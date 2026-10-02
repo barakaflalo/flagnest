@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" data-pal="gold" data-mode="night" data-board="field">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FlagNest · כבוש את הדגל</title>
+<meta name="description" content="FlagNest — משחק אסטרטגיה של דרגות נסתרות מול המחשב. AppNest.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="FlagNest · כבוש את הדגל">
+<meta property="og:description" content="משחק אסטרטגיה של דרגות נסתרות — סדר את הצבא, הסתר את הדגל וכבוש את דגל המחשב.">
+<meta property="og:image" content="icon-512.png">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000;--s1:#0f0e0b;--s2:#1a1812;--line:#3a3121;--gold:#d4af37;--gold2:#f3d98b;--gt:var(--gold);
+  --txt:#f5edd6;--mut:#a69b7e;--bad:#e5574b;--good:#62c483;
+  --redA:#a3291d;--redB:#c94a33;--bluA:#1b3466;--bluB:#2f569b;--rim:#ddba5e;--rim2:#7c5d1c;
+  --fd:'Frank Ruhl Libre',Georgia,'Times New Roman',serif;
+  --fu:'Heebo',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  --field:linear-gradient(160deg,#5d8b44,#3e6a30);--grid:rgba(10,30,8,.55);--water:#4f7f9c;--water2:#7fb0c8;--frame:#2a1c0c;
+  --boardReserve:268px;
+}
+[data-pal=silver]{--gold:#c9d1dc;--gold2:#eef2f7;--line:#2d3239;--rim:#d3d9e2;--rim2:#5d6670}
+[data-pal=emerald]{--gold:#3fc48f;--gold2:#a8efd1;--line:#1e3b2f}
+[data-pal=sapphire]{--gold:#5d91f0;--gold2:#bcd2ff;--line:#20304d}
+[data-pal=ruby]{--gold:#e5536c;--gold2:#ffc3cd;--line:#43212b}
+[data-mode=day]{--bg:#f3eee1;--s1:#fffaf0;--s2:#ebe3cf;--txt:#1d1910;--mut:#6c6352;--line:#d6c9a8;--gt:color-mix(in srgb,var(--gold) 58%,#000)}
+[data-board=desert]{--field:linear-gradient(160deg,#cfa86b,#a87d45);--grid:rgba(70,40,10,.45);--water:#3f8f92;--water2:#86c8c4;--frame:#4a2e12}
+[data-board=night]{--field:linear-gradient(160deg,#18241d,#0c1410);--grid:rgba(212,175,55,.28);--water:#16324a;--water2:#2c5a7a;--frame:#000}
+[data-board=marble]{--field:linear-gradient(160deg,#dcd8cd,#b9b3a4);--grid:rgba(60,50,30,.35);--water:#5b7f95;--water2:#9fc0d0;--frame:#3b3426}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--txt);font:400 16px/1.5 var(--fu);overscroll-behavior:none}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,.cell:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+.skip{position:absolute;inset-inline-start:-999px;top:0}
+.skip:focus{inset-inline-start:8px;z-index:99;background:var(--gold);color:#000;padding:6px 10px;border-radius:8px}
+#app{max-width:560px;margin:0 auto;padding:10px 12px 22px;min-height:100%}
+.scr{animation:fadeIn .18s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- generic controls ---------- */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:10px 16px;border-radius:14px;border:1.5px solid var(--gold);background:transparent;font-weight:700;font-size:16px;width:100%}
+.btn.pri{background:var(--gold);color:#120f06;font-weight:800;border-color:var(--gold)}
+.btn.ghost{border-color:var(--line)}
+.btn.small{min-height:40px;font-size:14px;padding:6px 10px;border-radius:11px}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn:disabled{opacity:.38;cursor:default}
+.bar{display:flex;align-items:center;gap:8px;margin-bottom:8px;min-height:46px}
+.back{border:1.5px solid var(--gold);background:var(--s1);border-radius:12px;min-height:44px;padding:4px 14px;font-weight:800;font-size:16px;white-space:nowrap}
+.icon{border:1px solid var(--line);background:var(--s1);border-radius:12px;width:44px;height:44px;font-size:19px;display:grid;place-items:center;flex:none}
+.ttl{flex:1;font:700 19px/1.2 var(--fd);text-align:center;color:var(--gt)}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0}
+.muted{color:var(--mut);font-size:14px}
+h2{font:700 21px/1.25 var(--fd);margin:14px 0 6px;color:var(--gt)}
+h3{font:700 17px/1.3 var(--fd);margin:12px 0 4px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:80px;min-height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--s2);font-weight:700;font-size:14px;padding:6px 8px}
+.seg button.on{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 18%,var(--s1));color:var(--txt)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .lb{font-weight:700}.row .sub{display:block;font-weight:400;color:var(--mut);font-size:13px}
+.sw{width:54px;height:32px;border-radius:20px;border:1.5px solid var(--line);background:var(--s2);position:relative;flex:none}
+.sw::after{content:'';position:absolute;top:3px;inset-inline-start:3px;width:24px;height:24px;border-radius:50%;background:var(--mut);transition:.18s}
+.sw.on{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 25%,var(--s2))}
+.sw.on::after{inset-inline-start:25px;background:var(--gold)}
+input[type=text],select{width:100%;min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--s2);color:var(--txt);padding:8px 12px;font:500 16px var(--fu)}
+.swatches{display:flex;gap:8px}
+.swatch{width:38px;height:38px;border-radius:50%;border:2px solid var(--line);background:#000;position:relative}
+.swatch i{position:absolute;inset:7px;border-radius:50%}
+.swatch.on{border-color:var(--txt);box-shadow:0 0 0 2px var(--gold)}
+.badge{margin:22px auto 0;text-align:center;font-size:12px;color:var(--mut);letter-spacing:.3px}
+.badge b{color:var(--gt);font-weight:700}
+
+/* ---------- home ---------- */
+.homeTop{display:flex;justify-content:space-between;align-items:center}
+.hero{display:grid;grid-template-columns:1fr;justify-items:center;padding:18px 0 6px}
+.mini{direction:ltr;width:min(62vw,236px);aspect-ratio:1;display:grid;grid-template-columns:repeat(3,1fr);background:var(--field);border-radius:12px;padding:3px;
+  box-shadow:0 0 0 5px var(--frame),0 0 0 6.5px var(--gold),0 18px 40px rgba(0,0,0,.55);container-type:inline-size;--n:3;transform:rotate(-4deg)}
+.mini .cell{border:1px solid var(--grid)}
+.title{font:900 clamp(38px,11vw,54px)/1 var(--fd);margin:26px 0 4px;text-align:center;letter-spacing:-.5px}
+.title small{display:block;font:700 15px/1.4 var(--fu);color:var(--gt);letter-spacing:.4px;margin-top:8px}
+.tag{color:var(--mut);text-align:center;margin:2px 0 18px;font-size:15px}
+.menu{display:grid;gap:10px}
+.menu .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ---------- board ---------- */
+.boardWrap{display:flex;justify-content:center;padding:6px 0}
+.board{--n:10;direction:ltr;position:relative;width:min(94vw,540px,calc(100dvh - var(--boardReserve)));min-width:250px;aspect-ratio:1;display:grid;
+  grid-template-columns:repeat(var(--n),1fr);grid-template-rows:repeat(var(--n),1fr);background:var(--field);border-radius:8px;padding:2px;
+  box-shadow:0 0 0 4px var(--frame),0 0 0 5.5px var(--gold),0 14px 34px rgba(0,0,0,.55);container-type:inline-size;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.board::before{content:'';position:absolute;inset:0;border-radius:8px;pointer-events:none;
+  background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.07),transparent 38%),radial-gradient(circle at 78% 74%,rgba(0,0,0,.14),transparent 42%),radial-gradient(circle at 60% 30%,rgba(0,0,0,.07),transparent 30%)}
+.cell{position:relative;border:1px solid var(--grid);display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}
+.cell.lake{border-color:transparent;background:radial-gradient(circle at 35% 30%,var(--water2),transparent 60%),var(--water);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.cell.lake::after{content:'';position:absolute;inset:18%;border-radius:50%;border:1px solid rgba(255,255,255,.18);opacity:.6}
+.cell.zone{background:color-mix(in srgb,var(--gold) 16%,transparent)}
+.cell.zone.drop{background:color-mix(in srgb,var(--gold) 30%,transparent)}
+.cell.lastf{background:rgba(255,226,120,.20)}
+.cell.lastt{box-shadow:inset 0 0 0 2px rgba(255,226,120,.75)}
+.cell.tgt::after{content:'';width:26%;height:26%;border-radius:50%;background:rgba(255,236,160,.85);box-shadow:0 0 8px rgba(255,226,120,.95)}
+.cell.atk::after{content:'';position:absolute;inset:4%;border-radius:50%;border:3px solid #ff5a46;animation:pulse 1s infinite;pointer-events:none}
+@keyframes pulse{50%{transform:scale(.9);opacity:.6}}
+
+/* ---------- pieces ---------- */
+.tok{position:relative;width:86%;height:86%;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 34% 28%,var(--fB),var(--fA) 62%);
+  box-shadow:0 0 0 calc(1.5px + .25cqw / var(--n)) var(--rim),0 0 0 calc(2.5px + .4cqw / var(--n)) var(--rim2),0 3px 5px rgba(0,0,0,.45),inset 0 -3px 6px rgba(0,0,0,.35),inset 0 2px 3px rgba(255,255,255,.2);
+  color:var(--tc);font:900 calc(100cqw / var(--n) * .42)/1 var(--fd);transition:transform .2s}
+.tok.o0{--fA:var(--redA);--fB:var(--redB);--tc:#fbe9c2}
+.tok.o1{--fA:var(--bluA);--fB:var(--bluB);--tc:#e8eefc}
+.tok .n{position:relative;top:.04em;text-shadow:0 1px 0 rgba(0,0,0,.45)}
+.tok svg{fill:var(--tc);stroke:var(--tc)}
+.tok .big{width:56%;height:56%}
+.tok .sm{position:absolute;top:9%;right:6%;width:30%;height:30%}
+.tok.hid::after{content:'';position:absolute;inset:20%;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--rim) 55%,transparent)}
+.tok.mv::before{content:'';position:absolute;bottom:9%;width:15%;height:15%;border-radius:50%;background:var(--rim);opacity:.9}
+.tok .eye{position:absolute;bottom:-4%;left:-4%;width:34%;height:34%;border-radius:50%;background:#000c;display:grid;place-items:center}
+.tok .eye svg{width:76%;height:76%;fill:#ffe9a8;stroke:none}
+.tok .note{position:absolute;bottom:-10%;right:-10%;min-width:44%;height:40%;padding:0 4%;border-radius:8px;background:#fff5d6;color:#2b1d05;
+  font:800 calc(100cqw / var(--n) * .22)/1 var(--fu);display:flex;align-items:center;justify-content:center;gap:1px;box-shadow:0 1px 3px #0008}
+.tok .note svg{width:1em;height:1em;fill:#2b1d05;stroke:#2b1d05}
+.tok.dead{filter:grayscale(.85) brightness(.75)}
+.cell.sel .tok{transform:translateY(-7%) scale(1.07);box-shadow:0 0 0 2px #fff4c4,0 0 0 4px var(--gold),0 6px 14px rgba(0,0,0,.55),0 0 16px var(--gold)}
+
+/* ---------- strips / tray ---------- */
+.strip{display:grid;grid-template-columns:repeat(var(--k,12),minmax(0,30px));justify-content:center;gap:2px;padding:2px 0;direction:ltr}
+.chip{display:flex;flex-direction:column;align-items:center;min-width:0}
+.tb{width:26px;height:26px;max-width:100%;display:flex;align-items:center;justify-content:center;container-type:inline-size;--n:1}
+.tb .tok{width:100%;height:100%}
+.chip .c{font:700 11px/1.2 var(--fu);color:var(--mut)}
+.chip .tb{width:100%;max-width:26px;height:auto;aspect-ratio:1}
+.chip.zero{opacity:.28}
+.tray{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;direction:ltr;margin:8px 0}
+.tray button{border:1.5px solid var(--line);background:var(--s1);border-radius:12px;padding:5px 4px 3px;display:flex;flex-direction:column;align-items:center;width:46px}
+.tray button.on{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in srgb,var(--gold) 40%,transparent)}
+.tray button .tb{width:34px;height:34px}
+.tray button .c{font:800 12px/1.3 var(--fu)}
+.tray button:disabled{opacity:.25}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0 8px}
+.status{text-align:center;min-height:26px;font-weight:700;color:var(--gt);margin-top:4px}
+.turn{flex:1;text-align:center;font:800 15px var(--fu);border-radius:12px;padding:8px 6px;border:1.5px solid var(--line)}
+.turn.me{border-color:var(--redB);color:var(--txt);background:color-mix(in srgb,var(--redA) 35%,transparent)}
+.turn.cpu{border-color:var(--bluB);background:color-mix(in srgb,var(--bluA) 40%,transparent)}
+.turn.cpu::after{content:'';display:inline-block;width:12px;height:12px;margin-inline-start:8px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:-1px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- overlays ---------- */
+.ov{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.66);padding:14px;animation:fadeIn .15s}
+.sheet{background:var(--s1);border:1px solid var(--line);border-radius:20px;width:min(100%,500px);max-height:88dvh;overflow:auto;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.sheet h2{margin-top:0}
+.sheet .acts{display:grid;gap:8px;margin-top:14px}
+.sheet .acts.two{grid-template-columns:1fr 1fr}
+.notes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;direction:ltr}
+.notes button{border:1.5px solid var(--line);background:var(--s2);border-radius:12px;padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:700}
+.notes .tb{width:36px;height:36px}
+.battle{z-index:45;background:rgba(0,0,0,.6)}
+.bcard{background:var(--s1);border:1.5px solid var(--gold);border-radius:22px;padding:18px 14px 14px;width:min(94vw,390px);text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.7)}
+.duel{display:flex;align-items:center;justify-content:space-around;direction:ltr}
+.side{display:flex;flex-direction:column;align-items:center;gap:6px;width:40%}
+.bt{width:min(28vw,112px);aspect-ratio:1;display:flex;align-items:center;justify-content:center;container-type:inline-size;--n:1}
+.bt .tok{width:100%;height:100%}
+.bt.a{animation:inL .35s cubic-bezier(.2,.9,.3,1.3)}
+.bt.d{animation:inR .35s cubic-bezier(.2,.9,.3,1.3)}
+.bt .tok{animation:flip .45s .25s both}
+.bt.lose .tok{animation:flip .45s .25s both,lose .5s 1s forwards}
+.bt.boom .tok{animation:flip .45s .25s both,boom .6s 1s forwards}
+@keyframes inL{from{transform:translateX(-60%) scale(.7);opacity:0}}
+@keyframes inR{from{transform:translateX(60%) scale(.7);opacity:0}}
+@keyframes flip{from{transform:rotateY(90deg)}to{transform:none}}
+@keyframes lose{to{transform:scale(.55) rotate(-25deg);opacity:.15;filter:grayscale(1)}}
+@keyframes boom{40%{transform:scale(1.25);filter:brightness(1.8)}to{transform:scale(.9);opacity:.9}}
+.vs{font:900 30px var(--fd);color:var(--gt);animation:clash .6s .2s both}
+@keyframes clash{0%{transform:scale(.3);opacity:0}60%{transform:scale(1.4)}to{transform:none;opacity:1}}
+.who{font-size:13px;color:var(--mut);font-weight:700}
+.bres{font:900 22px/1.25 var(--fd);margin:14px 0 2px;color:var(--gt);animation:fadeIn .3s .9s both}
+.bsub{color:var(--mut);font-size:14px;animation:fadeIn .3s 1s both}
+.tapc{margin-top:10px;font-size:12px;color:var(--mut);opacity:.8}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--s2);border:1px solid var(--gold);color:var(--txt);padding:10px 16px;border-radius:14px;font-weight:700;max-width:90vw;text-align:center;box-shadow:0 8px 24px #0009;animation:fadeIn .18s}
+.endT{font:900 34px/1.1 var(--fd);text-align:center;margin:4px 0 6px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.kv div{background:var(--s2);border-radius:12px;padding:10px;text-align:center}
+.kv b{display:block;font:900 24px var(--fd);color:var(--gt)}
+.kv span{font-size:13px;color:var(--mut)}
+.ptable{width:100%;border-collapse:collapse;font-size:14px}
+.ptable td{padding:7px 4px;border-bottom:1px solid var(--line);vertical-align:middle}
+.ptable .tb{width:32px;height:32px}
+.ptable td:nth-child(3){text-align:center;font-weight:800;color:var(--gt)}
+.rules p,.rules li{max-width:68ch}
+.rules ul{padding-inline-start:20px;margin:6px 0}
+.rules li{margin:5px 0}
+.list button.item{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:start;border:1px solid var(--line);background:var(--s2);border-radius:12px;padding:10px 12px;margin:6px 0;min-height:52px}
+.logl{font-size:14px;padding:6px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.logl .d{color:var(--mut);min-width:34px}
+.obStep{font-size:13px;color:var(--mut);text-align:center}
+.obArt{display:flex;justify-content:center;gap:10px;margin:8px 0 4px;direction:ltr}
+.obArt .tb{width:54px;height:54px}
+@media (max-height:700px){:root{--boardReserve:236px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#app">דלג לתוכן</a>
+<main id="app" tabindex="-1"></main>
+<div id="ovl"></div>
+<noscript><p style="padding:20px">FlagNest needs JavaScript.</p></noscript>
+<script>
+'use strict';
+/* ===================== FlagNest engine (pure, no DOM) =====================
+   Ranks: 0 = flag, 11 = bomb, 1 = spy, 2 = scout, 3 = miner, 4..10 regular.
+   Owner 0 = human (bottom), owner 1 = computer (top).                       */
+const FLAG = 0, BOMB = 11, SPY = 1, SCOUT = 2, MINER = 3, MARSHAL = 10;
+const RANK_ORDER = [0, 11, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const VARIANTS = {
+  10: { n: 10, rows: 4, lakes: [[4,2],[4,3],[5,2],[5,3],[4,6],[4,7],[5,6],[5,7]],
+        set: {0:1, 11:6, 1:1, 2:8, 3:5, 4:4, 5:4, 6:4, 7:3, 8:2, 9:1, 10:1} },          // 40
+  7:  { n: 7, rows: 2, lakes: [[3,1],[3,5]],
+        set: {0:1, 11:2, 1:1, 2:3, 3:2, 4:1, 5:1, 6:1, 8:1, 10:1} },                   // 14
+  5:  { n: 5, rows: 2, lakes: [[2,2]],
+        set: {0:1, 11:2, 1:1, 2:2, 3:1, 5:1, 7:1, 10:1} }                               // 10
+};
+// piece values for the AI
+const VAL = {0:1000, 11:12, 1:30, 2:8, 3:19, 4:12, 5:20, 6:30, 7:42, 8:58, 9:85, 10:130};
+const PROG = {1:.15, 2:.45, 3:.55, 4:.5, 5:.55, 6:.6, 7:.65, 8:.75, 9:.85, 10:1};
+const DIRS = [[-1,0],[1,0],[0,-1],[0,1]];
+
+function fight(a, d) {               // 'A' attacker wins, 'D' defender wins, 'T' both die
+  if (d === FLAG) return 'A';
+  if (d === BOMB) return a === MINER ? 'A' : 'D';
+  if (a === SPY && d === MARSHAL) return 'A';
+  if (a === d) return 'T';
+  return a > d ? 'A' : 'D';
+}
+const movable = r => r !== FLAG && r !== BOMB;
+function setTotal(set) { let t = 0; for (const k in set) t += set[k]; return t; }
+function expandSet(set) { const a = []; for (const k of RANK_ORDER) for (let i = 0; i < (set[k] || 0); i++) a.push(k); return a; }
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function makeGame(size, diff) {
+  const V = VARIANTS[size], n = V.n;
+  const lake = Array(n * n).fill(false);
+  V.lakes.forEach(([r, c]) => lake[r * n + c] = true);
+  return { size, diff, n, rows: V.rows, lake, board: Array(n * n).fill(null), pcs: {}, nid: 1,
+           phase: 'setup', turn: 0, ply: 0, hist: [], last: null, winner: null, reason: '', log: [],
+           aggr: {}, t0: Date.now(), t1: 0 };
+}
+const rowOf = (g, i) => Math.floor(i / g.n), colOf = (g, i) => i % g.n;
+function inZone(g, o, i) { const r = rowOf(g, i); return o === 1 ? r < g.rows : r >= g.n - g.rows; }
+function zoneCells(g, o) { const a = []; for (let i = 0; i < g.n * g.n; i++) if (inZone(g, o, i)) a.push(i); return a; }
+// depth 0 = back row (furthest from enemy) -> cell index
+function depthCell(g, o, d, c) { const r = o === 1 ? d : g.n - 1 - d; return r * g.n + c; }
+
+function addPiece(g, o, r, pos) {
+  const id = g.nid++;
+  g.pcs[id] = { id, o, r, pos, rev: false, mv: false, dead: false, note: null };
+  g.board[pos] = id; return id;
+}
+function removeAt(g, pos) { const id = g.board[pos]; if (id != null) { delete g.pcs[id]; g.board[pos] = null; } }
+function placedCounts(g, o) { const c = {}; for (const id in g.pcs) { const p = g.pcs[id]; if (p.o === o && !p.dead) c[p.r] = (c[p.r] || 0) + 1; } return c; }
+function trayCounts(g, o) {
+  const set = VARIANTS[g.size].set, pc = placedCounts(g, o), t = {};
+  for (const k of RANK_ORDER) if (set[k]) t[k] = set[k] - (pc[k] || 0); return t;
+}
+
+/* ---------- smart / random setup ---------- */
+function genSetup(size, mode) {                     // returns grid[depth][col] of ranks
+  const V = VARIANTS[size], n = V.n, R = V.rows;
+  const grid = Array.from({ length: R }, () => Array(n).fill(null));
+  const bag = expandSet(V.set);
+  if (mode === 'random') { shuffle(bag); let k = 0; for (let d = 0; d < R; d++) for (let c = 0; c < n; c++) grid[d][c] = bag[k++]; return grid; }
+  const take = r => { const i = bag.indexOf(r); if (i < 0) return null; bag.splice(i, 1); return r; };
+  const empty = (d, c) => d >= 0 && d < R && c >= 0 && c < n && grid[d][c] == null;
+  const rnd = a => a[Math.floor(Math.random() * a.length)];
+  // flag: back row, favour the edges a little
+  const cols = []; for (let c = 0; c < n; c++) { cols.push(c); if (c === 0 || c === n - 1 || c === 1 || c === n - 2) cols.push(c); }
+  const fc = rnd(cols); grid[0][fc] = take(FLAG);
+  // bombs around the flag (sometimes leave one side open as a bluff)
+  let nb = shuffle([[0, fc - 1], [0, fc + 1], [1, fc]].filter(([d, c]) => empty(d, c)));
+  let bombs = bag.filter(r => r === BOMB).length;
+  const around = Math.min(bombs, nb.length, size === 10 ? (Math.random() < .2 ? 2 : 3) : 2);
+  for (let i = 0; i < around; i++) { const [d, c] = nb[i]; grid[d][c] = take(BOMB); }
+  // a decoy bomb cluster on 10x10 (back corner far from flag)
+  if (size === 10 && bag.includes(BOMB) && Math.random() < .55) {
+    const dc = fc < n / 2 ? n - 1 - Math.floor(Math.random() * 2) : Math.floor(Math.random() * 2);
+    if (empty(0, dc)) grid[0][dc] = take(BOMB);
+  }
+  const cellsAt = ds => { const a = []; ds.forEach(d => { for (let c = 0; c < n; c++) if (empty(d, c)) a.push([d, c]); }); return shuffle(a); };
+  const put = (r, ds) => { const a = cellsAt(ds); if (!a.length || !bag.includes(r)) return null; const [d, c] = a[0]; grid[d][c] = take(r); return [d, c]; };
+  // remaining bombs: mostly middle rows, sometimes front row to block a lane
+  while (bag.includes(BOMB)) { put(BOMB, R >= 3 ? (Math.random() < .2 ? [R - 1] : [0, 1, Math.max(0, R - 2)]) : [0, 1]); }
+  // marshal + general in the middle rows, spy next to the general
+  const mid = R >= 3 ? [1, 2] : [0, 1];
+  put(10, R >= 3 ? [1, 2, 3].slice(0, R - 1) : mid);
+  const gpos = bag.includes(9) ? put(9, mid) : null;
+  if (gpos && bag.includes(SPY)) {
+    const adj = shuffle([[gpos[0] - 1, gpos[1]], [gpos[0], gpos[1] - 1], [gpos[0], gpos[1] + 1]].filter(([d, c]) => empty(d, c)));
+    if (adj.length) { const [d, c] = adj[0]; grid[d][c] = take(SPY); }
+  }
+  if (bag.includes(SPY)) put(SPY, R >= 3 ? [1, 2] : [0, 1]);
+  // scouts: about half in the front row
+  const sc = bag.filter(r => r === SCOUT).length;
+  for (let i = 0; i < Math.ceil(sc / 2); i++) put(SCOUT, [R - 1]);
+  // miners mostly in the back half
+  const mn = bag.filter(r => r === MINER).length;
+  for (let i = 0; i < Math.ceil(mn * .6); i++) put(MINER, R >= 3 ? [0, 1] : [0]);
+  // the rest anywhere
+  const rest = shuffle(bag.slice()); bag.length = 0;
+  const free = cellsAt([...Array(R).keys()]);
+  rest.forEach((r, i) => { const [d, c] = free[i]; grid[d][c] = r; });
+  return grid;
+}
+function applySetup(g, o, grid) {
+  zoneCells(g, o).forEach(i => removeAt(g, i));
+  for (let d = 0; d < grid.length; d++) for (let c = 0; c < g.n; c++) addPiece(g, o, grid[d][c], depthCell(g, o, d, c));
+}
+function readSetup(g, o) {               // current zone -> grid (null where empty)
+  const grid = Array.from({ length: g.rows }, () => Array(g.n).fill(null));
+  for (let d = 0; d < g.rows; d++) for (let c = 0; c < g.n; c++) { const id = g.board[depthCell(g, o, d, c)]; grid[d][c] = id == null ? null : g.pcs[id].r; }
+  return grid;
+}
+
+/* ---------- moves ---------- */
+function passable(g, i) { return !g.lake[i]; }
+function pieceMoves(g, id, out) {
+  const p = g.pcs[id]; if (!p || p.dead || !movable(p.r)) return out;
+  const n = g.n, r0 = rowOf(g, p.pos), c0 = colOf(g, p.pos);
+  for (const [dr, dc] of DIRS) {
+    let r = r0 + dr, c = c0 + dc, steps = 0;
+    while (r >= 0 && r < n && c >= 0 && c < n) {
+      const i = r * n + c; if (!passable(g, i)) break;
+      const t = g.board[i]; steps++;
+      if (t == null) { out.push({ id, from: p.pos, to: i, long: steps > 1 }); }
+      else { if (g.pcs[t].o !== p.o) out.push({ id, from: p.pos, to: i, long: steps > 1, atk: true }); break; }
+      if (p.r !== SCOUT) break;
+      r += dr; c += dc;
+    }
+  }
+  return out;
+}
+// two-square rule: a piece may not shuttle between the same two squares more than 3 times in a row
+function violatesTwoSquare(g, m) {
+  const mine = []; for (let k = g.hist.length - 1; k >= 0 && mine.length < 3; k--) if (g.hist[k].o === g.pcs[m.id].o) mine.push(g.hist[k]);
+  if (mine.length < 3) return false;
+  const [m3, m2, m1] = mine;
+  if (!(m1.id === m.id && m2.id === m.id && m3.id === m.id)) return false;
+  return m1.f === m3.f && m1.t === m3.t && m2.f === m1.t && m2.t === m1.f && m.from === m3.t && m.to === m3.f;
+}
+function allMoves(g, o) {
+  const out = [];
+  for (const id in g.pcs) { const p = g.pcs[id]; if (p.o === o && !p.dead) pieceMoves(g, +id, out); }
+  return out.filter(m => !violatesTwoSquare(g, m));
+}
+
+function applyMove(g, m) {
+  const p = g.pcs[m.id], from = p.pos, to = m.to, tid = g.board[to];
+  p.mv = true; if (m.long) p.rev = true;           // a long move gives the scout away
+  g.hist.push({ o: p.o, id: p.id, f: from, t: to }); if (g.hist.length > 80) g.hist.shift();
+  // remember aggressive approaches (for the AI's bluff reading)
+  if (p.o === 0) {
+    delete g.aggr[p.id];
+    for (const [dr, dc] of DIRS) {
+      const r = rowOf(g, to) + dr, c = colOf(g, to) + dc; if (r < 0 || c < 0 || r >= g.n || c >= g.n) continue;
+      const q = g.board[r * g.n + c]; if (q != null && q !== tid && g.pcs[q].o === 1 && g.pcs[q].rev) g.aggr[p.id] = Math.max(g.aggr[p.id] || 0, g.pcs[q].r);
+    }
+  }
+  let battle = null;
+  if (tid == null) { g.board[from] = null; g.board[to] = p.id; p.pos = to; }
+  else {
+    const d = g.pcs[tid], res = fight(p.r, d.r);
+    battle = { a: { id: p.id, o: p.o, r: p.r, wasRev: p.rev }, d: { id: d.id, o: d.o, r: d.r, wasRev: d.rev }, res, at: to, from, ply: g.ply };
+    p.rev = true; d.rev = true; g.board[from] = null;
+    const kill = x => { x.dead = true; x.pos = -1; };
+    if (res === 'A') { kill(d); g.board[to] = p.id; p.pos = to; if (d.r === FLAG) { g.winner = p.o; g.reason = 'flag'; } }
+    else if (res === 'D') { kill(p); }
+    else { kill(p); kill(d); g.board[to] = null; }
+    g.log.push({ ply: g.ply, ao: p.o, ar: p.r, dr: d.r, res });
+    delete g.aggr[d.id];
+  }
+  g.last = { f: from, t: to, o: p.o, id: p.id };
+  g.ply++; g.turn = 1 - g.turn;
+  if (g.winner == null) {
+    if (g.ply >= 3000) { g.winner = -1; g.reason = 'cap'; }
+    else if (!allMoves(g, g.turn).length) {
+      if (!allMoves(g, 1 - g.turn).length) { g.winner = -1; g.reason = 'stuck'; }
+      else { g.winner = 1 - g.turn; g.reason = 'nomoves'; }
+    }
+  }
+  if (g.winner != null) { g.phase = 'over'; g.t1 = Date.now(); }
+  return battle;
+}
+
+/* ===================== the computer player ===================== */
+function belief(g, viewer, diff) {          // probability over ranks for each unknown enemy piece
+  const foe = 1 - viewer, set = VARIANTS[g.size].set, cnt = {};
+  for (const k of RANK_ORDER) cnt[k] = set[k] || 0;
+  const U = [];
+  for (const id in g.pcs) { const p = g.pcs[id]; if (p.o !== foe) continue; if (p.dead || p.rev) cnt[p.r]--; else U.push(p); }
+  const S = U.filter(p => !p.mv);
+  const fbBoost = S.length ? Math.max(1, U.length / S.length) : 1;
+  const backRow = foe === 0 ? g.n - 1 : 0;
+  const B = {};
+  for (const p of U) {
+    const a = Array(12).fill(0); let tot = 0;
+    for (const r of RANK_ORDER) {
+      if (cnt[r] <= 0) continue;
+      if (p.mv && !movable(r)) continue;
+      let w = cnt[r];
+      if (!p.mv && !movable(r)) { w *= fbBoost; if (r === FLAG && rowOf(g, p.pos) === backRow) w *= 2.5; }
+      if (diff === 'hard' && g.aggr[p.id] != null && r > g.aggr[p.id] && movable(r)) w *= 2.2;   // it walked up to a known piece — probably stronger
+      a[r] = w; tot += w;
+    }
+    if (tot > 0) for (let r = 0; r < 12; r++) a[r] /= tot;
+    B[p.id] = a;
+  }
+  return B;
+}
+function distOf(ctx, p) { if (p.rev) { const a = Array(12).fill(0); a[p.r] = 1; return a; } return ctx.B[p.id] || Array(12).fill(1 / 12); }
+
+function risk(ctx, p, sq, revealed, opts) {        // expected loss if an adjacent enemy decides to hit p on sq
+  const g = ctx.g, n = g.n, r0 = rowOf(g, sq), c0 = colOf(g, sq); let worst = 0;
+  for (const [dr, dc] of DIRS) {
+    const r = r0 + dr, c = c0 + dc; if (r < 0 || c < 0 || r >= n || c >= n) continue;
+    const i = r * n + c; if (opts && i === opts.removed) continue;
+    const q = g.board[i]; if (q == null) continue; const e = g.pcs[q]; if (e.o === p.o) continue;
+    const d = distOf(ctx, e); let mob = 0, win = 0, tie = 0;
+    for (let k = 0; k < 12; k++) { if (!d[k] || !movable(k)) continue; mob += d[k]; const f = fight(k, p.r); if (f === 'A') win += d[k]; else if (f === 'T') tie += d[k]; }
+    if (mob <= 0) continue;
+    const pw = win / mob, pt = tie / mob;
+    let will = revealed ? (pw > .5 ? .95 : .25) : .45;
+    if (ctx.diff === 'easy' && !revealed) will *= .5;
+    const loss = mob * will * (pw * VAL[p.r] + pt * VAL[p.r] * .5);
+    if (loss > worst) worst = loss;
+  }
+  return worst;
+}
+function distField(ctx, p) {                // BFS distance from squares worth going to
+  if (ctx.df[p.id]) return ctx.df[p.id];
+  const g = ctx.g, n = g.n, N = n * n, D = new Array(N).fill(1e9), Q = [];
+  for (const id in g.pcs) {
+    const e = g.pcs[id]; if (e.o === p.o || e.dead) continue;
+    const d = distOf(ctx, e); let win = 0;
+    for (let k = 0; k < 12; k++) if (d[k] && fight(p.r, k) === 'A') win += d[k];
+    let good = win >= .62;
+    if (p.r === MINER && (d[BOMB] > .25 || d[FLAG] > .08)) good = true;
+    if ((p.r === SCOUT || p.r === 4) && !e.mv && !e.rev) good = true;               // cheap pieces probe the unknown
+    if (p.r === SPY) good = e.rev && e.r === MARSHAL;
+    if (good) { D[e.pos] = 0; Q.push(e.pos); }
+  }
+  for (let h = 0; h < Q.length; h++) {
+    const i = Q[h], r0 = Math.floor(i / n), c0 = i % n;
+    for (const [dr, dc] of DIRS) {
+      const r = r0 + dr, c = c0 + dc; if (r < 0 || c < 0 || r >= n || c >= n) continue;
+      const j = r * n + c; if (g.lake[j] || D[j] <= D[i] + 1) continue;
+      const t = g.board[j]; if (t != null && t !== p.id) continue;
+      D[j] = D[i] + 1; Q.push(j);
+    }
+  }
+  ctx.df[p.id] = D; return D;
+}
+function prevPosOf(g, id) { for (let k = g.hist.length - 1; k >= 0; k--) if (g.hist[k].id === id) return g.hist[k].f; return -1; }
+
+function scoreMove(ctx, m) {
+  const g = ctx.g, p = g.pcs[m.id], tid = g.board[m.to]; let s = 0;
+  if (tid != null) {
+    const e = g.pcs[tid], d = distOf(ctx, e); let ev = 0, pw = 0;
+    for (let k = 0; k < 12; k++) {
+      if (!d[k]) continue; const f = fight(p.r, k);
+      if (f === 'A') { ev += d[k] * (k === FLAG ? 5000 : VAL[k]); pw += d[k]; }
+      else if (f === 'D') ev -= d[k] * (VAL[p.r] + (k === BOMB ? -4 : 0));
+      else ev += d[k] * (VAL[k] - VAL[p.r]);
+    }
+    s += ev;
+    if (!e.rev && (p.r === SCOUT || p.r === 4) ) s += 3;                         // information is worth something
+    if (!p.rev && p.r >= 8) s -= p.r * .9;                                        // revealing a big piece costs
+    if (ctx.diff !== 'easy') s -= pw * risk(ctx, p, m.to, true, { removed: tid }) * .8;
+    if (ctx.flag >= 0 && Math.abs(rowOf(g, e.pos) - rowOf(g, ctx.flag)) + Math.abs(colOf(g, e.pos) - colOf(g, ctx.flag)) <= 2) s += 14;
+  } else {
+    const before = risk(ctx, p, p.pos, p.rev), after = risk(ctx, p, m.to, p.rev || m.long);
+    s += (before - after) * (ctx.diff === 'easy' ? .5 : 1);
+    const D = distField(ctx, p), a = D[p.pos], b = D[m.to];
+    if (a < 1e9 && b < 1e9) s += (a - b) * PROG[p.r] * 2.2;
+    else if (b < 1e9) s += PROG[p.r];
+    if (m.long && !p.rev) s -= 2.5;
+    if (prevPosOf(g, p.id) === m.to) s -= 3.5;
+    if (ctx.diff === 'hard') {                                                    // initiative: threaten something we beat
+      const n = g.n, r0 = rowOf(g, m.to), c0 = colOf(g, m.to);
+      for (const [dr, dc] of DIRS) {
+        const r = r0 + dr, c = c0 + dc; if (r < 0 || c < 0 || r >= n || c >= n) continue;
+        const q = g.board[r * n + c]; if (q == null || g.pcs[q].o === p.o) continue;
+        const d = distOf(ctx, g.pcs[q]); let w = 0; for (let k = 0; k < 12; k++) if (d[k] && fight(p.r, k) === 'A') w += d[k] * VAL[k];
+        s += Math.min(w, 60) * .12;
+      }
+    }
+  }
+  return s;
+}
+function aiChoose(g, owner) {
+  owner = owner == null ? 1 : owner;
+  const moves = allMoves(g, owner); if (!moves.length) return null;
+  const diff = g.diff;
+  if (diff === 'easy' && Math.random() < .28) return moves[Math.floor(Math.random() * moves.length)];
+  let flag = -1; for (const id in g.pcs) { const p = g.pcs[id]; if (p.o === owner && p.r === FLAG && !p.dead) flag = p.pos; }
+  const ctx = { g, diff, flag, B: belief(g, owner, diff), df: {} };
+  const noise = diff === 'easy' ? 22 : diff === 'medium' ? 5 : 1.2;
+  let best = null, bs = -1e18;
+  for (const m of moves) { const s = scoreMove(ctx, m) + (Math.random() - .5) * 2 * noise; if (s > bs) { bs = s; best = m; } }
+  return best;
+}
+
+if (typeof module !== 'undefined') module.exports = { VARIANTS, RANK_ORDER, makeGame, genSetup, applySetup, readSetup, allMoves, applyMove, aiChoose, fight, trayCounts, zoneCells, inZone, setTotal };
+/* ===================== translations ===================== */
+const LANGS = {
+he: {
+  dir:'rtl', langName:'עברית',
+  app:'כבוש את הדגל', sub:'FlagNest · משחק אסטרטגיה של דרגות נסתרות',
+  tag:'הסתר את הדגל. נחש את הדרגות. כבוש את הדגל של המחשב.',
+  newGame:'משחק חדש מול המחשב', resume:'המשך את המשחק', rules:'חוקים', stats:'סטטיסטיקה', settings:'הגדרות', about:'אודות',
+  home:'בית', back:'חזרה', ok:'אישור', cancel:'ביטול', close:'סגור', save:'שמור', del:'מחק', edit:'ערוך', next:'הבא', skip:'דלג', done:'סיום',
+  boardSize:'גודל לוח', s10:'רגיל 10×10', s7:'מהיר 7×7', s5:'בזק 5×5', pieces:'{n} כלים',
+  difficulty:'רמת קושי', easy:'קל', medium:'בינוני', hard:'קשה',
+  diffEasy:'טועה לא מעט ותוקף בלי לחשוב הרבה', diffMedium:'שוקל סיכונים וזוכר כל קרב', diffHard:'קורא בלופים, צד חלשים ושומר על הדגל',
+  toSetup:'לסידור הכלים', resumeQ:'יש משחק פתוח. להתחיל חדש במקומו?', startNew:'התחל חדש',
+  setupTitle:'סידור הצבא', setupHint:'בחר כלי מהמגש ולחץ על משבצת מוארת. לחיצה על כלי שהונח ואז על משבצת אחרת מחליפה ביניהם.',
+  random:'אקראי', smart:'חכם', clear:'נקה', myBoards:'שמורים', start:'יוצאים לקרב', leftN:'נותרו {n} כלים להנחה', ready:'הצבא מוכן',
+  toTray:'לחץ על המגש כדי להחזיר את הכלי',
+  yourTurn:'התור שלך', cpuTurn:'המחשב חושב', you:'אתה', cpu:'המחשב', attacker:'תוקף', defender:'מגן',
+  pickPiece:'בחר כלי להזזה', pickTarget:'בחר לאן לזוז — טבעת אדומה היא תקיפה', cantMove:'הכלי הזה לא זז',
+  twoSq:'אסור להזיז את אותו כלי הלוך-חזור יותר משלוש פעמים',
+  menu:'תפריט', log:'יומן קרבות', noLog:'עדיין לא היו קרבות.', resign:'כניעה', resignQ:'להיכנע ולסיים את המשחק?', restart:'משחק חדש',
+  noteT:'מה לדעתך הכלי הזה?', noteSub:'הסימון רק בשבילך — המחשב לא רואה אותו.', noteClear:'נקה סימון', unknown:'?',
+  win:'ניצחת!', lose:'הפסדת', draw:'תיקו',
+  rflag:'כבשת את הדגל של המחשב', rflagL:'המחשב כבש את הדגל שלך', rnomoves:'למחשב לא נשארו מהלכים', rnomovesL:'לא נשארו לך מהלכים',
+  rresign:'נכנעת', rstuck:'לאף צד לא נשארו מהלכים', rcap:'הגעתם למגבלת המהלכים',
+  playAgain:'עוד משחק', sameSetup:'שוב עם אותו סידור', toHome:'לדף הבית', viewBoard:'הצג את הלוח', moves:'מהלכים', time:'זמן',
+  bWin:'{a} מנצח את {d}', bTie:'תיקו — {a} מול {a}, שניהם יצאו', bBomb:'בום! ה{a} עלה על פצצה', bDefuse:'החבלן נטרל את הפצצה',
+  bSpy:'המרגל חיסל את המרשל!', bFlag:'הדגל נכבש!', tapCont:'הקש להמשך',
+  saveBoard:'שמור את הסידור הנוכחי', boardName:'שם הסידור', noBoards:'אין עדיין סידורים שמורים. סדר את הכלים ושמור אותם כאן.',
+  needFull:'קודם צריך להניח את כל הכלים', saved:'נשמר', loaded:'הסידור נטען', deleted:'נמחק', delQ:'למחוק את "{n}"?', boardsFor:'סידורים ללוח {s}',
+  userName:'שם משתמש', userNameSub:'יופיע בגיבוי ובשיתוף', lang:'שפה', theme:'ערכת צבע', mode:'מצב תצוגה', day:'יום', night:'לילה',
+  boardSkin:'מראה הלוח', skField:'שדה', skDesert:'מדבר', skNight:'מבצע לילה', skMarble:'שיש',
+  sound:'צלילים', vib:'רטט', speed:'מהירות אנימציה', slow:'איטי', normal:'רגיל', fast:'מהיר',
+  hints:'סמן כלי אויב שזזו', hintsSub:'נקודה קטנה = הכלי זז, ולכן הוא לא פצצה ולא דגל',
+  hideRev:'מצב זיכרון', hideRevSub:'דרגות של כלי אויב נעלמות שוב אחרי הקרב',
+  backup:'גיבוי ושחזור', exportB:'ייצוא גיבוי', importB:'ייבוא גיבוי', importQ:'השחזור יחליף את כל הנתונים באפליקציה. להמשיך?',
+  imported:'הנתונים שוחזרו', badFile:'הקובץ הזה אינו גיבוי של FlagNest', exported:'קובץ הגיבוי נוצר',
+  wipe:'מחק את כל הנתונים', wipeQ1:'למחוק את כל הנתונים — סטטיסטיקה, סידורים ומשחק פתוח?', wipeQ2:'בטוח? בלי קובץ גיבוי אין דרך לשחזר.', wiped:'הכול נמחק',
+  guide:'מדריך פתיחה', privacy:'מדיניות פרטיות', saveFail:'השמירה נכשלה — ייתכן שהאחסון מלא',
+  games:'משחקים', wins:'ניצחונות', losses:'הפסדים', draws:'תיקו', winRate:'אחוז ניצחון', streak:'רצף נוכחי', best:'רצף שיא',
+  fastest:'הניצחון המהיר ביותר', byDiff:'לפי רמת קושי', resetStats:'אפס סטטיסטיקה', resetQ:'לאפס את כל הסטטיסטיקה?', noStats:'עוד לא שיחקת. משחק ראשון מחכה לך.',
+  version:'גרסה', developer:'פיתוח', platform:'פלטפורמה', storage:'אחסון', storageV:'על המכשיר בלבד', license:'רישיון',
+  store:'חנות AppNest', share:'שתף את האפליקציה', feedback:'שלח משוב', shareText:'בוא נראה אם אתה מנצח את המחשב בכבוש את הדגל',
+  disclaimer:'FlagNest הוא משחק עצמאי בהשראת משחקי האסטרטגיה הקלאסיים של דרגות נסתרות. אינו קשור לבעלי סימני מסחר של משחקים אחרים. כל הנתונים נשמרים על המכשיר שלך בלבד.',
+  copied:'הקישור הועתק',
+  r0:'דגל', r11:'פצצה', r1:'מרגל', r2:'סייר', r3:'חבלן', r4:'סמל', r5:'סגן', r6:'סרן', r7:'רב-סרן', r8:'אלוף-משנה', r9:'גנרל', r10:'מרשל',
+  a0:'כבוש אותו — וניצחת', a11:'לא זזה. מפוצצת כל תוקף חוץ מחבלן', a1:'מחסל את המרשל כשהוא תוקף ראשון', a2:'רץ כמה משבצות בקו ישר',
+  a3:'מנטרל פצצות', a10:'הכלי החזק ביותר', aN:'', count:'כמות', piece:'כלי', ability:'יכולת',
+  ob1t:'ברוך הבא לקרב', ob1:'לך ולמחשב יש צבא עם דגל אחד. מי שכובש ראשון את הדגל של היריב — מנצח.',
+  ob2t:'מסדרים בסוד', ob2:'לפני הקרב מסדרים את הכלים בשורות הקרובות אליך. המחשב לא רואה את הדרגות שלך — וגם אתה לא רואה את שלו.',
+  ob3t:'זזים ותוקפים', ob3:'לחץ על כלי ואז על משבצת. זז משבצת אחת ישר, לא באלכסון. נכנסים לכלי אויב — יש קרב, והדרגה הגבוהה מנצחת.',
+  ob4t:'הכלים המיוחדים', ob4:'פצצה מפוצצת כל תוקף חוץ מהחבלן (3). המרגל (1) מחסל את המרשל (10) אם הוא תוקף ראשון. הסייר (2) רץ רחוק בקו ישר.',
+  ob5t:'שחק כמו בלש', ob5:'לחץ על כלי של המחשב כדי לסמן עליו ניחוש. נקודה קטנה על כלי אויב אומרת שהוא זז — כלומר הוא לא פצצה ולא דגל.',
+  rulesH:`<h2>המטרה</h2><p>לכבוש את הדגל של המחשב — או להשאיר אותו בלי אף מהלך חוקי.</p>
+<h2>הסידור</h2><p>כל צד מסדר את הכלים בשורות הקרובות אליו: 4 שורות בלוח 10×10, ושתי שורות בלוחות 7×7 ו-5×5. אף צד לא רואה את הדרגות של השני. אפשר לסדר לבד, לבחור סידור חכם או אקראי, ולשמור סידורים אהובים.</p>
+<h2>תנועה</h2><ul><li>בכל תור מזיזים כלי אחד, משבצת אחת קדימה, אחורה או לצד. לא באלכסון.</li><li>אסור להיכנס לאגמים.</li><li>הדגל והפצצות לא זזים אף פעם.</li><li>הסייר (2) רץ כמה משבצות שרוצים בקו ישר, וגם יכול לתקוף בסוף הריצה. ריצה ארוכה מסגירה שהוא סייר.</li></ul>
+<h2>קרב</h2><ul><li>כניסה למשבצת של כלי אויב היא תקיפה. שני הכלים נחשפים.</li><li>הדרגה הגבוהה מנצחת והנמוכה יוצאת מהלוח. דרגות שוות — שניהם יוצאים.</li><li>מי שתוקף פצצה — מתפוצץ, והפצצה נשארת. רק החבלן (3) מנטרל אותה.</li><li>המרגל (1) מחסל את המרשל (10), אבל רק כשהמרגל תוקף ראשון. כל כלי אחר מנצח את המרגל.</li></ul>
+<h2>כלל שתי המשבצות</h2><p>אסור להזיז את אותו כלי הלוך-חזור בין אותן שתי משבצות יותר משלוש פעמים ברצף. הכלל מונע מרדפים אינסופיים, והוא חל גם על המחשב.</p>
+<h2>סוף המשחק</h2><p>מי שכובש את הדגל — מנצח. מי שאין לו אף מהלך חוקי בתורו — מפסיד. אם לאף צד אין מהלכים — תיקו.</p>
+<h2>סימנים על הלוח</h2><ul><li>לחיצה על כלי של המחשב פותחת סימון ניחוש — למשל "9?" או "פצצה?". הסימון רק בשבילך.</li><li>נקודה קטנה בתחתית כלי של המחשב: הוא כבר זז, אז הוא לא פצצה ולא דגל.</li><li>עין קטנה על כלי שלך: המחשב כבר ראה מה הוא.</li></ul>
+<h2>טיפים</h2><ul><li>הקף את הדגל בפצצות — אבל אל תשים אותו במקום הכי ברור. פינה עם פצצות היא הדבר הראשון שהמחשב בודק.</li><li>שמור את המרגל ליד הגנרל: כשהמרשל של המחשב בא לצוד אותו, המרגל מחכה.</li><li>שלח סיירים וסמלים לגלות דרגות לפני שאתה מסכן כלים חזקים.</li><li>אל תחשוף את המרשל מוקדם. כל עוד המחשב לא יודע איפה הוא — הוא נזהר מכל הכלים שלך.</li></ul>`
+},
+en: {
+  dir:'ltr', langName:'English',
+  app:'Capture the Flag', sub:'FlagNest · a strategy game of hidden ranks',
+  tag:'Hide your flag. Read the ranks. Capture the computer’s flag.',
+  newGame:'New game vs computer', resume:'Resume game', rules:'Rules', stats:'Statistics', settings:'Settings', about:'About',
+  home:'Home', back:'Back', ok:'OK', cancel:'Cancel', close:'Close', save:'Save', del:'Delete', edit:'Edit', next:'Next', skip:'Skip', done:'Done',
+  boardSize:'Board size', s10:'Classic 10×10', s7:'Quick 7×7', s5:'Blitz 5×5', pieces:'{n} pieces',
+  difficulty:'Difficulty', easy:'Easy', medium:'Medium', hard:'Hard',
+  diffEasy:'Makes mistakes and attacks without much thought', diffMedium:'Weighs risk and remembers every battle', diffHard:'Reads bluffs, hunts weak pieces, guards its flag',
+  toSetup:'Arrange pieces', resumeQ:'A game is in progress. Start a new one instead?', startNew:'Start new',
+  setupTitle:'Arrange your army', setupHint:'Pick a piece from the tray and tap a lit square. Tap a placed piece, then another square, to swap them.',
+  random:'Random', smart:'Smart', clear:'Clear', myBoards:'Saved', start:'To battle', leftN:'{n} pieces left to place', ready:'Army ready',
+  toTray:'Tap the tray to put the piece back',
+  yourTurn:'Your turn', cpuTurn:'Computer is thinking', you:'You', cpu:'Computer', attacker:'Attacker', defender:'Defender',
+  pickPiece:'Pick a piece to move', pickTarget:'Pick where to go — a red ring is an attack', cantMove:'This piece can’t move',
+  twoSq:'A piece can’t shuttle between the same two squares more than three times',
+  menu:'Menu', log:'Battle log', noLog:'No battles yet.', resign:'Resign', resignQ:'Resign and end this game?', restart:'New game',
+  noteT:'What do you think this piece is?', noteSub:'Your mark is private — the computer can’t see it.', noteClear:'Clear mark', unknown:'?',
+  win:'You won!', lose:'You lost', draw:'Draw',
+  rflag:'You captured the computer’s flag', rflagL:'The computer captured your flag', rnomoves:'The computer has no moves left', rnomovesL:'You have no moves left',
+  rresign:'You resigned', rstuck:'Neither side can move', rcap:'Move limit reached',
+  playAgain:'Play again', sameSetup:'Again with the same setup', toHome:'Home', viewBoard:'View board', moves:'Moves', time:'Time',
+  bWin:'{a} beats {d}', bTie:'Tie — {a} vs {a}, both are out', bBomb:'Boom! The {a} hit a bomb', bDefuse:'The miner defused the bomb',
+  bSpy:'The spy took out the marshal!', bFlag:'The flag is captured!', tapCont:'Tap to continue',
+  saveBoard:'Save the current setup', boardName:'Setup name', noBoards:'No saved setups yet. Arrange your pieces and save them here.',
+  needFull:'Place all your pieces first', saved:'Saved', loaded:'Setup loaded', deleted:'Deleted', delQ:'Delete "{n}"?', boardsFor:'Setups for {s}',
+  userName:'Your name', userNameSub:'Shown in backups and shares', lang:'Language', theme:'Color theme', mode:'Display mode', day:'Day', night:'Night',
+  boardSkin:'Board look', skField:'Field', skDesert:'Desert', skNight:'Night ops', skMarble:'Marble',
+  sound:'Sounds', vib:'Vibration', speed:'Animation speed', slow:'Slow', normal:'Normal', fast:'Fast',
+  hints:'Mark enemy pieces that moved', hintsSub:'A small dot = it moved, so it is not a bomb or the flag',
+  hideRev:'Memory mode', hideRevSub:'Enemy ranks hide again after each battle',
+  backup:'Backup & restore', exportB:'Export backup', importB:'Import backup', importQ:'Restoring replaces all data in the app. Continue?',
+  imported:'Data restored', badFile:'This file is not a FlagNest backup', exported:'Backup file created',
+  wipe:'Delete all data', wipeQ1:'Delete all data — stats, setups and the open game?', wipeQ2:'Sure? Without a backup file there is no way back.', wiped:'Everything deleted',
+  guide:'Welcome guide', privacy:'Privacy policy', saveFail:'Saving failed — storage may be full',
+  games:'Games', wins:'Wins', losses:'Losses', draws:'Draws', winRate:'Win rate', streak:'Current streak', best:'Best streak',
+  fastest:'Fastest win', byDiff:'By difficulty', resetStats:'Reset statistics', resetQ:'Reset all statistics?', noStats:'No games yet. Your first battle is waiting.',
+  version:'Version', developer:'Developer', platform:'Platform', storage:'Storage', storageV:'On this device only', license:'License',
+  store:'AppNest store', share:'Share the app', feedback:'Send feedback', shareText:'Can you beat the computer at Capture the Flag?',
+  disclaimer:'FlagNest is an independent game inspired by classic hidden-rank strategy games. It is not affiliated with any other game’s trademark owners. All data stays on your device.',
+  copied:'Link copied',
+  r0:'Flag', r11:'Bomb', r1:'Spy', r2:'Scout', r3:'Miner', r4:'Sergeant', r5:'Lieutenant', r6:'Captain', r7:'Major', r8:'Colonel', r9:'General', r10:'Marshal',
+  a0:'Capture it and you win', a11:'Never moves. Blows up any attacker except a miner', a1:'Takes out the marshal when it attacks first', a2:'Runs any distance in a straight line',
+  a3:'Defuses bombs', a10:'The strongest piece', aN:'', count:'Count', piece:'Piece', ability:'Ability',
+  ob1t:'Welcome to the battle', ob1:'You and the computer each have an army with one flag. Whoever captures the other side’s flag first wins.',
+  ob2t:'Set up in secret', ob2:'Before the battle you arrange your pieces in the rows nearest you. The computer can’t see your ranks — and you can’t see its.',
+  ob3t:'Move and attack', ob3:'Tap a piece, then a square. Pieces move one square straight, never diagonally. Move into an enemy piece and they fight — the higher rank wins.',
+  ob4t:'Special pieces', ob4:'A bomb destroys any attacker except the miner (3). The spy (1) takes out the marshal (10) if it attacks first. The scout (2) runs far in a straight line.',
+  ob5t:'Play like a detective', ob5:'Tap a computer piece to mark your guess on it. A small dot on an enemy piece means it has moved — so it is not a bomb or the flag.',
+  rulesH:`<h2>Goal</h2><p>Capture the computer’s flag — or leave it with no legal move.</p>
+<h2>Setup</h2><p>Each side arranges its pieces in the rows nearest to it: 4 rows on the 10×10 board, 2 rows on 7×7 and 5×5. Neither side sees the other’s ranks. Arrange by hand, use a smart or random setup, and save setups you like.</p>
+<h2>Moving</h2><ul><li>Each turn, move one piece one square forward, back or sideways. Never diagonally.</li><li>Lakes can’t be entered.</li><li>The flag and bombs never move.</li><li>The scout (2) runs any distance in a straight line and may attack at the end of the run. A long run gives away that it is a scout.</li></ul>
+<h2>Battles</h2><ul><li>Moving onto an enemy piece is an attack. Both pieces are revealed.</li><li>The higher rank wins and the lower leaves the board. Equal ranks — both leave.</li><li>Any piece that attacks a bomb is destroyed and the bomb stays. Only the miner (3) defuses it.</li><li>The spy (1) takes out the marshal (10), but only when the spy attacks first. Every other piece beats the spy.</li></ul>
+<h2>Two-square rule</h2><p>A piece may not move back and forth between the same two squares more than three times in a row. This stops endless chases and applies to the computer too.</p>
+<h2>End of the game</h2><p>Capture the flag and you win. A player with no legal move on their turn loses. If neither side can move, it is a draw.</p>
+<h2>Marks on the board</h2><ul><li>Tap a computer piece to mark a guess — like "9?" or "bomb?". Only you see it.</li><li>A small dot at the bottom of a computer piece: it has moved, so it is not a bomb or the flag.</li><li>A small eye on your piece: the computer has already seen what it is.</li></ul>
+<h2>Tips</h2><ul><li>Surround your flag with bombs — but don’t put it in the most obvious spot. A bombed corner is the first thing the computer checks.</li><li>Keep the spy near your general: when the enemy marshal comes hunting, the spy is waiting.</li><li>Send scouts and sergeants to discover ranks before risking strong pieces.</li><li>Don’t reveal your marshal early. While the computer doesn’t know where it is, it has to respect all your pieces.</li></ul>`
+},
+ru: {
+  dir:'ltr', langName:'Русский',
+  app:'Захвати флаг', sub:'FlagNest · стратегия скрытых рангов', tag:'Спрячь флаг. Разгадай ранги. Захвати флаг компьютера.',
+  newGame:'Новая игра с компьютером', resume:'Продолжить игру', rules:'Правила', stats:'Статистика', settings:'Настройки', about:'О приложении',
+  home:'Домой', back:'Назад', ok:'OK', cancel:'Отмена', close:'Закрыть', save:'Сохранить', del:'Удалить', edit:'Изменить', next:'Далее', skip:'Пропустить', done:'Готово',
+  boardSize:'Размер доски', s10:'Классика 10×10', s7:'Быстро 7×7', s5:'Блиц 5×5', pieces:'{n} фигур',
+  difficulty:'Сложность', easy:'Легко', medium:'Средне', hard:'Сложно', toSetup:'Расставить фигуры', startNew:'Начать новую',
+  setupTitle:'Расставь армию', random:'Случайно', smart:'Умно', clear:'Очистить', myBoards:'Сохранённые', start:'В бой', leftN:'Осталось расставить: {n}', ready:'Армия готова',
+  yourTurn:'Твой ход', cpuTurn:'Компьютер думает', you:'Ты', cpu:'Компьютер', attacker:'Атакует', defender:'Защищает',
+  menu:'Меню', log:'Журнал боёв', noLog:'Боёв ещё не было.', resign:'Сдаться', resignQ:'Сдаться и закончить игру?', restart:'Новая игра',
+  noteT:'Что это за фигура?', noteClear:'Снять отметку', win:'Победа!', lose:'Поражение', draw:'Ничья',
+  playAgain:'Ещё раз', toHome:'Домой', moves:'Ходы', time:'Время', tapCont:'Нажми, чтобы продолжить',
+  bWin:'{a} побеждает {d}', bTie:'Ничья — оба {a} выбыли', bBomb:'Бум! {a} подорвался на бомбе', bDefuse:'Сапёр обезвредил бомбу', bSpy:'Шпион устранил маршала!', bFlag:'Флаг захвачен!',
+  userName:'Имя', lang:'Язык', theme:'Цветовая тема', mode:'Режим', day:'День', night:'Ночь', boardSkin:'Вид доски', sound:'Звуки', vib:'Вибрация', speed:'Скорость анимации', slow:'Медленно', normal:'Обычно', fast:'Быстро',
+  hints:'Отмечать сходившие фигуры', hideRev:'Режим памяти', backup:'Резервная копия', exportB:'Экспорт', importB:'Импорт', wipe:'Удалить все данные', guide:'Обучение', privacy:'Конфиденциальность',
+  games:'Игры', wins:'Победы', losses:'Поражения', draws:'Ничьи', winRate:'Процент побед', streak:'Серия', best:'Лучшая серия', fastest:'Самая быстрая победа',
+  version:'Версия', store:'Магазин AppNest', share:'Поделиться', feedback:'Отзыв',
+  r0:'Флаг', r11:'Бомба', r1:'Шпион', r2:'Разведчик', r3:'Сапёр', r4:'Сержант', r5:'Лейтенант', r6:'Капитан', r7:'Майор', r8:'Полковник', r9:'Генерал', r10:'Маршал'
+},
+es: {
+  dir:'ltr', langName:'Español',
+  app:'Captura la bandera', sub:'FlagNest · estrategia de rangos ocultos', tag:'Esconde tu bandera. Descifra los rangos. Captura la del ordenador.',
+  newGame:'Nueva partida contra el ordenador', resume:'Continuar partida', rules:'Reglas', stats:'Estadísticas', settings:'Ajustes', about:'Acerca de',
+  home:'Inicio', back:'Atrás', ok:'OK', cancel:'Cancelar', close:'Cerrar', save:'Guardar', del:'Borrar', edit:'Editar', next:'Siguiente', skip:'Saltar', done:'Listo',
+  boardSize:'Tamaño del tablero', s10:'Clásico 10×10', s7:'Rápido 7×7', s5:'Relámpago 5×5', pieces:'{n} piezas',
+  difficulty:'Dificultad', easy:'Fácil', medium:'Media', hard:'Difícil', toSetup:'Colocar piezas', startNew:'Empezar nueva',
+  setupTitle:'Prepara tu ejército', random:'Aleatorio', smart:'Inteligente', clear:'Vaciar', myBoards:'Guardados', start:'A la batalla', leftN:'Faltan {n} piezas', ready:'Ejército listo',
+  yourTurn:'Tu turno', cpuTurn:'El ordenador piensa', you:'Tú', cpu:'Ordenador', attacker:'Ataca', defender:'Defiende',
+  menu:'Menú', log:'Registro de batallas', noLog:'Aún no hubo batallas.', resign:'Rendirse', resignQ:'¿Rendirse y terminar la partida?', restart:'Nueva partida',
+  noteT:'¿Qué crees que es esta pieza?', noteClear:'Quitar marca', win:'¡Ganaste!', lose:'Perdiste', draw:'Empate',
+  playAgain:'Otra vez', toHome:'Inicio', moves:'Movimientos', time:'Tiempo', tapCont:'Toca para continuar',
+  bWin:'{a} vence a {d}', bTie:'Empate — ambos {a} fuera', bBomb:'¡Bum! El {a} pisó una bomba', bDefuse:'El zapador desactivó la bomba', bSpy:'¡El espía eliminó al mariscal!', bFlag:'¡Bandera capturada!',
+  userName:'Tu nombre', lang:'Idioma', theme:'Tema de color', mode:'Modo', day:'Día', night:'Noche', boardSkin:'Aspecto del tablero', sound:'Sonidos', vib:'Vibración', speed:'Velocidad de animación', slow:'Lenta', normal:'Normal', fast:'Rápida',
+  hints:'Marcar piezas enemigas que se movieron', hideRev:'Modo memoria', backup:'Copia de seguridad', exportB:'Exportar', importB:'Importar', wipe:'Borrar todos los datos', guide:'Guía', privacy:'Privacidad',
+  games:'Partidas', wins:'Victorias', losses:'Derrotas', draws:'Empates', winRate:'% de victorias', streak:'Racha actual', best:'Mejor racha', fastest:'Victoria más rápida',
+  version:'Versión', store:'Tienda AppNest', share:'Compartir', feedback:'Enviar comentarios',
+  r0:'Bandera', r11:'Bomba', r1:'Espía', r2:'Explorador', r3:'Zapador', r4:'Sargento', r5:'Teniente', r6:'Capitán', r7:'Comandante', r8:'Coronel', r9:'General', r10:'Mariscal'
+},
+ar: {
+  dir:'rtl', langName:'العربية',
+  app:'التقط العلم', sub:'FlagNest · لعبة استراتيجية بالرتب المخفية', tag:'أخفِ علمك. اكشف الرتب. التقط علم الحاسوب.',
+  newGame:'لعبة جديدة ضد الحاسوب', resume:'متابعة اللعبة', rules:'القواعد', stats:'الإحصائيات', settings:'الإعدادات', about:'حول',
+  home:'الرئيسية', back:'رجوع', ok:'موافق', cancel:'إلغاء', close:'إغلاق', save:'حفظ', del:'حذف', edit:'تعديل', next:'التالي', skip:'تخطٍ', done:'تم',
+  boardSize:'حجم اللوحة', s10:'كلاسيكي 10×10', s7:'سريع 7×7', s5:'خاطف 5×5', pieces:'{n} قطعة',
+  difficulty:'الصعوبة', easy:'سهل', medium:'متوسط', hard:'صعب', toSetup:'ترتيب القطع', startNew:'ابدأ جديدة',
+  setupTitle:'رتّب جيشك', random:'عشوائي', smart:'ذكي', clear:'مسح', myBoards:'المحفوظة', start:'إلى المعركة', leftN:'تبقى {n} قطع', ready:'الجيش جاهز',
+  yourTurn:'دورك', cpuTurn:'الحاسوب يفكر', you:'أنت', cpu:'الحاسوب', attacker:'مهاجم', defender:'مدافع',
+  menu:'القائمة', log:'سجل المعارك', noLog:'لا معارك بعد.', resign:'استسلام', resignQ:'الاستسلام وإنهاء اللعبة؟', restart:'لعبة جديدة',
+  noteT:'ما رأيك في هذه القطعة؟', noteClear:'إزالة العلامة', win:'فزت!', lose:'خسرت', draw:'تعادل',
+  playAgain:'مرة أخرى', toHome:'الرئيسية', moves:'النقلات', time:'الوقت', tapCont:'انقر للمتابعة',
+  bWin:'{a} يهزم {d}', bTie:'تعادل — خرج كلا الـ{a}', bBomb:'بوم! داس {a} على قنبلة', bDefuse:'أبطل خبير الألغام القنبلة', bSpy:'الجاسوس أطاح بالمارشال!', bFlag:'تم التقاط العلم!',
+  userName:'اسمك', lang:'اللغة', theme:'السمة', mode:'الوضع', day:'نهار', night:'ليل', boardSkin:'شكل اللوحة', sound:'الأصوات', vib:'الاهتزاز', speed:'سرعة الحركة', slow:'بطيء', normal:'عادي', fast:'سريع',
+  hints:'تمييز قطع العدو التي تحركت', hideRev:'وضع الذاكرة', backup:'نسخ احتياطي', exportB:'تصدير', importB:'استيراد', wipe:'حذف كل البيانات', guide:'الدليل', privacy:'الخصوصية',
+  games:'الألعاب', wins:'انتصارات', losses:'هزائم', draws:'تعادلات', winRate:'نسبة الفوز', streak:'السلسلة الحالية', best:'أفضل سلسلة', fastest:'أسرع فوز',
+  version:'الإصدار', store:'متجر AppNest', share:'مشاركة', feedback:'إرسال ملاحظات',
+  r0:'العلم', r11:'قنبلة', r1:'جاسوس', r2:'كشّاف', r3:'خبير ألغام', r4:'رقيب', r5:'ملازم', r6:'نقيب', r7:'رائد', r8:'عقيد', r9:'جنرال', r10:'مارشال'
+}
+};
+/* ===================== FlagNest app ===================== */
+const APP_VERSION = '1.0.0';
+const P = 'flagnest_';
+const STORE_URL = 'https://appnest-store.pages.dev';
+const FEEDBACK = 'mailto:appnest55@gmail.com?subject=FlagNest%20' + APP_VERSION;
+
+/* ---------- storage shim (falls back to memory) ---------- */
+const MEM = {};
+const S = {
+  get(k, d) { try { const v = localStorage.getItem(P + k); return v == null ? (k in MEM ? MEM[k] : d) : JSON.parse(v); } catch (e) { return k in MEM ? MEM[k] : d; } },
+  set(k, v) { MEM[k] = v; try { localStorage.setItem(P + k, JSON.stringify(v)); return true; } catch (e) { if (!S._warned) { S._warned = 1; setTimeout(() => toast(T('saveFail')), 50); } return false; } },
+  del(k) { delete MEM[k]; try { localStorage.removeItem(P + k); } catch (e) {} }
+};
+const DEF = { lang: 'he', pal: 'gold', mode: 'night', board: 'field', sound: true, vib: true, speed: 1, hints: true, hideRev: false, name: '', onboarded: false, lastSize: 10, lastDiff: 'medium' };
+let ST = Object.assign({}, DEF, S.get('settings', {}));
+const saveST = () => S.set('settings', ST);
+
+function T(k, v) {
+  let s = (LANGS[ST.lang] || {})[k]; if (s == null) s = LANGS.en[k]; if (s == null) s = LANGS.he[k]; if (s == null) s = k;
+  if (v) s = s.replace(/\{(\w+)\}/g, (_, x) => v[x] != null ? v[x] : '');
+  return s;
+}
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const $ = s => document.querySelector(s);
+function applyLook() {
+  const h = document.documentElement;
+  h.lang = ST.lang; h.dir = (LANGS[ST.lang] || LANGS.en).dir || 'ltr';
+  h.dataset.pal = ST.pal; h.dataset.mode = ST.mode; h.dataset.board = ST.board;
+  const tc = document.querySelector('meta[name=theme-color]'); if (tc) tc.content = ST.mode === 'day' ? '#f3eee1' : '#000000';
+}
+
+/* ---------- icons ---------- */
+const ICON = {
+  0: '<svg viewBox="0 0 24 24"><path d="M6 2.5v19" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M7 3.5h12l-3.2 4.3L19 12H7z" stroke="none"/></svg>',
+  11: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="14" r="7" stroke="none"/><path d="M14.6 8.2l2.2-2.2" stroke-width="2.4" fill="none"/><path d="M17.3 5.3c.7-1.5 2-2 3.2-1.6" stroke-width="1.4" fill="none" stroke-linecap="round"/><circle cx="8" cy="11.5" r="1.6" fill="rgba(255,255,255,.45)" stroke="none"/></svg>',
+  1: '<svg viewBox="0 0 24 24"><path d="M3 10.5h18M6.5 10.5l1.6-6h7.8l1.6 6" stroke-width="2" fill="none" stroke-linejoin="round"/><circle cx="8" cy="16" r="3" stroke-width="2" fill="none"/><circle cx="16" cy="16" r="3" stroke-width="2" fill="none"/><path d="M11 16h2" stroke-width="2"/></svg>',
+  2: '<svg viewBox="0 0 24 24"><path d="M5 13l7-7 7 7M5 19l7-7 7 7" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  3: '<svg viewBox="0 0 24 24"><path d="M4 8c4-4.5 12-4.5 16 0" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M12 5.5V21" stroke-width="2.6" stroke-linecap="round"/></svg>',
+  eye: '<svg viewBox="0 0 24 24"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3.2" fill="#000"/></svg>'
+};
+const pname = r => T('r' + r);
+function face(r) {
+  if (r === 0 || r === 11) return '<span class="big" style="display:flex;width:56%;height:56%">' + ICON[r] + '</span>';
+  return '<span class="n">' + r + '</span>' + (r <= 3 ? '<span class="sm">' + ICON[r] + '</span>' : '');
+}
+// a token. opts: {show, note, mv, eye, id}
+function tokHTML(o, r, opts) {
+  opts = opts || {};
+  const show = opts.show !== false;
+  let cls = 'tok o' + o + (show ? '' : ' hid') + (opts.mv ? ' mv' : '') + (opts.dead ? ' dead' : '');
+  let inner = show ? face(r) : '';
+  if (opts.eye) inner += '<span class="eye">' + ICON.eye + '</span>';
+  if (opts.note != null) inner += '<span class="note">' + (opts.note === 0 || opts.note === 11 ? ICON[opts.note] : esc(opts.note === 'q' ? '' : opts.note)) + '?</span>';
+  return '<div class="' + cls + '"' + (opts.id ? ' data-id="' + opts.id + '"' : '') + '>' + inner + '</div>';
+}
+const tb = (o, r, opts) => '<div class="tb">' + tokHTML(o, r, opts) + '</div>';
+
+/* ---------- sound + haptics ---------- */
+let AC = null;
+function tone(f, t0, dur, type, vol, f2) {
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = type || 'sine'; o.frequency.setValueAtTime(f, AC.currentTime + t0);
+  if (f2) o.frequency.exponentialRampToValueAtTime(f2, AC.currentTime + t0 + dur);
+  g.gain.setValueAtTime(0.0001, AC.currentTime + t0);
+  g.gain.exponentialRampToValueAtTime(vol || .2, AC.currentTime + t0 + .01);
+  g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime + t0 + dur);
+  o.connect(g).connect(AC.destination); o.start(AC.currentTime + t0); o.stop(AC.currentTime + t0 + dur + .05);
+}
+function noise(t0, dur, vol, freq) {
+  const len = Math.floor(AC.sampleRate * dur), b = AC.createBuffer(1, len, AC.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2);
+  const s = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+  s.buffer = b; f.type = 'lowpass'; f.frequency.value = freq || 900; g.gain.value = vol || .4;
+  s.connect(f).connect(g).connect(AC.destination); s.start(AC.currentTime + t0);
+}
+function snd(k) {
+  if (!ST.sound) return;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume();
+    if (k === 'tap') tone(660, 0, .06, 'triangle', .08);
+    else if (k === 'place') { noise(0, .07, .25, 1800); tone(220, 0, .08, 'sine', .12); }
+    else if (k === 'move') { noise(0, .09, .3, 1200); tone(160, 0, .1, 'sine', .1); }
+    else if (k === 'clash') { noise(0, .12, .5, 3000); tone(880, .02, .25, 'square', .05, 440); tone(1320, .05, .3, 'triangle', .05); }
+    else if (k === 'boom') { noise(0, .8, .9, 400); tone(90, 0, .6, 'sine', .35, 40); }
+    else if (k === 'win') [523, 659, 784, 1046].forEach((f, i) => tone(f, i * .12, .3, 'triangle', .14));
+    else if (k === 'lose') [392, 330, 262, 196].forEach((f, i) => tone(f, i * .16, .35, 'sine', .14));
+    else if (k === 'bad') tone(150, 0, .15, 'square', .06);
+  } catch (e) {}
+}
+const buzz = p => { if (ST.vib && navigator.vibrate) try { navigator.vibrate(p); } catch (e) {} };
+
+/* ---------- overlays ---------- */
+function toast(msg, ms) {
+  const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), ms || 2200);
+}
+let ovStack = [];
+function openSheet(html, onMount, opts) {
+  const ov = document.createElement('div'); ov.className = 'ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+  ov.innerHTML = '<div class="sheet">' + html + '</div>';
+  const prev = document.activeElement;
+  ov.close = () => { ov.remove(); ovStack = ovStack.filter(x => x !== ov); if (prev && prev.focus) try { prev.focus(); } catch (e) {} };
+  if (!(opts && opts.sticky)) ov.addEventListener('click', e => { if (e.target === ov) ov.close(); });
+  $('#ovl').appendChild(ov); ovStack.push(ov);
+  const f = ov.querySelector('button,input,select'); if (f) setTimeout(() => f.focus(), 30);
+  if (onMount) onMount(ov);
+  return ov;
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && ovStack.length) { const top = ovStack[ovStack.length - 1]; if (top._esc) top._esc(); else top.close(); }
+  if (e.key === 'Tab' && ovStack.length) {             // focus trap
+    const top = ovStack[ovStack.length - 1], f = [...top.querySelectorAll('button,input,select,[tabindex]')].filter(x => !x.disabled);
+    if (!f.length) return; const a = f[0], z = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
+  }
+});
+function ask(msg, okText, danger) {
+  return new Promise(res => {
+    const ov = openSheet('<h2>' + esc(msg) + '</h2><div class="acts two"><button class="btn ghost" data-a="0">' + T('cancel') + '</button><button class="btn ' + (danger ? 'danger' : 'pri') + '" data-a="1">' + esc(okText || T('ok')) + '</button></div>', o => {
+      o.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { o.close(); res(b.dataset.a === '1'); });
+    });
+    ov._esc = () => { ov.close(); res(false); };
+  });
+}
+function askText(title, val) {
+  return new Promise(res => {
+    openSheet('<h2>' + esc(title) + '</h2><input type="text" maxlength="40" id="askIn" value="' + esc(val || '') + '"><div class="acts two"><button class="btn ghost" data-a="0">' + T('cancel') + '</button><button class="btn pri" data-a="1">' + T('save') + '</button></div>', o => {
+      const inp = o.querySelector('#askIn'); setTimeout(() => { inp.focus(); inp.select(); }, 40);
+      const done = ok => { o.close(); res(ok ? inp.value.trim() : null); };
+      o.querySelectorAll('[data-a]').forEach(b => b.onclick = () => done(b.dataset.a === '1'));
+      inp.onkeydown = e => { if (e.key === 'Enter') done(true); };
+      o._esc = () => done(false);
+    });
+  });
+}
+
+/* ---------- navigation ---------- */
+let scr = 'home', G = S.get('game', null), UI = { sel: null, moves: [], trayR: null, cell: null, busy: false };
+const SCREENS = {};
+function go(name) { scr = name; UI.sel = null; UI.moves = []; UI.cell = null; render(); window.scrollTo(0, 0); }
+function render() { applyLook(); $('#app').innerHTML = '<div class="scr">' + SCREENS[scr]() + '</div>'; if (SCREENS[scr].mount) SCREENS[scr].mount(); }
+function barHTML(title, right) {
+  return '<div class="bar"><button class="back" onclick="go(\'home\')" aria-label="' + T('home') + '">' + (document.documentElement.dir === 'rtl' ? '› ' : '‹ ') + T('home') + '</button><div class="ttl">' + esc(title) + '</div>' + (right || '<span style="width:44px"></span>') + '</div>';
+}
+const saveGame = () => { if (G && G.phase !== 'over') S.set('game', G); else S.del('game'); };
+
+/* ---------- home ---------- */
+SCREENS.home = () => {
+  const live = G && (G.phase === 'setup' || G.phase === 'play');
+  const pals = ['gold', 'silver', 'emerald', 'sapphire', 'ruby'];
+  return '<div class="homeTop"><button class="icon" id="palBtn" aria-label="' + T('theme') + '" title="' + T('theme') + '">🎨</button>' +
+    '<button class="icon" id="modeBtn" aria-label="' + T('mode') + '">' + (ST.mode === 'day' ? '🌙' : '☀️') + '</button>' +
+    '<span style="flex:1"></span><button class="icon" onclick="go(\'about\')" aria-label="' + T('about') + '">ℹ️</button></div>' +
+    '<div class="hero"><div class="mini" aria-hidden="true">' +
+      '<div class="cell"></div><div class="cell">' + tokHTML(1, 0, { show: false }) + '</div><div class="cell"></div>' +
+      '<div class="cell">' + tokHTML(1, 11, { show: false, mv: false }) + '</div><div class="cell" style="background:rgba(255,226,120,.2)"></div><div class="cell">' + tokHTML(1, 9, { show: false, mv: true }) + '</div>' +
+      '<div class="cell"></div><div class="cell sel">' + tokHTML(0, 10) + '</div><div class="cell">' + tokHTML(0, 2) + '</div>' +
+    '</div></div>' +
+    '<h1 class="title">' + T('app') + '<small>' + T('sub') + '</small></h1><p class="tag">' + T('tag') + '</p>' +
+    '<div class="menu">' + (live ? '<button class="btn pri" onclick="resumeGame()">▶ ' + T('resume') + '</button>' : '') +
+    '<button class="btn ' + (live ? '' : 'pri') + '" onclick="newGameSheet()">⚔ ' + T('newGame') + '</button>' +
+    '<div class="two"><button class="btn ghost" onclick="go(\'rules\')">📜 ' + T('rules') + '</button><button class="btn ghost" onclick="go(\'stats\')">🏅 ' + T('stats') + '</button></div>' +
+    '<button class="btn ghost" onclick="go(\'settings\')">⚙️ ' + T('settings') + '</button></div>' +
+    '<div class="badge">AppNest · <b>FlagNest</b> v' + APP_VERSION + '</div>';
+};
+SCREENS.home.mount = () => {
+  const pals = ['gold', 'silver', 'emerald', 'sapphire', 'ruby'];
+  $('#palBtn').onclick = () => { ST.pal = pals[(pals.indexOf(ST.pal) + 1) % pals.length]; saveST(); applyLook(); snd('tap'); };
+  $('#modeBtn').onclick = () => { ST.mode = ST.mode === 'day' ? 'night' : 'day'; saveST(); render(); };
+  if (!ST.onboarded) setTimeout(onboarding, 250);
+};
+function resumeGame() { if (!G) return; go(G.phase === 'setup' ? 'setup' : 'game'); }
+
+function newGameSheet() {
+  let size = ST.lastSize, diff = ST.lastDiff;
+  const body = () => '<h2>' + T('newGame') + '</h2><h3>' + T('boardSize') + '</h3><div class="seg" id="sz">' +
+    [10, 7, 5].map(s => '<button data-s="' + s + '" class="' + (s === size ? 'on' : '') + '">' + T('s' + s) + '<br><span class="muted">' + T('pieces', { n: setTotal(VARIANTS[s].set) }) + '</span></button>').join('') + '</div>' +
+    '<h3>' + T('difficulty') + '</h3><div class="seg" id="df">' + ['easy', 'medium', 'hard'].map(d => '<button data-d="' + d + '" class="' + (d === diff ? 'on' : '') + '">' + T(d) + '</button>').join('') + '</div>' +
+    '<p class="muted" style="min-height:42px">' + T('diff' + diff[0].toUpperCase() + diff.slice(1)) + '</p>' +
+    '<div class="acts two"><button class="btn ghost" data-a="0">' + T('cancel') + '</button><button class="btn pri" data-a="1">' + T('toSetup') + '</button></div>';
+  openSheet(body(), function mount(o) {
+    const sheet = o.querySelector('.sheet');
+    const bind = () => {
+      sheet.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { size = +b.dataset.s; sheet.innerHTML = body(); bind(); });
+      sheet.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { diff = b.dataset.d; sheet.innerHTML = body(); bind(); });
+      sheet.querySelector('[data-a="0"]').onclick = () => o.close();
+      sheet.querySelector('[data-a="1"]').onclick = async () => {
+        if (G && G.phase === 'play' && !(await ask(T('resumeQ'), T('startNew'), true))) return;
+        o.close(); ST.lastSize = size; ST.lastDiff = diff; saveST(); startSetup(size, diff);
+      };
+    };
+    bind();
+  });
+}
+function startSetup(size, diff, grid) {
+  G = makeGame(size, diff);
+  applySetup(G, 1, genSetup(size, 'smart'));
+  const last = S.get('lastSetup_' + size, null);
+  if (grid) applySetup(G, 0, grid); else if (last) applySetup(G, 0, last);
+  UI.trayR = null; saveGame(); go('setup');
+}
+
+/* ---------- board rendering ---------- */
+function lakeCorners(g, i) {
+  const n = g.n, r = Math.floor(i / n), c = i % n, L = (rr, cc) => rr >= 0 && cc >= 0 && rr < n && cc < n && g.lake[rr * n + cc];
+  const up = L(r - 1, c), dn = L(r + 1, c), lf = L(r, c - 1), rt = L(r, c + 1), R = '38%';
+  return 'border-radius:' + (!up && !lf ? R : '0') + ' ' + (!up && !rt ? R : '0') + ' ' + (!dn && !rt ? R : '0') + ' ' + (!dn && !lf ? R : '0');
+}
+function cellsHTML(mode) {
+  const g = G, n = g.n, over = g.phase === 'over';
+  const tg = {}; UI.moves.forEach(m => tg[m.to] = m.atk ? 'atk' : 'tgt');
+  let h = '';
+  for (let i = 0; i < n * n; i++) {
+    let cls = 'cell', style = '';
+    if (g.lake[i]) { cls += ' lake'; style = lakeCorners(g, i); }
+    if (mode === 'setup' && inZone(g, 0, i)) cls += ' zone' + (UI.trayR != null || UI.cell != null ? ' drop' : '');
+    if (mode === 'play' && g.last) { if (g.last.f === i) cls += ' lastf'; if (g.last.t === i) cls += ' lastt'; }
+    if (tg[i]) cls += ' ' + tg[i];
+    const id = g.board[i];
+    if ((mode === 'play' && UI.sel === id && id != null) || (mode === 'setup' && UI.cell === i)) cls += ' sel';
+    let inner = '';
+    if (id != null) {
+      const p = g.pcs[id];
+      if (p.o === 0) inner = tokHTML(0, p.r, { id, eye: mode === 'play' && p.rev && !over });
+      else {
+        const show = over || (p.rev && !ST.hideRev);
+        inner = tokHTML(1, p.r, { id, show, mv: !show && ST.hints && p.mv, note: !show && p.note != null ? p.note : null });
+      }
+    }
+    h += '<div class="' + cls + '" data-i="' + i + '"' + (style ? ' style="' + style + '"' : '') + (g.lake[i] ? ' aria-hidden="true"' : ' role="gridcell"') + '>' + inner + '</div>';
+  }
+  return h;
+}
+function stripHTML(o) {
+  const set = VARIANTS[G.size].set, alive = {};
+  for (const id in G.pcs) { const p = G.pcs[id]; if (p.o === o && !p.dead) alive[p.r] = (alive[p.r] || 0) + 1; }
+  return RANK_ORDER.filter(r => set[r]).map(r => { const c = alive[r] || 0; return '<div class="chip' + (c ? '' : ' zero') + '" title="' + pname(r) + '">' + tb(o, r) + '<span class="c">×' + c + '</span></div>'; }).join('');
+}
+function animateMove(id, fromIdx, dur) {
+  const el = document.querySelector('#board .tok[data-id="' + id + '"]'); if (!el || !G.pcs[id] || G.pcs[id].dead) return;
+  const board = $('#board'), cs = board.clientWidth / G.n, to = G.pcs[id].pos;
+  const dx = ((fromIdx % G.n) - (to % G.n)) * cs, dy = (Math.floor(fromIdx / G.n) - Math.floor(to / G.n)) * cs;
+  el.style.transition = 'none'; el.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; el.style.zIndex = 5; void el.offsetWidth;
+  el.style.transition = 'transform ' + dur + 'ms cubic-bezier(.2,.8,.2,1)'; el.style.transform = '';
+  setTimeout(() => { el.style.zIndex = ''; el.style.transition = ''; }, dur + 30);
+}
+const SPEED = () => [1.7, 1, .55][ST.speed] || 1;
+
+/* ---------- setup screen ---------- */
+SCREENS.setup = () => {
+  if (!G || G.phase !== 'setup') { setTimeout(() => go('home')); return ''; }
+  return barHTML(T('setupTitle'), '<button class="icon" onclick="go(\'rules\')" aria-label="' + T('rules') + '">?</button>') +
+    '<div class="boardWrap"><div class="board" id="board" style="--n:' + G.n + '" role="grid" aria-label="' + T('setupTitle') + '"></div></div>' +
+    '<div class="tray" id="tray"></div>' +
+    '<div class="tools"><button class="btn small ghost" id="tRand">🎲 ' + T('random') + '</button><button class="btn small ghost" id="tSmart">🧠 ' + T('smart') + '</button>' +
+    '<button class="btn small ghost" id="tClear">✕ ' + T('clear') + '</button><button class="btn small ghost" id="tSaved">💾 ' + T('myBoards') + '</button></div>' +
+    '<button class="btn pri" id="goBtn"></button><p class="muted" id="sHint" style="text-align:center;margin:8px 0 0"></p>';
+};
+SCREENS.setup.mount = () => {
+  $('#board').addEventListener('click', e => { const c = e.target.closest('.cell'); if (c) onSetupCell(+c.dataset.i); });
+  $('#tRand').onclick = () => { applySetup(G, 0, genSetup(G.size, 'random')); UI.cell = null; UI.trayR = null; snd('place'); refreshSetup(); };
+  $('#tSmart').onclick = () => { applySetup(G, 0, genSetup(G.size, 'smart')); UI.cell = null; UI.trayR = null; snd('place'); refreshSetup(); };
+  $('#tClear').onclick = () => { zoneCells(G, 0).forEach(i => { const id = G.board[i]; if (id != null) { delete G.pcs[id]; G.board[i] = null; } }); UI.cell = null; UI.trayR = firstTray(); refreshSetup(); };
+  $('#tSaved').onclick = savedBoards;
+  $('#goBtn').onclick = beginBattle;
+  refreshSetup();
+};
+function firstTray() { const t = trayCounts(G, 0); for (const r of RANK_ORDER) if (t[r] > 0) return r; return null; }
+function refreshSetup() {
+  $('#board').innerHTML = cellsHTML('setup');
+  const t = trayCounts(G, 0); let left = 0;
+  $('#tray').innerHTML = RANK_ORDER.filter(r => t[r] != null).map(r => { left += t[r]; return '<button data-r="' + r + '" class="' + (UI.trayR === r ? 'on' : '') + '" ' + (t[r] <= 0 && UI.cell == null ? 'disabled' : '') + ' aria-label="' + pname(r) + ' ×' + t[r] + '">' + tb(0, r) + '<span class="c">×' + t[r] + '</span></button>'; }).join('');
+  $('#tray').querySelectorAll('button').forEach(b => b.onclick = () => onTray(+b.dataset.r));
+  const gb = $('#goBtn'); gb.disabled = left > 0; gb.textContent = left > 0 ? T('leftN', { n: left }) : '⚔ ' + T('start');
+  $('#sHint').textContent = UI.cell != null ? T('toTray') : left > 0 ? T('setupHint') : T('ready');
+  saveGame();
+}
+function movePiece(a, b) {              // swap contents of two cells (either may be empty)
+  const ia = G.board[a], ib = G.board[b]; G.board[a] = ib; G.board[b] = ia;
+  if (ia != null) G.pcs[ia].pos = b; if (ib != null) G.pcs[ib].pos = a;
+}
+function onSetupCell(i) {
+  if (!inZone(G, 0, i)) return;
+  const id = G.board[i];
+  if (UI.cell != null) { if (UI.cell !== i) { movePiece(UI.cell, i); snd('place'); } UI.cell = null; }
+  else if (UI.trayR != null) {
+    if (id != null) { delete G.pcs[id]; G.board[i] = null; }
+    addPiece(G, 0, UI.trayR, i); snd('place'); buzz(8);
+    if (trayCounts(G, 0)[UI.trayR] <= 0) UI.trayR = firstTray();
+  } else if (id != null) { UI.cell = i; snd('tap'); }
+  else UI.trayR = firstTray();
+  refreshSetup();
+}
+function onTray(r) {
+  if (UI.cell != null) { const id = G.board[UI.cell]; if (id != null) { delete G.pcs[id]; G.board[UI.cell] = null; } UI.cell = null; UI.trayR = r; refreshSetup(); return; }
+  if (trayCounts(G, 0)[r] <= 0) return;
+  UI.trayR = UI.trayR === r ? null : r; snd('tap'); refreshSetup();
+}
+function beginBattle() {
+  if (firstTray() != null) { toast(T('needFull')); return; }
+  S.set('lastSetup_' + G.size, readSetup(G, 0));
+  G.phase = 'play'; G.turn = 0; G.t0 = Date.now(); snd('clash'); buzz([20, 40, 20]);
+  saveGame(); go('game');
+}
+function savedBoards() {
+  const all = S.get('boards', {}), list = all[G.size] || [];
+  const html = '<h2>' + T('boardsFor', { s: T('s' + G.size) }) + '</h2><div class="list">' +
+    (list.length ? list.map((b, k) => '<button class="item" data-k="' + k + '"><span><b>' + esc(b.name) + '</b><br><span class="muted">' + new Date(b.t).toLocaleDateString() + '</span></span><span class="icon" data-e="' + k + '" role="button" aria-label="' + T('edit') + '">✎</span></button>').join('') : '<p class="muted">' + T('noBoards') + '</p>') +
+    '</div><div class="acts"><button class="btn pri" id="sbSave">💾 ' + T('saveBoard') + '</button><button class="btn ghost" id="sbClose">' + T('close') + '</button></div>';
+  openSheet(html, o => {
+    o.querySelector('#sbClose').onclick = () => o.close();
+    o.querySelector('#sbSave').onclick = async () => {
+      if (firstTray() != null) { toast(T('needFull')); return; }
+      const name = await askText(T('boardName'), T('s' + G.size) + ' #' + (list.length + 1)); if (!name) return;
+      list.unshift({ name, t: Date.now(), grid: readSetup(G, 0) }); all[G.size] = list.slice(0, 12); S.set('boards', all);
+      toast(T('saved')); o.close(); savedBoards();
+    };
+    o.querySelectorAll('[data-k]').forEach(b => b.onclick = e => {
+      const k = +b.dataset.k;
+      if (e.target.closest('[data-e]')) { o.close(); editBoard(k); return; }
+      applySetup(G, 0, list[k].grid); UI.cell = null; UI.trayR = null; o.close(); refreshSetup(); toast(T('loaded'));
+    });
+    let lp; o.querySelectorAll('[data-k]').forEach(b => {           // long-press also edits
+      b.addEventListener('pointerdown', () => { lp = setTimeout(() => { lp = 'done'; o.close(); editBoard(+b.dataset.k); }, 600); });
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => { if (lp !== 'done') clearTimeout(lp); }));
+    });
+  });
+}
+function editBoard(k) {
+  const all = S.get('boards', {}), list = all[G.size] || [], b = list[k]; if (!b) return;
+  openSheet('<h2>' + T('edit') + '</h2><label class="muted" for="ebN">' + T('boardName') + '</label><input type="text" id="ebN" maxlength="40" value="' + esc(b.name) + '">' +
+    '<div class="acts"><button class="btn pri" id="ebS">' + T('save') + '</button><button class="btn danger" id="ebD">' + T('del') + '</button><button class="btn ghost" id="ebC">' + T('cancel') + '</button></div>', o => {
+    o.querySelector('#ebC').onclick = () => { o.close(); savedBoards(); };
+    o.querySelector('#ebS').onclick = () => { b.name = o.querySelector('#ebN').value.trim() || b.name; S.set('boards', all); o.close(); toast(T('saved')); savedBoards(); };
+    o.querySelector('#ebD').onclick = async () => { if (await ask(T('delQ', { n: b.name }), T('del'), true)) { list.splice(k, 1); all[G.size] = list; S.set('boards', all); o.close(); toast(T('deleted')); savedBoards(); } };
+  });
+}
+
+/* ---------- game screen ---------- */
+SCREENS.game = () => {
+  if (!G || G.phase === 'setup') { setTimeout(() => go(G ? 'setup' : 'home')); return ''; }
+  return '<div class="bar"><button class="back" onclick="go(\'home\')">' + (document.documentElement.dir === 'rtl' ? '› ' : '‹ ') + T('home') + '</button><div class="turn" id="turn"></div><button class="icon" onclick="gameMenu()" aria-label="' + T('menu') + '">☰</button></div>' +
+    '<div class="strip" id="stE" aria-label="' + T('cpu') + '"></div>' +
+    '<div class="boardWrap"><div class="board" id="board" style="--n:' + G.n + '" role="grid"></div></div>' +
+    '<div class="strip" id="stM" aria-label="' + T('you') + '"></div><div class="status" id="status" aria-live="polite"></div>';
+};
+SCREENS.game.mount = () => {
+  $('#board').addEventListener('click', e => { const c = e.target.closest('.cell'); if (c) onCell(+c.dataset.i); });
+  refreshGame();
+  if (G.phase === 'play' && G.turn === 1 && !UI.busy) aiTurn();
+  if (G.phase === 'over' && !G.shownEnd) endSheet();
+};
+function refreshGame(msg) {
+  if (scr !== 'game' || !$('#board')) return;
+  $('#board').innerHTML = cellsHTML('play');
+  $('#stE').innerHTML = stripHTML(1); $('#stM').innerHTML = stripHTML(0);
+  const k = RANK_ORDER.filter(r => VARIANTS[G.size].set[r]).length; $('#stE').style.setProperty('--k', k); $('#stM').style.setProperty('--k', k);
+  const t = $('#turn');
+  if (G.phase === 'over') { t.className = 'turn'; t.textContent = G.winner === 0 ? T('win') : G.winner === 1 ? T('lose') : T('draw'); }
+  else { t.className = 'turn ' + (G.turn === 0 ? 'me' : 'cpu'); t.textContent = G.turn === 0 ? T('yourTurn') : T('cpuTurn'); }
+  $('#status').textContent = msg != null ? msg : (G.phase === 'play' && G.turn === 0 ? (UI.sel != null ? T('pickTarget') : T('pickPiece')) : '');
+}
+function onCell(i) {
+  if (G.phase !== 'play' || G.turn !== 0 || UI.busy) return;
+  const m = UI.moves.find(x => x.to === i);
+  if (m) { doMove(m); return; }
+  const id = G.board[i];
+  if (id != null && G.pcs[id].o === 0) {
+    if (UI.sel === id) { UI.sel = null; UI.moves = []; refreshGame(); return; }
+    const p = G.pcs[id];
+    if (p.r === 0 || p.r === 11) { UI.sel = null; UI.moves = []; refreshGame(T('cantMove')); snd('bad'); return; }
+    const all = allMoves(G, 0).filter(x => x.id === id);
+    UI.sel = id; UI.moves = all; snd('tap');
+    if (!all.length) { const raw = []; pieceMoves(G, id, raw); refreshGame(raw.length ? T('twoSq') : T('cantMove')); return; }
+    refreshGame(); return;
+  }
+  if (id != null && G.pcs[id].o === 1) {
+    const p = G.pcs[id]; UI.sel = null; UI.moves = []; refreshGame();
+    if (!(p.rev && !ST.hideRev)) noteSheet(id);
+    return;
+  }
+  UI.sel = null; UI.moves = []; refreshGame();
+}
+async function doMove(m) {
+  UI.busy = true; UI.sel = null; UI.moves = [];
+  const from = m.from, b = applyMove(G, m); saveGame();
+  if (b) { refreshGame(''); await showBattle(b); refreshGame(); }
+  else { refreshGame(); animateMove(m.id, from, 230 * SPEED()); snd('move'); }
+  UI.busy = false;
+  if (G.phase === 'over') return finish();
+  aiTurn();
+}
+function aiTurn() {
+  if (G.phase !== 'play' || G.turn !== 1) return;
+  UI.busy = true; refreshGame('');
+  setTimeout(async () => {
+    if (!G || G.phase !== 'play' || G.turn !== 1) { UI.busy = false; return; }
+    const m = aiChoose(G, 1);
+    if (!m) { G.phase = 'over'; G.winner = 0; G.reason = 'nomoves'; UI.busy = false; return finish(); }
+    const from = m.from, b = applyMove(G, m); saveGame();
+    if (b && scr === 'game') { refreshGame(''); await showBattle(b); refreshGame(); }
+    else { refreshGame(); if (!b) { animateMove(m.id, from, 260 * SPEED()); snd('move'); } }
+    UI.busy = false;
+    if (G.phase === 'over') finish();
+  }, (380 + Math.random() * 320) * SPEED());
+}
+function battleText(b) {
+  const a = pname(b.a.r), d = pname(b.d.r);
+  if (b.d.r === 0) return T('bFlag');
+  if (b.d.r === 11) return b.res === 'A' ? T('bDefuse') : T('bBomb', { a });
+  if (b.a.r === 1 && b.d.r === 10 && b.res === 'A') return T('bSpy');
+  if (b.res === 'T') return T('bTie', { a });
+  return b.res === 'A' ? T('bWin', { a, d }) : T('bWin', { a: d, d: a });
+}
+function showBattle(b) {
+  return new Promise(res => {
+    const boom = b.d.r === 11 && b.res === 'D', who = o => o === 0 ? T('you') : T('cpu');
+    const aCls = 'bt a' + (b.res === 'D' || b.res === 'T' ? (boom ? ' lose' : ' lose') : '');
+    const dCls = 'bt d' + (b.res === 'A' || b.res === 'T' ? ' lose' : '') + (boom ? ' boom' : '');
+    const good = (b.res === 'A' && b.a.o === 0) || (b.res === 'D' && b.d.o === 0);
+    const ov = document.createElement('div'); ov.className = 'ov battle'; ov.setAttribute('role', 'alertdialog');
+    ov.innerHTML = '<div class="bcard"><div class="duel"><div class="side"><div class="' + aCls + '">' + tokHTML(b.a.o, b.a.r) + '</div><div class="who">' + who(b.a.o) + ' · ' + T('attacker') + '</div></div>' +
+      '<div class="vs">⚔</div><div class="side"><div class="' + dCls + '">' + tokHTML(b.d.o, b.d.r) + '</div><div class="who">' + who(b.d.o) + ' · ' + T('defender') + '</div></div></div>' +
+      '<div class="bres">' + esc(battleText(b)) + '</div><div class="bsub">' + esc(pname(b.a.r)) + ' (' + (b.a.r === 0 || b.a.r === 11 ? '' : b.a.r) + ') ⟷ ' + esc(pname(b.d.r)) + (b.d.r === 0 || b.d.r === 11 ? '' : ' (' + b.d.r + ')') + '</div><div class="tapc">' + T('tapCont') + '</div></div>';
+    document.body.appendChild(ov);
+    snd('clash'); setTimeout(() => { if (boom) { snd('boom'); buzz([60, 30, 120]); } else buzz(good ? 25 : [40, 30, 40]); }, 900);
+    let done = false; const close = () => { if (done) return; done = true; ov.remove(); res(); };
+    ov.addEventListener('click', () => setTimeout(close, 0));
+    setTimeout(close, (b.d.r === 0 ? 2400 : 1900) * SPEED());
+  });
+}
+function noteSheet(id) {
+  const p = G.pcs[id], opts = ['q', ...RANK_ORDER];
+  openSheet('<h2>' + T('noteT') + '</h2><p class="muted">' + T('noteSub') + '</p><div class="notes">' +
+    opts.map(r => '<button data-r="' + r + '">' + (r === 'q' ? '<div class="tb">' + tokHTML(1, 0, { show: false, note: 'q' }) + '</div>' + T('unknown') : tb(1, r) + esc(pname(r))) + '</button>').join('') +
+    '</div><div class="acts two"><button class="btn ghost" id="nC">' + T('noteClear') + '</button><button class="btn ghost" id="nX">' + T('close') + '</button></div>', o => {
+    o.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { const v = b.dataset.r; p.note = v === 'q' ? 'q' : +v; saveGame(); o.close(); refreshGame(); snd('tap'); });
+    o.querySelector('#nC').onclick = () => { p.note = null; saveGame(); o.close(); refreshGame(); };
+    o.querySelector('#nX').onclick = () => o.close();
+  });
+}
+function gameMenu() {
+  const over = G.phase === 'over';
+  openSheet('<h2>' + T('menu') + '</h2><div class="acts">' +
+    '<button class="btn ghost" id="mLog">📜 ' + T('log') + '</button>' +
+    '<button class="btn ghost" id="mRules">❔ ' + T('rules') + '</button>' +
+    '<button class="btn ghost" id="mSnd">' + (ST.sound ? '🔊' : '🔇') + ' ' + T('sound') + '</button>' +
+    (over ? '<button class="btn pri" id="mNew">⚔ ' + T('playAgain') + '</button>' : '<button class="btn danger" id="mRes">🏳 ' + T('resign') + '</button>') +
+    '<button class="btn ghost" id="mX">' + T('close') + '</button></div>', o => {
+    o.querySelector('#mLog').onclick = () => { o.close(); logSheet(); };
+    o.querySelector('#mRules').onclick = () => { o.close(); go('rules'); };
+    o.querySelector('#mSnd').onclick = () => { ST.sound = !ST.sound; saveST(); o.close(); toast(T('sound') + ': ' + (ST.sound ? 'ON' : 'OFF')); };
+    o.querySelector('#mX').onclick = () => o.close();
+    const n = o.querySelector('#mNew'); if (n) n.onclick = () => { o.close(); startSetup(G.size, G.diff); };
+    const r = o.querySelector('#mRes'); if (r) r.onclick = async () => { o.close(); if (await ask(T('resignQ'), T('resign'), true)) { G.phase = 'over'; G.winner = 1; G.reason = 'resign'; G.t1 = Date.now(); finish(); } };
+  });
+}
+function logSheet() {
+  const L = G.log.slice().reverse();
+  openSheet('<h2>' + T('log') + '</h2>' + (L.length ? L.map(e => {
+    const b = { a: { r: e.ar, o: e.ao }, d: { r: e.dr, o: 1 - e.ao }, res: e.res };
+    const good = (e.res === 'A' && e.ao === 0) || (e.res === 'D' && e.ao === 1);
+    return '<div class="logl"><span class="d">#' + (e.ply + 1) + '</span>' + tb(e.ao, e.ar) + '<span>⚔</span>' + tb(1 - e.ao, e.dr) + '<span style="flex:1">' + esc(battleText(b)) + '</span><span>' + (e.res === 'T' ? '＝' : good ? '✓' : '✗') + '</span></div>';
+  }).join('') : '<p class="muted">' + T('noLog') + '</p>') + '<div class="acts"><button class="btn ghost" id="lX">' + T('close') + '</button></div>', o => { o.querySelector('#lX').onclick = () => o.close(); });
+}
+function finish() {
+  if (!G.t1) G.t1 = Date.now();
+  if (!G.counted) {
+    G.counted = true;
+    const st = S.get('stats', { games: 0, wins: 0, losses: 0, draws: 0, streak: 0, best: 0, fastest: null, by: {} });
+    const k = G.diff + '_' + G.size; st.by[k] = st.by[k] || { w: 0, l: 0, d: 0 };
+    st.games++;
+    if (G.winner === 0) { st.wins++; st.streak++; st.best = Math.max(st.best, st.streak); st.by[k].w++; const mv = Math.ceil(G.ply / 2); if (!st.fastest || mv < st.fastest.m) st.fastest = { m: mv, s: G.size, d: G.diff }; }
+    else if (G.winner === 1) { st.losses++; st.streak = 0; st.by[k].l++; }
+    else { st.draws++; st.by[k].d++; }
+    S.set('stats', st);
+  }
+  S.del('game');
+  refreshGame();
+  setTimeout(() => { snd(G.winner === 0 ? 'win' : G.winner === 1 ? 'lose' : 'tap'); endSheet(); }, 350);
+}
+function endSheet() {
+  G.shownEnd = true;
+  const w = G.winner, reason = G.reason;
+  const rk = reason === 'flag' ? (w === 0 ? 'rflag' : 'rflagL') : reason === 'nomoves' ? (w === 0 ? 'rnomoves' : 'rnomovesL') : reason === 'resign' ? 'rresign' : reason === 'stuck' ? 'rstuck' : 'rcap';
+  const secs = Math.max(1, Math.round(((G.t1 || Date.now()) - G.t0) / 1000));
+  const tm = Math.floor(secs / 60) + ':' + String(secs % 60).padStart(2, '0');
+  const caps = G.log.filter(e => (e.res === 'A' && e.ao === 0) || (e.res === 'D' && e.ao === 1)).length;
+  openSheet('<div class="endT" style="color:' + (w === 0 ? 'var(--gt)' : 'var(--txt)') + '">' + (w === 0 ? '🏆 ' + T('win') : w === 1 ? T('lose') : T('draw')) + '</div>' +
+    '<p style="text-align:center" class="muted">' + T(rk) + ' · ' + T(G.diff) + ' · ' + T('s' + G.size) + '</p>' +
+    '<div class="kv"><div><b>' + Math.ceil(G.ply / 2) + '</b><span>' + T('moves') + '</span></div><div><b>' + tm + '</b><span>' + T('time') + '</span></div></div>' +
+    '<div class="acts"><button class="btn pri" id="eSame">⚔ ' + T('sameSetup') + '</button><button class="btn" id="eNew">' + T('playAgain') + '</button>' +
+    '<div class="acts two" style="margin:0"><button class="btn ghost" id="eView">' + T('viewBoard') + '</button><button class="btn ghost" id="eHome">' + T('toHome') + '</button></div></div>', o => {
+    const size = G.size, diff = G.diff, mine = S.get('lastSetup_' + size, null);
+    o.querySelector('#eSame').onclick = () => { o.close(); startSetup(size, diff, mine); };
+    o.querySelector('#eNew').onclick = () => { o.close(); newGameSheet(); };
+    o.querySelector('#eView').onclick = () => o.close();
+    o.querySelector('#eHome').onclick = () => { o.close(); go('home'); };
+  });
+}
+
+/* ---------- rules ---------- */
+SCREENS.rules = () => {
+  const set10 = VARIANTS[10].set, ab = r => T('a' + r) === 'a' + r ? '' : T('a' + r);
+  const rows = RANK_ORDER.slice().reverse().map(r => '<tr><td>' + tb(0, r) + '</td><td><b>' + esc(pname(r)) + '</b>' + (r && r !== 11 ? ' (' + r + ')' : '') + '<br><span class="muted">' + esc(ab(r)) + '</span></td><td dir="ltr">' + set10[r] + ' / ' + (VARIANTS[7].set[r] || 0) + ' / ' + (VARIANTS[5].set[r] || 0) + '</td></tr>').join('');
+  return barHTML(T('rules')) + '<div class="card"><table class="ptable"><tr><td></td><td class="muted">' + T('piece') + '</td><td class="muted" dir="ltr" style="text-align:center">10 / 7 / 5</td></tr>' + rows + '</table></div>' +
+    '<div class="rules">' + T('rulesH') + '</div><div class="acts" style="margin-top:14px"><button class="btn ghost" onclick="onboarding()">' + T('guide') + '</button></div>';
+};
+
+/* ---------- stats ---------- */
+SCREENS.stats = () => {
+  const st = S.get('stats', null);
+  if (!st || !st.games) return barHTML(T('stats')) + '<div class="card"><p>' + T('noStats') + '</p><button class="btn pri" onclick="newGameSheet()">⚔ ' + T('newGame') + '</button></div>';
+  const rate = Math.round(st.wins / st.games * 100);
+  const by = ['easy', 'medium', 'hard'].map(d => {
+    let w = 0, l = 0, dr = 0; [10, 7, 5].forEach(s => { const x = st.by[d + '_' + s]; if (x) { w += x.w; l += x.l; dr += x.d; } });
+    return w + l + dr ? '<div class="row"><span class="lb">' + T(d) + '</span><span>' + w + ' / ' + l + (dr ? ' / ' + dr : '') + '</span></div>' : '';
+  }).join('');
+  return barHTML(T('stats')) +
+    '<div class="kv"><div><b>' + st.games + '</b><span>' + T('games') + '</span></div><div><b>' + rate + '%</b><span>' + T('winRate') + '</span></div>' +
+    '<div><b>' + st.wins + '</b><span>' + T('wins') + '</span></div><div><b>' + st.losses + '</b><span>' + T('losses') + '</span></div>' +
+    '<div><b>' + st.streak + '</b><span>' + T('streak') + '</span></div><div><b>' + st.best + '</b><span>' + T('best') + '</span></div></div>' +
+    (st.fastest ? '<div class="card"><span class="muted">' + T('fastest') + '</span><br><b style="font:900 22px var(--fd)">' + st.fastest.m + ' ' + T('moves') + '</b> <span class="muted">· ' + T(st.fastest.d) + ' · ' + T('s' + st.fastest.s) + '</span></div>' : '') +
+    (by ? '<div class="card"><h3 style="margin-top:0">' + T('byDiff') + '</h3><p class="muted" style="margin:0">' + T('wins') + ' / ' + T('losses') + '</p>' + by + '</div>' : '') +
+    '<button class="btn danger" id="rsStats">' + T('resetStats') + '</button>';
+};
+SCREENS.stats.mount = () => { const b = $('#rsStats'); if (b) b.onclick = async () => { if (await ask(T('resetQ'), T('resetStats'), true)) { S.del('stats'); render(); } }; };
+
+/* ---------- settings ---------- */
+SCREENS.settings = () => {
+  const sw = (k, on) => '<button class="sw' + (on ? ' on' : '') + '" data-sw="' + k + '" role="switch" aria-checked="' + !!on + '" aria-label="' + T(k) + '"></button>';
+  const pal = { gold: '#d4af37', silver: '#c9d1dc', emerald: '#3fc48f', sapphire: '#5d91f0', ruby: '#e5536c' };
+  return barHTML(T('settings')) +
+    '<div class="card"><label class="lb" for="nm">' + T('userName') + '</label><span class="muted" style="display:block">' + T('userNameSub') + '</span><input type="text" id="nm" maxlength="40" value="' + esc(ST.name) + '"></div>' +
+    '<div class="card"><div class="row"><span class="lb">' + T('lang') + '</span><select id="lg" style="width:auto">' + Object.keys(LANGS).map(k => '<option value="' + k + '"' + (k === ST.lang ? ' selected' : '') + '>' + LANGS[k].langName + '</option>').join('') + '</select></div>' +
+    '<div class="row"><span class="lb">' + T('theme') + '</span><div class="swatches">' + Object.keys(pal).map(k => '<button class="swatch' + (k === ST.pal ? ' on' : '') + '" data-setpal="' + k + '" aria-label="' + k + '"><i style="background:' + pal[k] + '"></i></button>').join('') + '</div></div>' +
+    '<div class="row"><span class="lb">' + T('mode') + '</span><div class="seg" style="width:180px"><button data-setmode="night" class="' + (ST.mode === 'night' ? 'on' : '') + '">' + T('night') + '</button><button data-setmode="day" class="' + (ST.mode === 'day' ? 'on' : '') + '">' + T('day') + '</button></div></div>' +
+    '<div style="padding-top:12px"><span class="lb">' + T('boardSkin') + '</span><div class="seg" style="margin-top:8px">' + ['field', 'desert', 'night', 'marble'].map(k => '<button data-skin="' + k + '" class="' + (ST.board === k ? 'on' : '') + '">' + T('sk' + k[0].toUpperCase() + k.slice(1)) + '</button>').join('') + '</div></div></div>' +
+    '<div class="card"><div class="row"><span class="lb">' + T('sound') + '</span>' + sw('sound', ST.sound) + '</div>' +
+    '<div class="row"><span class="lb">' + T('vib') + '</span>' + sw('vib', ST.vib) + '</div>' +
+    '<div class="row"><span class="lb">' + T('hints') + '<span class="sub">' + T('hintsSub') + '</span></span>' + sw('hints', ST.hints) + '</div>' +
+    '<div class="row"><span class="lb">' + T('hideRev') + '<span class="sub">' + T('hideRevSub') + '</span></span>' + sw('hideRev', ST.hideRev) + '</div>' +
+    '<div style="padding-top:12px"><span class="lb">' + T('speed') + '</span><div class="seg" style="margin-top:8px">' + ['slow', 'normal', 'fast'].map((k, i) => '<button data-speed="' + i + '" class="' + (ST.speed === i ? 'on' : '') + '">' + T(k) + '</button>').join('') + '</div></div></div>' +
+    '<div class="card"><h3 style="margin-top:0">' + T('backup') + '</h3><div class="acts two" style="margin-top:6px"><button class="btn small" id="exB">⬇ ' + T('exportB') + '</button><button class="btn small" id="imB">⬆ ' + T('importB') + '</button></div><input type="file" id="imF" accept="application/json,.json" hidden></div>' +
+    '<div class="acts"><button class="btn ghost" onclick="onboarding()">' + T('guide') + '</button><button class="btn ghost" onclick="location.href=\'privacy_policy.html\'">🔒 ' + T('privacy') + '</button><button class="btn danger" id="wipe">' + T('wipe') + '</button></div>' +
+    '<div class="badge">AppNest · <b>FlagNest</b> v' + APP_VERSION + '</div>';
+};
+SCREENS.settings.mount = () => {
+  $('#nm').oninput = e => { ST.name = e.target.value; saveST(); };
+  $('#lg').onchange = e => { ST.lang = e.target.value; saveST(); render(); };
+  document.querySelectorAll('[data-setpal]').forEach(b => b.onclick = () => { ST.pal = b.dataset.setpal; saveST(); render(); });
+  document.querySelectorAll('[data-setmode]').forEach(b => b.onclick = () => { ST.mode = b.dataset.setmode; saveST(); render(); });
+  document.querySelectorAll('[data-skin]').forEach(b => b.onclick = () => { ST.board = b.dataset.skin; saveST(); render(); });
+  document.querySelectorAll('[data-speed]').forEach(b => b.onclick = () => { ST.speed = +b.dataset.speed; saveST(); render(); });
+  document.querySelectorAll('[data-sw]').forEach(b => b.onclick = () => { const k = b.dataset.sw; ST[k] = !ST[k]; saveST(); b.classList.toggle('on', ST[k]); b.setAttribute('aria-checked', ST[k]); if (k === 'sound' && ST.sound) snd('tap'); if (k === 'vib') buzz(20); });
+  $('#exB').onclick = exportBackup;
+  $('#imB').onclick = () => $('#imF').click();
+  $('#imF').onchange = importBackup;
+  $('#wipe').onclick = async () => {
+    if (!(await ask(T('wipeQ1'), T('del'), true))) return; if (!(await ask(T('wipeQ2'), T('wipe'), true))) return;
+    ['settings', 'stats', 'boards', 'game', 'lastSetup_10', 'lastSetup_7', 'lastSetup_5'].forEach(k => S.del(k));
+    ST = Object.assign({}, DEF, { onboarded: true, lang: ST.lang }); saveST(); G = null; toast(T('wiped')); go('home');
+  };
+};
+function exportBackup() {
+  const data = { app: 'FlagNest', version: APP_VERSION, user: ST.name || '', date: new Date().toISOString(),
+    summary: (() => { const s = S.get('stats', null); return s ? { games: s.games, wins: s.wins, losses: s.losses } : null; })(),
+    settings: ST, stats: S.get('stats', null), boards: S.get('boards', {}), lastSetup: { 10: S.get('lastSetup_10', null), 7: S.get('lastSetup_7', null), 5: S.get('lastSetup_5', null) }, game: S.get('game', null) };
+  const blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'flagnest-backup-' + (ST.name ? ST.name.replace(/[^\w\u0590-\u05FF-]+/g, '_') + '-' : '') + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); toast(T('exported'));
+}
+async function importBackup(e) {
+  const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
+  let d; try { d = JSON.parse(await f.text()); } catch (x) { toast(T('badFile')); return; }
+  if (!d || d.app !== 'FlagNest') { toast(T('badFile')); return; }
+  if (!(await ask(T('importQ'), T('importB'), true))) return;
+  if (d.settings) { ST = Object.assign({}, DEF, d.settings); saveST(); }
+  if (d.stats) S.set('stats', d.stats); else S.del('stats');
+  S.set('boards', d.boards || {});
+  if (d.lastSetup) [10, 7, 5].forEach(s => { if (d.lastSetup[s]) S.set('lastSetup_' + s, d.lastSetup[s]); });
+  if (d.game) { S.set('game', d.game); G = d.game; } else { S.del('game'); G = null; }
+  toast(T('imported')); render();
+}
+
+/* ---------- about ---------- */
+SCREENS.about = () => barHTML(T('about')) +
+  '<div style="text-align:center;margin:14px 0"><img src="icon-192.png" alt="" width="88" height="88" style="border-radius:22px;box-shadow:0 0 0 1.5px var(--gold)"><h2 style="margin:10px 0 0">FlagNest</h2><p class="muted" style="margin:2px 0">' + T('app') + '</p></div>' +
+  '<div class="card"><div class="row"><span>' + T('version') + '</span><b>' + APP_VERSION + '</b></div><div class="row"><span>' + T('developer') + '</span><b>Barak Aflalo</b></div>' +
+  '<div class="row"><span>' + T('platform') + '</span><b>PWA · HTML5</b></div><div class="row"><span>' + T('storage') + '</span><b>' + T('storageV') + '</b></div><div class="row"><span>' + T('license') + '</span><b>© AppNest 2026</b></div></div>' +
+  '<div class="acts"><button class="btn" onclick="window.open(\'' + STORE_URL + '\',\'_blank\')">🛍 ' + T('store') + '</button><button class="btn ghost" id="shBtn">📤 ' + T('share') + '</button>' +
+  '<button class="btn ghost" onclick="location.href=\'' + FEEDBACK + '\'">✉️ ' + T('feedback') + '</button><button class="btn ghost" onclick="go(\'rules\')">📜 ' + T('rules') + '</button><button class="btn ghost" onclick="location.href=\'privacy_policy.html\'">🔒 ' + T('privacy') + '</button></div>' +
+  '<p class="muted" style="margin-top:16px">' + T('disclaimer') + '</p><div class="badge">AppNest · <b>FlagNest</b></div>';
+SCREENS.about.mount = () => {
+  $('#shBtn').onclick = async () => {
+    const url = location.href.split('#')[0], text = T('shareText') + (ST.name ? ' — ' + ST.name : '');
+    try { if (navigator.share) await navigator.share({ title: 'FlagNest', text, url }); else { await navigator.clipboard.writeText(text + ' ' + url); toast(T('copied')); } } catch (e) {}
+  };
+};
+
+/* ---------- onboarding ---------- */
+function onboarding() {
+  let k = 0;
+  const arts = [
+    tb(0, 0) + tb(1, 0, { show: false }),
+    tb(0, 11) + tb(0, 0) + tb(0, 11),
+    tb(0, 7) + '<span style="font:900 28px var(--fd);align-self:center">⚔</span>' + tb(1, 5),
+    tb(0, 3) + tb(0, 1) + tb(0, 2),
+    tb(1, 0, { show: false, note: 9 }) + tb(1, 0, { show: false, mv: true })
+  ];
+  const html = () => '<p class="obStep">' + (k + 1) + ' / 5</p><div class="obArt">' + arts[k] + '</div><h2 style="text-align:center">' + T('ob' + (k + 1) + 't') + '</h2><p>' + T('ob' + (k + 1)) + '</p>' +
+    '<div class="acts two"><button class="btn ghost" data-a="s">' + T('skip') + '</button><button class="btn pri" data-a="n">' + (k === 4 ? T('done') : T('next')) + '</button></div>';
+  const end = o => { ST.onboarded = true; saveST(); o.close(); };
+  openSheet(html(), function bind(o) {
+    const sh = o.querySelector('.sheet');
+    sh.querySelector('[data-a=s]').onclick = () => end(o);
+    sh.querySelector('[data-a=n]').onclick = () => { if (k === 4) return end(o); k++; sh.innerHTML = html(); bind(o); };
+    o._esc = () => end(o);
+  }, { sticky: true });
+}
+
+/* ---------- boot ---------- */
+function boot() {
+  if (G && (!G.pcs || !VARIANTS[G.size])) { G = null; S.del('game'); }
+  applyLook(); render();
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+  if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
+  window.__fn = { get G() { return G; }, set G(v) { G = v; }, go, aiChoose, allMoves, applyMove, ST };   // test hook
+}
+boot();
+</script></body></html>
