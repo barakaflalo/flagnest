@@ -253,6 +253,15 @@ input[type=text],select{width:100%;min-height:46px;border-radius:12px;border:1.5
 .rpc{display:flex;justify-content:center;gap:8px;margin-top:6px;direction:ltr}
 .rpc .big{width:58px;background:var(--gold);color:#111;border-color:var(--gold)}
 input[type=range]{width:100%;accent-color:var(--gold);margin:6px 0}
+.vbar{display:flex;gap:6px;justify-content:center;margin-top:8px}
+.vbtn{flex:1;max-width:190px;min-height:46px;border-radius:14px;border:1.5px solid var(--gold);background:var(--s1);font-weight:800;font-size:14px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.vbtn.ptt.on{background:var(--gold);color:#120f06;transform:scale(1.04);box-shadow:0 0 18px var(--gold)}
+.vbtn.rec{border-color:var(--bad);color:var(--bad);animation:pulse 1s infinite}
+.vbar .icon.on{border-color:var(--good);box-shadow:0 0 10px var(--good)}
+.talkB{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:66;background:var(--s2);border:1.5px solid var(--good);border-radius:20px;padding:6px 14px;font-weight:800;box-shadow:0 6px 18px #0008;animation:fadeIn .15s}
+.vbub{position:fixed;top:calc(58px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:64;background:var(--s2);border:1.5px solid var(--gold);border-radius:18px;padding:10px 14px;font-size:15px;box-shadow:0 8px 22px #0009;animation:fadeIn .2s}
+.vbub.mine{border-color:var(--line);opacity:.9}
+.vbub.playing{border-color:var(--good);box-shadow:0 0 14px var(--good)}
 @media (max-height:700px){:root{--boardReserve:236px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition:none!important}}
 </style>
@@ -707,6 +716,8 @@ function replayGame(rp, upto) {
 const LANGS = {
 he: {
   dir:'rtl', langName:'עברית',
+  ptt:'לחץ ודבר', vmsg:'הודעה קולית', vsend:'שלח', sec:'ש׳', sentV:'נשלח', openMicOn:'מיקרופון פתוח — החבר שומע אותך כל הזמן', openMicOff:'מיקרופון סגור — לחץ והחזק כדי לדבר',
+  talking:'{n} מדבר…', micDenied:'אין גישה למיקרופון. אשר הרשאת מיקרופון לאתר (סמל המנעול בשורת הכתובת) ונסה שוב.', tapForSound:'הקש על המסך כדי לשמוע את החבר', roomFull:'החדר מלא',
   expert:'מומחה', diffExpert:'בודק כמה עתידים אפשריים לפני כל מהלך, צופה את התגובה שלך וזוכר איפה אתה מחביא את הדגל',
   diffHard:'קורא בלופים, זוכר איפה אתה מחביא את הדגל ויוצא לצוד אותו',
   mCpu:'מול המחשב', mLocal:'שניים בטלפון אחד', mOnline:'אונליין מול חבר',
@@ -793,12 +804,14 @@ he: {
 <h2>כלל שתי המשבצות</h2><p>אסור להזיז את אותו כלי הלוך-חזור בין אותן שתי משבצות יותר משלוש פעמים ברצף. הכלל מונע מרדפים אינסופיים, והוא חל גם על המחשב.</p>
 <h2>סוף המשחק</h2><p>מי שכובש את הדגל — מנצח. מי שאין לו אף מהלך חוקי בתורו — מפסיד. אם לאף צד אין מהלכים — תיקו.</p>
 <h2>סימנים על הלוח</h2><ul><li>לחיצה על כלי של המחשב פותחת סימון ניחוש — למשל "9?" או "פצצה?". הסימון רק בשבילך.</li><li>נקודה קטנה בתחתית כלי של המחשב: הוא כבר זז, אז הוא לא פצצה ולא דגל.</li><li>עין קטנה על כלי שלך: המחשב כבר ראה מה הוא.</li></ul>
-<h2>מצבי משחק</h2><ul><li><b>מול המחשב</b> — ארבע רמות. המומחה בודק כמה עתידים אפשריים לפני כל מהלך. מקשה ומעלה המחשב גם זוכר איפה אתה נוטה להחביא את הדגל.</li><li><b>שניים בטלפון אחד</b> — כל אחד מסדר בסוד, ובין התורות מופיע מסך "העבר את הטלפון" כדי שלא תראו זה את דרגות זה.</li><li><b>אונליין מול חבר</b> — יוצרים חדר ושולחים קוד או קישור. הדרגות שלך לא נשלחות לחבר; רק כלי שנכנס לקרב נחשף.</li></ul>
+<h2>מצבי משחק</h2><ul><li><b>מול המחשב</b> — ארבע רמות. המומחה בודק כמה עתידים אפשריים לפני כל מהלך. מקשה ומעלה המחשב גם זוכר איפה אתה נוטה להחביא את הדגל.</li><li><b>שניים בטלפון אחד</b> — כל אחד מסדר בסוד, ובין התורות מופיע מסך "העבר את הטלפון" כדי שלא תראו זה את דרגות זה.</li><li><b>אונליין מול חבר</b> — יוצרים חדר ושולחים קוד או קישור. הדרגות שלך לא נשלחות לחבר; רק כלי שנכנס לקרב נחשף. אפשר לדבר תוך כדי משחק: 🎙 לחץ והחזק כדי לדבר, 🎤 הודעה קולית, 🔊 מיקרופון פתוח.</li></ul>
 <h2>כלי עזר</h2><ul><li>💡 רמז — מסמן מהלך מומלץ (לא זמין באונליין).</li><li>🔍 בדיקה במסך הסידור — מנתחת את הסידור שלך ומצביעה על נקודות תורפה.</li><li>▶ ריפליי — אחרי כל משחק אפשר לצפות בו מההתחלה עם כל הכלים חשופים.</li></ul>
 <h2>טיפים</h2><ul><li>הקף את הדגל בפצצות — אבל אל תשים אותו במקום הכי ברור. פינה עם פצצות היא הדבר הראשון שהמחשב בודק.</li><li>שמור את המרגל ליד הגנרל: כשהמרשל של המחשב בא לצוד אותו, המרגל מחכה.</li><li>שלח סיירים וסמלים לגלות דרגות לפני שאתה מסכן כלים חזקים.</li><li>אל תחשוף את המרשל מוקדם. כל עוד המחשב לא יודע איפה הוא — הוא נזהר מכל הכלים שלך.</li></ul>`
 },
 en: {
   dir:'ltr', langName:'English',
+  ptt:'Hold to talk', vmsg:'Voice message', vsend:'Send', sec:'s', sentV:'sent', openMicOn:'Mic open — your friend hears you all the time', openMicOff:'Mic closed — hold the button to talk',
+  talking:'{n} is talking…', micDenied:'No microphone access. Allow the microphone for this site (lock icon in the address bar) and try again.', tapForSound:'Tap the screen to hear your friend', roomFull:'The room is full',
   expert:'Expert', diffExpert:'Checks several possible futures before each move, predicts your reply and remembers where you hide your flag',
   diffHard:'Reads bluffs, remembers where you hide your flag and goes hunting for it',
   mCpu:'vs computer', mLocal:'Two on one phone', mOnline:'Online vs a friend',
@@ -885,12 +898,13 @@ en: {
 <h2>Two-square rule</h2><p>A piece may not move back and forth between the same two squares more than three times in a row. This stops endless chases and applies to the computer too.</p>
 <h2>End of the game</h2><p>Capture the flag and you win. A player with no legal move on their turn loses. If neither side can move, it is a draw.</p>
 <h2>Marks on the board</h2><ul><li>Tap a computer piece to mark a guess — like "9?" or "bomb?". Only you see it.</li><li>A small dot at the bottom of a computer piece: it has moved, so it is not a bomb or the flag.</li><li>A small eye on your piece: the computer has already seen what it is.</li></ul>
-<h2>Game modes</h2><ul><li><b>vs computer</b> — four levels. Expert checks several possible futures before each move. From hard upward the computer also remembers where you tend to hide your flag.</li><li><b>Two on one phone</b> — each player sets up in secret, and a "pass the phone" screen appears between turns.</li><li><b>Online vs a friend</b> — create a room and send a code or link. Your ranks are never sent to your friend; only pieces that fight are revealed.</li></ul>
+<h2>Game modes</h2><ul><li><b>vs computer</b> — four levels. Expert checks several possible futures before each move. From hard upward the computer also remembers where you tend to hide your flag.</li><li><b>Two on one phone</b> — each player sets up in secret, and a "pass the phone" screen appears between turns.</li><li><b>Online vs a friend</b> — create a room and send a code or link. Your ranks are never sent to your friend; only pieces that fight are revealed. You can talk while playing: 🎙 hold to talk, 🎤 voice message, 🔊 open mic.</li></ul>
 <h2>Helpers</h2><ul><li>💡 Hint — marks a suggested move (not available online).</li><li>🔍 Check on the setup screen — analyses your setup and points out weak spots.</li><li>▶ Replay — after each game, watch it from the start with every piece revealed.</li></ul>
 <h2>Tips</h2><ul><li>Surround your flag with bombs — but don’t put it in the most obvious spot. A bombed corner is the first thing the computer checks.</li><li>Keep the spy near your general: when the enemy marshal comes hunting, the spy is waiting.</li><li>Send scouts and sergeants to discover ranks before risking strong pieces.</li><li>Don’t reveal your marshal early. While the computer doesn’t know where it is, it has to respect all your pieces.</li></ul>`
 },
 ru: {
   dir:'ltr', langName:'Русский',
+  ptt:'Нажми и говори', vmsg:'Голосовое', vsend:'Отправить', sec:'с', talking:'{n} говорит…', roomFull:'Комната заполнена',
   expert:'Эксперт', mCpu:'С компьютером', mLocal:'Вдвоём на одном телефоне', mOnline:'Онлайн с другом', names:'Имена игроков', p1:'Красный', p2:'Синий',
   passTo:'Передай телефон: {n}', imReady:'Я {n} — показать доску', turnOf:'Ход: {n}', winOf:'{n} побеждает!', hint:'Подсказка', check:'Проверка', checkT:'Проверка расстановки',
   roomCode:'Код комнаты', createRoom:'Создать комнату', joinRoom:'Войти по коду', join:'Войти', sendWa:'Отправить в WhatsApp', shareInvite:'Пригласить',
@@ -916,6 +930,7 @@ ru: {
 },
 es: {
   dir:'ltr', langName:'Español',
+  ptt:'Mantén para hablar', vmsg:'Mensaje de voz', vsend:'Enviar', sec:'s', talking:'{n} está hablando…', roomFull:'La sala está llena',
   expert:'Experto', mCpu:'Contra el ordenador', mLocal:'Dos en un teléfono', mOnline:'Online con un amigo', names:'Nombres', p1:'Rojo', p2:'Azul',
   passTo:'Pasa el teléfono a {n}', imReady:'Soy {n} — mostrar tablero', turnOf:'Turno de {n}', winOf:'¡{n} gana!', hint:'Pista', check:'Revisar', checkT:'Revisión de la colocación',
   roomCode:'Código de sala', createRoom:'Crear sala', joinRoom:'Unirse con código', join:'Unirse', sendWa:'Enviar por WhatsApp', shareInvite:'Invitar',
@@ -941,6 +956,7 @@ es: {
 },
 ar: {
   dir:'rtl', langName:'العربية',
+  ptt:'اضغط وتحدث', vmsg:'رسالة صوتية', vsend:'إرسال', sec:'ث', talking:'{n} يتحدث…', roomFull:'الغرفة ممتلئة',
   expert:'خبير', mCpu:'ضد الحاسوب', mLocal:'لاعبان على هاتف واحد', mOnline:'أونلاين مع صديق', names:'أسماء اللاعبين', p1:'أحمر', p2:'أزرق',
   passTo:'مرّر الهاتف إلى {n}', imReady:'أنا {n} — اعرض اللوحة', turnOf:'دور {n}', winOf:'{n} فاز!', hint:'تلميح', check:'فحص', checkT:'فحص الترتيب',
   roomCode:'رمز الغرفة', createRoom:'إنشاء غرفة', joinRoom:'الانضمام برمز', join:'انضمام', sendWa:'إرسال عبر واتساب', shareInvite:'دعوة',
@@ -965,12 +981,248 @@ ar: {
   r0:'العلم', r11:'قنبلة', r1:'جاسوس', r2:'كشّاف', r3:'خبير ألغام', r4:'رقيب', r5:'ملازم', r6:'نقيب', r7:'رائد', r8:'عقيد', r9:'جنرال', r10:'مارشال'
 }
 };
+/* =====================================================================
+   NestLink 1.0 — AppNest online multiplayer module (WebRTC via PeerJS)
+   One file, drop into any AppNest game. No server of our own:
+   - a public PeerJS server only introduces the phones; game data, voice
+     and voice messages then travel directly phone-to-phone.
+   - star layout: the host is seat 0 and relays messages between guests,
+     so 2–6 players work; voice is a direct mesh (good up to ~4–5).
+   - every game message is sequenced and re-sent after a reconnect.
+   The game owns the session object (persist it with the game state) and
+   receives events through callbacks. See NESTLINK.md for the API.
+   ===================================================================== */
+const NestLink = (() => {
+  const CDNS = ['https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js', 'https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js'];
+  const ICE = [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }, { urls: 'stun:stun.cloudflare.com:3478' }];
+  const AB = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  const genCode = (n = 5) => Array.from({ length: n }, () => AB[Math.floor(Math.random() * AB.length)]).join('');
+  const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+  function loadScript(u) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = u; s.onload = res; s.onerror = rej; document.head.appendChild(s); setTimeout(rej, 12000); }); }
+  async function loadPeer() { if (window.Peer) return true; for (const u of CDNS) { try { await loadScript(u); if (window.Peer) return true; } catch (e) {} } return false; }
+  const b64 = buf => { let s = '', a = new Uint8Array(buf); for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000)); return btoa(s); };
+  const unb64 = s => { const b = atob(s), a = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; };
+
+  function create(opt) {
+    const L = { status: 'off', lastErr: null, peer: null, conns: {}, retry: null, chunks: {}, calls: {}, audio: {}, mic: null, talking: false, openMic: false, rec: null };
+    let S = null;                                         // the session — owned and persisted by the game
+    const ev = (k, ...a) => { try { opt[k] && opt[k](...a); } catch (e) { console.error(e); } };
+    const persist = () => ev('persist', S);
+    const roomId = c => (opt.app || 'nest') + '-v1-' + c.toLowerCase();
+    const max = () => opt.maxPlayers || 2;
+    const isHost = () => S && S.role === 'host';
+    function peerOpts() {
+      const q = new URLSearchParams(location.search), o = { debug: 0, config: { iceServers: opt.iceServers || ICE } };
+      if (q.get('peerhost')) { o.host = q.get('peerhost'); o.port = +(q.get('peerport') || 9000); o.path = '/'; o.secure = false; }   // test servers only
+      return o;
+    }
+    function setStatus(st, err) { L.status = st; if (err !== undefined) L.lastErr = err; ev('onStatus', st, L.lastErr); }
+    const link = seat => S.links[seat] || (S.links[seat] = { seq: 0, lastIn: 0, out: [] });
+    const rosterEntry = seat => S.roster.find(p => p.seat === seat);
+    function rawTo(seat, m) { const c = L.conns[seat]; try { if (c && c.open) c.send(m); } catch (e) {} }
+    function rawAll(m, except) { for (const s in L.conns) if (+s !== except) rawTo(+s, m); }
+
+    /* ---------- starting ---------- */
+    async function start(session) {
+      close(true); S = session; persist();
+      setStatus('connecting');
+      if (!(await loadPeer())) { setStatus('error', 'load'); return false; }
+      const peer = L.peer = new Peer(isHost() ? roomId(S.code) : undefined, peerOpts());
+      peer.on('open', id => {
+        S.pid = id; if (isHost()) { const me = rosterEntry(0); if (me) { me.pid = id; me.online = true; } }
+        persist(); setStatus(isHost() ? 'waiting' : 'connecting'); if (!isHost()) connectHost();
+      });
+      peer.on('connection', c => { if (isHost()) attach(c, null); });
+      peer.on('call', onCall);
+      peer.on('disconnected', () => setTimeout(() => { try { if (L.peer === peer && !peer.destroyed) peer.reconnect(); } catch (e) {} }, 1500));
+      peer.on('error', e => {
+        const t = e && e.type;
+        if (t === 'unavailable-id') {                     // room id still held (e.g. after reload) — new code while nobody joined, else retry
+          if (S.roster.length < 2) { S.code = genCode(); persist(); ev('onCode', S.code); }
+          setTimeout(() => start(S), S.roster.length < 2 ? 300 : 4000); return;
+        }
+        if (t === 'peer-unavailable') { setStatus('notfound', 'nf'); scheduleRetry(); return; }
+        if (/network|server-error|socket/.test(t || '')) setStatus('error', 'net');
+      });
+      return true;
+    }
+    function host(code) {
+      return start({ role: 'host', code: code || genCode(), seat: 0, cid: uid(), roster: [{ seat: 0, name: opt.name ? opt.name() : '', online: true, cid: null, voice: false }], links: {} });
+    }
+    function join(code) { return start({ role: 'guest', code: code.toUpperCase(), seat: null, cid: uid(), roster: [], links: {} }); }
+    function resume(session) { return start(session); }
+    function scheduleRetry() { clearTimeout(L.retry); if (S && !isHost() && !(L.conns[0] && L.conns[0].open)) L.retry = setTimeout(connectHost, 3000); }
+    function connectHost() { if (!L.peer || L.peer.destroyed || (L.conns[0] && L.conns[0].open)) return; attach(L.peer.connect(roomId(S.code), { reliable: true, serialization: 'json' }), 0); scheduleRetry(); }
+
+    /* ---------- connections ---------- */
+    function attach(c, seat) {
+      let mySeat = seat;                                  // the seat at the other end of this connection
+      const onOpen = () => {
+        if (!isHost()) { L.conns[0] = c; rawTo(0, { t: 'hi', cid: S.cid, name: opt.name ? opt.name() : '', have: link(0).lastIn, v: opt.version }); }
+      };
+      if (c.open) onOpen(); else c.on('open', onOpen);
+      c.on('data', m => {
+        if (!m || !m.t) return;
+        if (isHost() && m.t === 'hi') {                   // a guest introduces itself → give it a seat (same seat when it comes back)
+          let p = S.roster.find(x => x.cid === m.cid);
+          if (!p) {
+            if (S.roster.length >= max()) { try { c.send({ t: 'full' }); c.close(); } catch (e) {} return; }
+            let s = 1; while (S.roster.some(x => x.seat === s)) s++;
+            p = { seat: s, cid: m.cid, name: '', online: true, voice: false }; S.roster.push(p); S.roster.sort((a, b) => a.seat - b.seat);
+            ev('onJoin', s);
+          }
+          mySeat = p.seat; p.name = (m.name || '').slice(0, 20); p.online = true; p.pid = c.peer;
+          if (L.conns[mySeat] && L.conns[mySeat] !== c) { try { L.conns[mySeat].close(); } catch (e) {} }
+          L.conns[mySeat] = c;
+          rawTo(mySeat, { t: 'hi', seat: mySeat, have: link(mySeat).lastIn, roster: S.roster, v: opt.version });
+          link(mySeat).out.filter(x => x.seq > (m.have || 0)).forEach(x => rawTo(mySeat, x));
+          if (m.v && opt.version && m.v.split('.')[0] !== opt.version.split('.')[0]) ev('onVersion', m.v);
+          persist(); broadcastRoster(); setStatus('open'); callEveryone();
+          return;
+        }
+        if (!isHost() && m.t === 'hi') {
+          S.seat = m.seat; S.roster = m.roster || []; persist();
+          link(0).out.filter(x => x.seq > (m.have || 0)).forEach(x => rawTo(0, x));
+          if (m.v && opt.version && m.v.split('.')[0] !== opt.version.split('.')[0]) ev('onVersion', m.v);
+          clearTimeout(L.retry); setStatus('open'); ev('onRoster', S.roster); callEveryone(); return;
+        }
+        if (m.t === 'full') { setStatus('full', 'full'); close(true); return; }
+        onData(m, isHost() ? mySeat : 0);
+      });
+      const gone = () => {
+        if (isHost()) { if (mySeat == null || L.conns[mySeat] !== c) return; delete L.conns[mySeat]; const p = rosterEntry(mySeat); if (p) p.online = false; persist(); broadcastRoster(); setStatus(Object.keys(L.conns).length ? 'open' : 'waiting'); }
+        else { if (L.conns[0] !== c) return; delete L.conns[0]; setStatus('reconnecting'); scheduleRetry(); }
+        stopAudioFrom(mySeat);
+      };
+      c.on('close', gone); c.on('error', gone);
+    }
+    function broadcastRoster() { if (!isHost()) return; rawAll({ t: 'roster', roster: S.roster }); ev('onRoster', S.roster); }
+
+    /* ---------- messages ---------- */
+    function onData(m, via) {
+      if (m.t === 'roster') { S.roster = m.roster; persist(); ev('onRoster', S.roster); callEveryone(); return; }
+      if (m.t === 'need') { link(via).out.filter(x => x.seq > m.have).forEach(x => rawTo(via, x)); return; }
+      if (m.t === 'emo' || m.t === 'talk' || m.t === 'vm') {
+        if (isHost()) rawAll(m, via);                     // relay to the other guests
+        if (m.t === 'emo') ev('onEmoji', m.e, m.from);
+        else if (m.t === 'talk') { const p = rosterEntry(m.from); if (p) p.talking = m.on; ev('onTalk', m.from, m.on); }
+        else gotChunk(m);
+        return;
+      }
+      if (m.t === 'voice') { const p = rosterEntry(m.from); if (p) p.voice = m.on; if (isHost()) { rawAll(m, via); broadcastRoster(); } callEveryone(); return; }
+      if (m.t !== 'm') return;
+      const lk = link(via);
+      if (m.seq <= lk.lastIn) return;
+      if (m.seq > lk.lastIn + 1) { rawTo(via, { t: 'need', have: lk.lastIn }); return; }
+      lk.lastIn = m.seq; persist();
+      if (isHost() && max() > 2) for (const p of S.roster) if (p.seat !== 0 && p.seat !== m.from) seqTo(p.seat, m.d, m.from);
+      ev('onMessage', m.d, m.from);
+    }
+    function seqTo(seat, d, from) {
+      const lk = link(seat), m = { t: 'm', seq: ++lk.seq, from, d };
+      lk.out.push(m); if (lk.out.length > 300) lk.out.splice(0, lk.out.length - 300);
+      rawTo(seat, m);
+    }
+    function send(d) {                                    // reliable, ordered, reaches every other player
+      if (!S) return;
+      if (isHost()) { for (const p of S.roster) if (p.seat !== 0) seqTo(p.seat, d, 0); }
+      else seqTo(0, d, S.seat);
+      persist();
+    }
+    function emoji(e) { if (S) rawAll({ t: 'emo', e, from: S.seat }); }
+    const isOpen = () => !!S && (isHost() ? Object.values(L.conns).some(c => c.open) : !!(L.conns[0] && L.conns[0].open));
+
+    /* ---------- voice: push-to-talk / open mic (direct mesh) ---------- */
+    async function micOn() {
+      if (L.mic) return true;
+      try { L.mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); }
+      catch (e) { ev('onMicError', e && e.name); return false; }
+      L.mic.getAudioTracks().forEach(t => t.enabled = L.openMic);
+      const me = rosterEntry(S.seat); if (me) me.voice = true;
+      const m = { t: 'voice', on: true, from: S.seat }; rawAll(m);
+      callEveryone(); return true;
+    }
+    function callEveryone() {                             // each phone with a mic sends its own one-way audio call to every other phone
+      if (!L.mic || !L.peer || !S) return;
+      for (const p of S.roster) {
+        if (p.seat === S.seat || !p.online || !p.pid) continue;
+        const c = L.calls[p.seat]; if (c && !c._dead) continue;
+        try { const call = L.peer.call(p.pid, L.mic, { metadata: { seat: S.seat } }); L.calls[p.seat] = call; call.on('close', () => { call._dead = true; }); call.on('error', () => { call._dead = true; }); } catch (e) {}
+      }
+    }
+    function onCall(call) {
+      call.answer();                                      // receive only — our own audio goes out on our own call
+      call.on('stream', st => {
+        const seat = call.metadata && call.metadata.seat;
+        let a = L.audio[seat]; if (!a) { a = L.audio[seat] = document.createElement('audio'); a.autoplay = true; a.setAttribute('playsinline', ''); a.style.display = 'none'; document.body.appendChild(a); }
+        a.srcObject = st; const p = a.play(); if (p && p.catch) p.catch(() => ev('onAudioBlocked'));
+      });
+    }
+    function stopAudioFrom(seat) { const a = L.audio[seat]; if (a) { a.srcObject = null; a.remove(); delete L.audio[seat]; } const c = L.calls[seat]; if (c) { try { c.close(); } catch (e) {} delete L.calls[seat]; } }
+    async function talk(on) {
+      if (on && !(await micOn())) return false;
+      if (!L.mic) return false;
+      L.talking = on || L.openMic; L.mic.getAudioTracks().forEach(t => t.enabled = L.talking);
+      rawAll({ t: 'talk', on: L.talking, from: S.seat }); return true;
+    }
+    async function setOpenMic(on) { L.openMic = on; if (on && !(await micOn())) { L.openMic = false; return false; } return talk(on); }
+
+    /* ---------- voice messages ---------- */
+    async function recStart(maxSec) {
+      if (L.rec || !(await micOn())) return false;
+      const track = L.mic.getAudioTracks()[0].clone(); track.enabled = true;
+      const st = new MediaStream([track]), mime = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/webm', 'audio/mp4'].find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
+      let r; try { r = new MediaRecorder(st, mime ? { mimeType: mime, audioBitsPerSecond: 24000 } : undefined); } catch (e) { ev('onMicError', 'rec'); return false; }
+      const parts = [], t0 = Date.now();
+      L.rec = { r, track, t0, timer: setTimeout(() => recStop(), (maxSec || 20) * 1000) };
+      r.ondataavailable = e => { if (e.data && e.data.size) parts.push(e.data); };
+      r.onstop = async () => {
+        track.stop();
+        const dur = Math.round((Date.now() - t0) / 100) / 10, blob = new Blob(parts, { type: r.mimeType || mime || 'audio/webm' });
+        if (L.rec && L.rec.cancel || dur < .4 || !blob.size) { L.rec = null; ev('onRecState', false); return; }
+        L.rec = null; ev('onRecState', false);
+        const data = b64(await blob.arrayBuffer()), id = uid(), CH = 12000, n = Math.ceil(data.length / CH);
+        for (let i = 0; i < n; i++) rawAll({ t: 'vm', id, i, n, dur, mime: blob.type, from: S.seat, data: data.slice(i * CH, (i + 1) * CH) });
+        ev('onVoiceMsg', URL.createObjectURL(blob), dur, S.seat, true);
+      };
+      r.start(); ev('onRecState', true, t0); return true;
+    }
+    function recStop(cancel) { if (!L.rec) return; clearTimeout(L.rec.timer); L.rec.cancel = !!cancel; try { L.rec.r.stop(); } catch (e) {} }
+    function gotChunk(m) {
+      const c = L.chunks[m.id] || (L.chunks[m.id] = { parts: [], got: 0, t: Date.now() });
+      if (c.parts[m.i] == null) { c.parts[m.i] = m.data; c.got++; }
+      if (c.got === m.n) { delete L.chunks[m.id]; const blob = new Blob([unb64(c.parts.join(''))], { type: m.mime || 'audio/webm' }); ev('onVoiceMsg', URL.createObjectURL(blob), m.dur, m.from, false); }
+      for (const k in L.chunks) if (Date.now() - L.chunks[k].t > 60000) delete L.chunks[k];
+    }
+
+    /* ---------- closing ---------- */
+    function close(keepSession) {
+      clearTimeout(L.retry);
+      Object.keys(L.audio).forEach(s => stopAudioFrom(+s));
+      for (const s in L.conns) { try { L.conns[s].close(); } catch (e) {} }
+      L.conns = {};
+      if (L.mic) { L.mic.getTracks().forEach(t => t.stop()); L.mic = null; }
+      L.calls = {}; L.talking = false;
+      try { if (L.peer) L.peer.destroy(); } catch (e) {}
+      L.peer = null; if (!keepSession) S = null; setStatus('off');
+    }
+
+    return {
+      host, join, resume, close, send, emoji, isOpen, talk, setOpenMic, recStart, recStop,
+      get status() { return L.status; }, get error() { return L.lastErr; }, get session() { return S; },
+      get seat() { return S ? S.seat : null; }, get roster() { return S ? S.roster : []; },
+      get micReady() { return !!L.mic; }, get talking() { return L.talking; }, get openMic() { return L.openMic; }, get recording() { return !!L.rec; },
+      inviteURL: () => location.origin + location.pathname + '?join=' + (S ? S.code : ''),
+      _L: L
+    };
+  }
+  return { create, genCode, loadPeer };
+})();
 /* ===================== FlagNest app ===================== */
-const APP_VERSION = '1.2.0';
+const APP_VERSION = '1.3.0';
 const P = 'flagnest_';
 const STORE_URL = 'https://appnest-store.pages.dev';
 const FEEDBACK = 'mailto:appnest55@gmail.com?subject=FlagNest%20' + APP_VERSION;
-const PEER_CDNS = ['https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js', 'https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js'];
 
 /* ---------- storage shim (falls back to memory) ---------- */
 const MEM = {};
@@ -1349,7 +1601,7 @@ SCREENS.setup = () => {
     '<div class="tray" id="tray"></div>' +
     '<div class="tools"><button class="btn small ghost" id="tRand"><span>🎲</span>' + T('random') + '</button><button class="btn small ghost" id="tSmart"><span>🧠</span>' + T('smart') + '</button>' +
     '<button class="btn small ghost" id="tClear"><span>✕</span>' + T('clear') + '</button><button class="btn small ghost" id="tSaved"><span>💾</span>' + T('myBoards') + '</button><button class="btn small ghost" id="tCheck"><span>🔍</span>' + T('check') + '</button></div>' +
-    '<button class="btn pri" id="goBtn"></button><p class="muted" id="sHint" style="text-align:center;margin:8px 0 0"></p>';
+    '<button class="btn pri" id="goBtn"></button><p class="muted" id="sHint" style="text-align:center;margin:8px 0 0"></p>' + voiceBarHTML();
 };
 SCREENS.setup.mount = () => {
   const b = $('#board');
@@ -1369,6 +1621,7 @@ SCREENS.setup.mount = () => {
   $('#tSaved').onclick = savedBoards;
   $('#tCheck').onclick = () => setupCheck(SO());
   $('#goBtn').onclick = setupDone;
+  bindVoiceBar();
   refreshSetup();
 };
 function firstTray() { const t = trayCounts(G, SO()); for (const r of RANK_ORDER) if (t[r] > 0) return r; return null; }
@@ -1516,7 +1769,7 @@ SCREENS.game = () => {
     '<div class="strip" id="stE"></div>' +
     '<div class="boardWrap"><div class="board" id="board" style="--n:' + G.n + '"></div></div>' +
     '<div class="strip" id="stM"></div><div class="status" id="status" aria-live="polite"></div>' +
-    (online ? '<div class="emos" id="emos">' + EMOS.map(e => '<button data-e="' + e + '">' + e + '</button>').join('') + '</div>' : '');
+    (online ? '<div class="emos" id="emos">' + EMOS.map(e => '<button data-e="' + e + '">' + e + '</button>').join('') + '</div>' + voiceBarHTML() : '');
 };
 const EMOS = ['👍', '😂', '😮', '😬', '🔥', '🤝'];
 SCREENS.game.mount = () => {
@@ -1533,6 +1786,7 @@ SCREENS.game.mount = () => {
   });
   const hb = $('#hintBtn'); if (hb) hb.onclick = giveHint;
   const em = $('#emos'); if (em) em.querySelectorAll('button').forEach(x => x.onclick = () => sendEmo(x.dataset.e));
+  bindVoiceBar();
   refreshGame();
   if (G.phase === 'play' && G.mode === 'cpu' && G.turn === 1 && !UI.busy) aiTurn();
   if (G.phase === 'play' && G.mode === 'online') checkMyTurn();
@@ -1810,25 +2064,34 @@ SCREENS.replay.mount = () => {
   draw();
 };
 
-/* ===================== online (PeerJS, direct phone-to-phone) ===================== */
-const NET = { peer: null, conn: null, open: false, retry: null, lastEmo: 0 };
-function loadScript(u) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = u; s.onload = res; s.onerror = rej; document.head.appendChild(s); setTimeout(rej, 12000); }); }
-async function loadPeer() { if (window.Peer) return true; for (const u of PEER_CDNS) { try { await loadScript(u); if (window.Peer) return true; } catch (e) {} } return false; }
-function peerOpts() {
-  const q = new URLSearchParams(location.search);
-  const o = { debug: 0, config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }, { urls: 'stun:stun.cloudflare.com:3478' }] } };
-  if (q.get('peerhost')) { o.host = q.get('peerhost'); o.port = +(q.get('peerport') || 9000); o.path = '/'; o.secure = false; }
-  return o;
+/* ===================== online (NestLink module) ===================== */
+let LINK = null;
+const NET = { get open() { return !!(LINK && LINK.isOpen()); }, get peer() { return !!LINK && LINK.status !== 'off'; }, lastEmo: 0 };
+function makeLink() {
+  if (LINK) return LINK;
+  LINK = NestLink.create({
+    app: 'flagnest', version: APP_VERSION, maxPlayers: 2, name: () => ST.name || '',
+    persist: s => { if (G && G.mode === 'online' && G.net) { G.net.sess = s; G.net.code = s.code; if (s.seat != null) G.net.me = s.seat; saveGame(); } },
+    onStatus: () => renderNet(),
+    onCode: c => { if (G && G.net) G.net.code = c; renderNet(); },
+    onJoin: () => { if (G && G.phase === 'lobby') { netSend({ type: 'cfg', size: G.size }); snd('ping'); toSetupOnline(); } },
+    onRoster: r => { if (!G || !G.net) return; const o = r.find(p => p.seat !== G.net.me); if (o) G.net.oppName = o.name || ''; saveGame(); renderNet(); },
+    onVersion: () => toast(T('verMismatch'), 4000),
+    onMessage: m => { if (G && G.mode === 'online') { handleNet(m); saveGame(); } },
+    onEmoji: e => floatEmo(e, false),
+    onTalk: (seat, on) => talkBadge(seat, on),
+    onVoiceMsg: (url, dur, seat, mine) => voiceBubble(url, dur, seat, mine),
+    onRecState: on => recUI(on),
+    onMicError: () => toast(T('micDenied'), 4500),
+    onAudioBlocked: () => toast(T('tapForSound'), 3000)
+  });
+  return LINK;
 }
-const CODE_AB = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-const genCode = () => Array.from({ length: 5 }, () => CODE_AB[Math.floor(Math.random() * CODE_AB.length)]).join('');
-const roomId = c => 'flagnest-v1-' + c.toLowerCase();
 function inviteURL() { return location.origin + location.pathname + '?join=' + G.net.code; }
-
+function newNet(me) { return { me, oppName: '', ready: [false, false], rm: [false, false], pending: null, code: '', sess: null }; }
 async function hostRoom(size) {
-  G = makeGame(size, 'medium'); G.mode = 'online'; G.phase = 'lobby';
-  G.net = { role: 'host', code: genCode(), me: 0, seq: 0, lastIn: 0, out: [], oppName: '', ready: [false, false], rm: [false, false], pending: null };
-  saveGame(); go('online'); netEnsure();
+  netClose(); G = makeGame(size, 'medium'); G.mode = 'online'; G.phase = 'lobby'; G.net = newNet(0);
+  saveGame(); go('online'); makeLink().host();
 }
 function joinSheet(pre) {
   openSheet('<h2>' + T('joinRoom') + '</h2><p class="muted">' + T('enterCode') + '</p><input type="text" id="jc" maxlength="5" autocapitalize="characters" autocomplete="off" style="text-align:center;font:900 28px var(--fd);letter-spacing:6px;direction:ltr" value="' + esc(pre || '') + '">' +
@@ -1842,65 +2105,16 @@ function joinSheet(pre) {
 async function joinRoom(code) {
   if (G && (G.phase === 'play' || G.phase === 'setup') && !(await ask(T('resumeQ'), T('startNew'), true))) return;
   netClose();
-  G = { mode: 'online', phase: 'lobby', size: 10, net: { role: 'guest', code: code.toUpperCase(), me: 1, seq: 0, lastIn: 0, out: [], oppName: '', ready: [false, false], rm: [false, false], pending: null } };
-  saveGame(); go('online'); netEnsure();
+  G = { mode: 'online', phase: 'lobby', size: 10, net: newNet(1) }; G.net.code = code.toUpperCase();
+  saveGame(); go('online'); makeLink().join(code);
 }
-async function netEnsure() {
-  if (!G || G.mode !== 'online' || NET.peer) return;
-  if (!(await loadPeer())) { toast(T('netFail'), 4000); renderNet(); return; }
-  const host = G.net.role === 'host';
-  const peer = NET.peer = new Peer(host ? roomId(G.net.code) : undefined, peerOpts());
-  peer.on('open', () => { renderNet(); if (!host) connectToHost(); });
-  peer.on('connection', c => { if (host) attachConn(c); });
-  peer.on('disconnected', () => { setTimeout(() => { try { if (NET.peer === peer && !peer.destroyed) peer.reconnect(); } catch (e) {} }, 1500); });
-  peer.on('error', e => {
-    const t = e && e.type;
-    if (t === 'unavailable-id') {                     // the room id is still held (e.g. after a reload) — retry, or pick a new code in the lobby
-      if (G.phase === 'lobby' && !G.net.lastIn) { G.net.code = genCode(); saveGame(); }
-      netClose(); setTimeout(netEnsure, G.phase === 'lobby' ? 300 : 4000); return;
-    }
-    if (t === 'peer-unavailable') { NET.lastErr = 'nf'; renderNet(); scheduleRetry(); return; }
-    if (t === 'network' || t === 'server-error' || t === 'socket-error' || t === 'socket-closed') { NET.lastErr = 'net'; renderNet(); }
-  });
+function netEnsure() {
+  if (!G || G.mode !== 'online' || !G.net || !G.net.sess) return;
+  makeLink(); if (LINK.status === 'off') LINK.resume(G.net.sess);
 }
-function scheduleRetry() { clearTimeout(NET.retry); if (G && G.mode === 'online' && G.net.role === 'guest' && !NET.open) NET.retry = setTimeout(connectToHost, 3000); }
-function connectToHost() { if (!NET.peer || NET.peer.destroyed || NET.open) return; attachConn(NET.peer.connect(roomId(G.net.code), { reliable: true, serialization: 'json' })); scheduleRetry(); }
-function attachConn(c) {
-  if (NET.conn && NET.conn !== c) { try { NET.conn.close(); } catch (e) {} }
-  NET.conn = c;
-  const onOpen = () => { NET.open = true; NET.lastErr = null; clearTimeout(NET.retry); rawSend({ type: 'hi', v: APP_VERSION, name: ST.name || '', have: G.net.lastIn }); renderNet(); };
-  if (c.open) onOpen(); else c.on('open', onOpen);
-  c.on('data', onNet);
-  c.on('close', () => { if (NET.conn !== c) return; NET.open = false; renderNet(); scheduleRetry(); });
-  c.on('error', () => { if (NET.conn !== c) return; NET.open = false; renderNet(); scheduleRetry(); });
-}
-function netClose() { clearTimeout(NET.retry); try { if (NET.conn) NET.conn.close(); } catch (e) {} try { if (NET.peer) NET.peer.destroy(); } catch (e) {} NET.peer = null; NET.conn = null; NET.open = false; }
-function rawSend(m) { try { if (NET.conn && NET.open) NET.conn.send(m); } catch (e) {} }
-function netSend(m) {
-  if (!G || G.mode !== 'online') return;
-  m.seq = ++G.net.seq; G.net.out.push(m); if (G.net.out.length > 300) G.net.out.splice(0, G.net.out.length - 300);
-  saveGame(); rawSend(m);
-}
-function resendFrom(have) { G.net.out.filter(x => x.seq > have).forEach(rawSend); }
+function netClose() { if (LINK) LINK.close(); }
+function netSend(m) { if (LINK && G && G.mode === 'online') LINK.send(m); }
 function renderNet() { if (scr === 'online') render(); else if (scr === 'setup') refreshSetup(); else if (scr === 'game') refreshGame(); }
-function onNet(m) {
-  if (!m || !m.type || !G || G.mode !== 'online') return;
-  if (m.type === 'hi') {
-    if (m.v && m.v.split('.')[0] !== APP_VERSION.split('.')[0]) toast(T('verMismatch'), 4000);
-    G.net.oppName = (m.name || '').slice(0, 20); resendFrom(m.have || 0);
-    if (!m.r) rawSend({ type: 'hi', r: 1, v: APP_VERSION, name: ST.name || '', have: G.net.lastIn });
-    if (G.net.role === 'host' && G.phase === 'lobby') { netSend({ type: 'cfg', size: G.size }); toSetupOnline(); }
-    snd('ping'); saveGame(); renderNet(); return;
-  }
-  if (m.type === 'need') { resendFrom(m.have); return; }
-  if (m.type === 'emo') { floatEmo(m.e, false); return; }
-  if (m.seq) {
-    if (m.seq <= G.net.lastIn) return;
-    if (m.seq > G.net.lastIn + 1) { rawSend({ type: 'need', have: G.net.lastIn }); return; }
-    G.net.lastIn = m.seq;
-  }
-  handleNet(m); saveGame();
-}
 function toSetupOnline() {
   const net = G.net, size = G.size;
   G = makeGame(size, 'medium'); G.mode = 'online'; G.net = net; net.ready = [false, false]; net.rm = [false, false]; net.pending = null;
@@ -1962,7 +2176,7 @@ function checkMyTurn() {
   refreshGame();
 }
 function requestRematch() { G.net.rm[G.net.me] = true; netSend({ type: 'rematch' }); if (G.net.rm[1 - G.net.me]) toSetupOnline(); else toast(T('rematchWait'), 3000); }
-function sendEmo(e) { if (Date.now() - NET.lastEmo < 900) return; NET.lastEmo = Date.now(); rawSend({ type: 'emo', e }); floatEmo(e, true); }
+function sendEmo(e) { if (Date.now() - NET.lastEmo < 900 || !LINK) return; NET.lastEmo = Date.now(); LINK.emoji(e); floatEmo(e, true); }
 function floatEmo(e, mine) {
   if (!EMOS.includes(e)) return;
   const d = document.createElement('div'); d.className = 'floatE' + (mine ? ' mine' : ''); d.textContent = e; document.body.appendChild(d);
@@ -1973,10 +2187,54 @@ async function shareInvite() {
   try { if (navigator.share) { await navigator.share({ title: 'FlagNest', text, url }); return; } } catch (e) { return; }
   try { await navigator.clipboard.writeText(text + ' ' + url); toast(T('copied')); } catch (e) {}
 }
+
+/* ---------- voice (push-to-talk, open mic, voice messages) ---------- */
+function voiceBarHTML() {
+  if (!G || G.mode !== 'online') return '';
+  const om = LINK && LINK.openMic, rec = LINK && LINK.recording;
+  return '<div class="vbar"><button class="vbtn ptt" id="ptt" aria-label="' + T('ptt') + '">🎙 <span>' + T('ptt') + '</span></button>' +
+    '<button class="vbtn' + (rec ? ' rec' : '') + '" id="vmsg">' + (rec ? '⏹ <span id="recT">' + T('vsend') + '</span>' : '🎤 <span>' + T('vmsg') + '</span>') + '</button>' +
+    '<button class="icon' + (om ? ' on' : '') + '" id="omic" aria-pressed="' + !!om + '" title="' + T(om ? 'openMicOn' : 'openMicOff') + '">' + (om ? '🔊' : '🔈') + '</button></div>';
+}
+function bindVoiceBar() {
+  const p = $('#ptt'); if (!p) return;
+  const down = async e => { e.preventDefault(); if (!LINK) return; p.classList.add('on'); buzz(15); const ok = await LINK.talk(true); if (!ok) p.classList.remove('on'); };
+  const up = () => { if (!p.classList.contains('on')) return; p.classList.remove('on'); if (LINK && !LINK.openMic) LINK.talk(false); };
+  p.addEventListener('pointerdown', down); ['pointerup', 'pointerleave', 'pointercancel'].forEach(k => p.addEventListener(k, up));
+  p.oncontextmenu = e => e.preventDefault();
+  $('#vmsg').onclick = async () => { if (!LINK) return; if (LINK.recording) LINK.recStop(); else if (!(await LINK.recStart(20))) return; };
+  $('#omic').onclick = async () => { if (!LINK) return; await LINK.setOpenMic(!LINK.openMic); toast(T(LINK.openMic ? 'openMicOn' : 'openMicOff')); const b = $('#omic'); if (b) { b.classList.toggle('on', LINK.openMic); b.textContent = LINK.openMic ? '🔊' : '🔈'; } };
+}
+let recTimer = null;
+function recUI(on) {
+  const b = $('#vmsg'); clearInterval(recTimer);
+  if (!b) return;
+  if (on) {
+    const t0 = Date.now(); b.classList.add('rec'); b.innerHTML = '⏹ <span id="recT">' + T('vsend') + ' 0:00</span>'; buzz(20);
+    recTimer = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000), el = $('#recT'); if (el) el.textContent = T('vsend') + ' 0:' + String(s).padStart(2, '0'); }, 250);
+  } else { b.classList.remove('rec'); b.innerHTML = '🎤 <span>' + T('vmsg') + '</span>'; }
+}
+function talkBadge(seat, on) {
+  let b = $('#talkB');
+  if (!on) { if (b) b.remove(); return; }
+  if (!b) { b = document.createElement('div'); b.id = 'talkB'; b.className = 'talkB'; document.body.appendChild(b); }
+  b.textContent = '🔊 ' + T('talking', { n: G && G.net && G.net.oppName || T('friend') });
+}
+function voiceBubble(url, dur, seat, mine) {
+  document.querySelectorAll('.vbub').forEach(x => x.remove());
+  const b = document.createElement('button'); b.className = 'vbub' + (mine ? ' mine' : '');
+  const who = mine ? T('you') : (G && G.net && G.net.oppName) || T('friend');
+  b.innerHTML = (mine ? '✓ ' : '▶ ') + '<b>' + esc(who) + '</b> · ' + Math.max(1, Math.round(dur)) + T('sec') + (mine ? ' · ' + T('sentV') : '');
+  const play = () => { const a = new Audio(url); a.play().catch(() => toast(T('tapForSound'))); b.classList.add('playing'); a.onended = () => b.classList.remove('playing'); };
+  b.onclick = play; document.body.appendChild(b);
+  if (!mine) { snd('ping'); buzz([15, 40, 15]); setTimeout(play, 250); }
+  setTimeout(() => { if (b.isConnected) b.remove(); }, mine ? 3000 : 15000);
+}
 SCREENS.online = () => {
   if (!G || G.mode !== 'online') { setTimeout(() => go('home')); return ''; }
-  const host = G.net.role === 'host';
-  const st = NET.open ? T('connected') : NET.lastErr === 'nf' ? T('roomNotFound') : NET.lastErr === 'net' ? T('netFail') : !NET.peer ? T('connecting') : host ? T('waitFriend') : T('connecting');
+  const host = G.net.me === 0;
+  const ls = LINK ? LINK.status : 'off';
+  const st = NET.open ? T('connected') : ls === 'notfound' ? T('roomNotFound') : ls === 'error' ? T('netFail') : ls === 'full' ? T('roomFull') : ls === 'waiting' ? T('waitFriend') : T('connecting');
   return barHTML(T('mOnline')) +
     '<div class="card" style="text-align:center">' + (host ? '<p class="muted" style="margin:0">' + T('roomCode') + '</p><div class="code">' + esc(G.net.code) + '</div>' +
       '<div class="acts"><button class="btn pri" id="oWa">💬 ' + T('sendWa') + '</button><button class="btn ghost" id="oSh">📤 ' + T('shareInvite') + '</button></div>'
@@ -2130,6 +2388,7 @@ function onboarding() {
 function boot() {
   if (G && (!G.mode || (G.mode !== 'online' && (!G.pcs || !VARIANTS[G.size])))) { if (G.pcs && VARIANTS[G.size]) G.mode = 'cpu'; else { G = null; S.del('game'); } }
   if (G && G.phase === 'over' && G.mode !== 'online') { G = null; S.del('game'); }
+  if (G && G.mode === 'online' && (!G.net || !G.net.sess)) { G = null; S.del('game'); }
   applyLook();
   const q = new URLSearchParams(location.search), jc = q.get('join');
   if (jc && /^[A-Za-z0-9]{5}$/.test(jc)) {
@@ -2139,7 +2398,7 @@ function boot() {
   } else render();
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
   if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
-  window.__fn = { get G() { return G; }, set G(v) { G = v; }, go, aiChoose, allMoves, applyMove, ST, NET, VW, canAct };
+  window.__fn = { get G() { return G; }, set G(v) { G = v; }, go, aiChoose, allMoves, applyMove, ST, NET, VW, canAct, get LINK() { return LINK; } };
 }
 boot();
 </script></body></html>
