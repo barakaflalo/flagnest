@@ -1,7 +1,7 @@
 /* FlagNest service worker — AppNest rules:
    per-file caching (no atomic addAll), navigation = network-first with timeout -> cache -> friendly offline page,
    redirect-clean responses (Cloudflare 308 on .html), cross-origin = pass-through, skipWaiting on install. */
-const VERSION = 'flagnest-v2';
+const VERSION = 'flagnest-v3';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './privacy_policy.html'];
 
 async function clean(res) {                       // never serve a "redirected" response for a navigation

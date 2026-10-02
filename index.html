@@ -458,22 +458,31 @@ function belief(g, viewer, diff) {          // probability over ranks for each u
   const S = U.filter(p => !p.mv);
   const fbBoost = S.length ? Math.max(1, U.length / S.length) : 1;
   const backRow = foe === 0 ? g.n - 1 : 0;
-  const B = {};
-  for (const p of U) {
-    const a = Array(12).fill(0); let tot = 0;
+  // raw weights per piece, then balance them so every rank count adds up across the whole board (Sinkhorn)
+  const W = U.map(p => {
+    const a = Array(12).fill(0);
     for (const r of RANK_ORDER) {
       if (cnt[r] <= 0) continue;
       if (p.mv && !movable(r)) continue;
-      let w = cnt[r];
-      if (!p.mv && !movable(r)) { w *= fbBoost; if (r === FLAG && rowOf(g, p.pos) === backRow) w *= 2.5; }
+      let w = 1;
+      if (!p.mv && !movable(r)) {
+        const depth = foe === 0 ? g.n - 1 - rowOf(g, p.pos) : rowOf(g, p.pos);        // 0 = their back row
+        if (r === FLAG) w *= [6, 1.4, .25, .08][Math.min(depth, 3)];                   // people hide the flag at the back
+        if (r === BOMB) w *= [1.3, 1.2, .9, .55][Math.min(depth, 3)];
+      }
       const smart = diff === 'hard' || diff === 'expert';
-      if (smart && r === FLAG && !p.mv && g.flagPrior && g.flagPrior[p.pos]) w *= g.flagPrior[p.pos];      // remembers where you like to hide it
-      if (smart && g.aggr[p.id] != null && r > g.aggr[p.id] && movable(r)) w *= diff === 'expert' ? 2.6 : 2.2;  // walked up to a known piece — probably stronger
-      a[r] = w; tot += w;
+      if (smart && r === FLAG && !p.mv && g.flagPrior && g.flagPrior[p.pos]) w *= g.flagPrior[p.pos];
+      if (smart && g.aggr[p.id] != null && r > g.aggr[p.id] && movable(r)) w *= diff === 'expert' ? 2.6 : 2.2;
+      a[r] = w;
     }
-    if (tot > 0) for (let r = 0; r < 12; r++) a[r] /= tot;
-    B[p.id] = a;
+    return a;
+  });
+  for (let it = 0; it < 6; it++) {
+    for (const r of RANK_ORDER) { if (cnt[r] <= 0) continue; let col = 0; for (const a of W) col += a[r]; if (col > 0) for (const a of W) a[r] *= cnt[r] / col; }
+    for (const a of W) { let row = 0; for (let r = 0; r < 12; r++) row += a[r]; if (row > 0) for (let r = 0; r < 12; r++) a[r] /= row; }
   }
+  const B = {};
+  U.forEach((p, k) => B[p.id] = W[k]);
   return B;
 }
 function distOf(ctx, p) { if (p.rev) { const a = Array(12).fill(0); a[p.r] = 1; return a; } return ctx.B[p.id] || Array(12).fill(1 / 12); }
@@ -488,7 +497,12 @@ function risk(ctx, p, sq, revealed, opts) {        // expected loss if an adjace
     for (let k = 0; k < 12; k++) { if (!d[k] || !movable(k)) continue; mob += d[k]; const f = fight(k, p.r); if (f === 'A') win += d[k]; else if (f === 'T') tie += d[k]; }
     if (mob <= 0) continue;
     const pw = win / mob, pt = tie / mob;
-    let will = revealed ? (pw > .5 ? .95 : .25) : .45;
+    let will;
+    if (ctx.smart) {                       // a person attacks a known piece exactly when they expect to win
+      if (revealed) will = 1;
+      else if (e.rev && e.r >= 7) will = p.mv ? .85 : .4;       // a known big piece roams and eats unknown pieces (unmoved ones may be bombs)
+      else will = .45;
+    } else will = revealed ? (pw > .5 ? .95 : .25) : .45;
     if (ctx.diff === 'easy' && !revealed) will *= .5;
     const loss = mob * will * (pw * VAL[p.r] + pt * VAL[p.r] * .5);
     if (loss > worst) worst = loss;
@@ -506,6 +520,7 @@ function distField(ctx, p) {                // BFS distance from squares worth g
     if (p.r === MINER && (d[BOMB] > .25 || d[FLAG] > .08)) good = true;
     if ((p.r === SCOUT || p.r === 4) && !e.mv && !e.rev) good = true;               // cheap pieces probe the unknown
     if (ctx.smart && !e.mv && !e.rev && p.r >= 2 && p.r <= 7 && d[FLAG] >= .1) good = true;       // go look for the flag
+    if (ctx.stall && !e.rev && p.r >= 2 && p.r <= 7 && (p.r === MINER || e.mv || d[BOMB] < .3)) good = true;   // things are stuck: go find out
     if (p.r === SPY) good = e.rev && e.r === MARSHAL;
     if (good) { D[e.pos] = 0; Q.push(e.pos); }
   }
@@ -528,23 +543,28 @@ function scoreMove(ctx, m) {
     const e = g.pcs[tid], d = distOf(ctx, e); let ev = 0, pw = 0;
     for (let k = 0; k < 12; k++) {
       if (!d[k]) continue; const f = fight(p.r, k);
-      if (f === 'A') { ev += d[k] * (k === FLAG ? 5000 : VAL[k]); pw += d[k]; }
+      if (f === 'A') { ev += d[k] * (k === FLAG ? (p.r <= 4 || !ctx.probes ? 5000 : 150) : VAL[k]); pw += d[k]; }
       else if (f === 'D') ev -= d[k] * (VAL[p.r] + (k === BOMB ? -4 : 0));
       else ev += d[k] * (VAL[k] - VAL[p.r]);
     }
     s += ev;
     if (!e.rev && (p.r === SCOUT || p.r === 4) ) s += 3;                         // information is worth something
     if (!p.rev && p.r >= 8) s -= p.r * .9;                                        // revealing a big piece costs
+    if (!e.rev && !e.mv && p.r !== MINER && p.r !== SCOUT) s -= d[BOMB] * VAL[p.r] * (p.r >= 5 ? 1.2 : .6) + (p.r >= 5 && ctx.probes ? 20 : 0);   // leave unmoved pieces to miners and scouts
     if (ctx.diff !== 'easy') s -= pw * risk(ctx, p, m.to, true, { removed: tid }) * .8;
     if (ctx.flag >= 0 && Math.abs(rowOf(g, e.pos) - rowOf(g, ctx.flag)) + Math.abs(colOf(g, e.pos) - colOf(g, ctx.flag)) <= 2) s += 14;
   } else {
     const before = risk(ctx, p, p.pos, p.rev), after = risk(ctx, p, m.to, p.rev || m.long);
     s += (before - after) * (ctx.diff === 'easy' ? .5 : 1);
     const D = distField(ctx, p), a = D[p.pos], b = D[m.to];
-    if (a < 1e9 && b < 1e9) s += (a - b) * PROG[p.r] * 2.2 * (ctx.smart && g.ply > 220 ? 1.6 : 1);
+    if (a < 1e9 && b < 1e9) s += (a - b) * PROG[p.r] * 2.2 * (ctx.stall ? 3 : ctx.smart && g.ply > 220 ? 1.6 : 1);
     else if (b < 1e9) s += PROG[p.r];
     if (m.long && !p.rev) s -= 2.5;
     if (prevPosOf(g, p.id) === m.to) s -= 3.5;
+    if (ctx.smart) {                                                              // circling the same few squares gets us nowhere
+      let seen = 0, k = 0; for (let h = g.hist.length - 1; h >= 0 && k < 24; h--, k++) if (g.hist[h].id === p.id && g.hist[h].f === m.to) seen++;
+      s -= seen * (ctx.stall ? 9 : 4);
+    }
     if (ctx.diff === 'expert' && CFG.bluff && !p.rev && p.r <= 4 && ctx.bluffy) {            // bluff: a weak unknown piece "hunts" a known mid piece
       const n = g.n, r0 = rowOf(g, m.to), c0 = colOf(g, m.to);
       for (const [dr, dc] of DIRS) { const r = r0 + dr, c = c0 + dc; if (r < 0 || c < 0 || r >= n || c >= n) continue;
@@ -601,7 +621,10 @@ function aiChoose(g, owner) {
   if (diff === 'easy' && Math.random() < .28) return moves[Math.floor(Math.random() * moves.length)];
   let flag = -1; for (const id in g.pcs) { const p = g.pcs[id]; if (p.o === owner && p.r === FLAG && !p.dead) flag = p.pos; }
   if (g.bluffy == null) g.bluffy = Math.random() < .6;
-  const ctx = { g, diff, flag, smart: diff === 'hard' || diff === 'expert', bluffy: g.bluffy, B: belief(g, owner, diff), df: {} };
+  let probes = 0; for (const id in g.pcs) { const p = g.pcs[id]; if (p.o === owner && !p.dead && (p.r === MINER || p.r === SCOUT || p.r === 4)) probes++; }
+  let lastB = 0; if (g.log.length) lastB = g.log[g.log.length - 1].ply;
+  const stall = (diff === 'hard' || diff === 'expert') && g.ply - lastB > 40;
+  const ctx = { g, diff, flag, probes, stall, smart: diff === 'hard' || diff === 'expert', bluffy: g.bluffy, B: belief(g, owner, diff), df: {} };
   const noise = diff === 'easy' ? 22 : diff === 'medium' ? 5 : diff === 'hard' ? 1.2 : CFG.noiseX;
   const scored = moves.map(m => ({ m, s: scoreMove(ctx, m) + (Math.random() - .5) * 2 * noise }));
   scored.sort((a, b) => b.s - a.s);
@@ -943,7 +966,7 @@ ar: {
 }
 };
 /* ===================== FlagNest app ===================== */
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.2.0';
 const P = 'flagnest_';
 const STORE_URL = 'https://appnest-store.pages.dev';
 const FEEDBACK = 'mailto:appnest55@gmail.com?subject=FlagNest%20' + APP_VERSION;
@@ -1585,7 +1608,11 @@ async function doMove(m) {
   UI.busy = false; afterTurn();
 }
 function afterTurn() {
-  if (G.phase === 'over') return finish();
+  if (G.phase === 'over') {
+    // my phone found I can't move — the other phone can't know that (it doesn't know my ranks), so tell it
+    if (G.mode === 'online' && (G.reason === 'nomoves' || G.reason === 'stuck') && G.winner !== G.net.me && !G.toldStuck) { G.toldStuck = true; netSend({ type: 'nomoves', draw: G.reason === 'stuck' }); }
+    return finish();
+  }
   if (G.mode === 'cpu' && G.turn === 1) return aiTurn();
   if (G.mode === 'local') {
     setTimeout(async () => { await handoff(G.names[G.turn]); G.view = G.turn; saveGame(); refreshGame(); }, 650 * SPEED());
@@ -1913,7 +1940,7 @@ async function handleNet(m) {
   }
   if (m.type === 'resign' || m.type === 'nomoves') {
     if (G.phase !== 'play') return;
-    G.phase = 'over'; G.winner = me; G.reason = m.type === 'resign' ? 'resign' : 'nomoves'; G.t1 = Date.now();
+    G.phase = 'over'; G.winner = m.draw ? -1 : me; G.reason = m.type === 'resign' ? 'resign' : m.draw ? 'stuck' : 'nomoves'; G.t1 = Date.now();
     if (m.type === 'resign') toast(T('oppResigned', { n: nameOf(opp) }), 3000);
     finish(); return;
   }
@@ -1931,7 +1958,7 @@ async function handleNet(m) {
 }
 function checkMyTurn() {
   if (G.phase !== 'play' || G.turn !== G.net.me) { refreshGame(); return; }
-  if (!allMoves(G, G.net.me).length) { netSend({ type: 'nomoves' }); G.phase = 'over'; G.winner = 1 - G.net.me; G.reason = 'nomoves'; finish(); return; }
+  if (!allMoves(G, G.net.me).length) { G.toldStuck = true; netSend({ type: 'nomoves' }); G.phase = 'over'; G.winner = 1 - G.net.me; G.reason = 'nomoves'; finish(); return; }
   refreshGame();
 }
 function requestRematch() { G.net.rm[G.net.me] = true; netSend({ type: 'rematch' }); if (G.net.rm[1 - G.net.me]) toSetupOnline(); else toast(T('rematchWait'), 3000); }
