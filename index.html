@@ -144,12 +144,14 @@ input[type=text],select{width:100%;min-height:46px;border-radius:12px;border:1.5
 .tray button .tb{width:34px;height:34px}
 .tray button .c{font:800 12px/1.3 var(--fu)}
 .tray button:disabled{opacity:.25}
-.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0 8px}
+.tools{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:6px 0 8px}
+.tools .btn{flex-direction:column;gap:0;padding:4px 2px;font-size:12px;min-height:50px;line-height:1.15}
+.tools .btn span{font-size:17px}
 .status{text-align:center;min-height:26px;font-weight:700;color:var(--gt);margin-top:4px}
 .turn{flex:1;text-align:center;font:800 15px var(--fu);border-radius:12px;padding:8px 6px;border:1.5px solid var(--line)}
-.turn.me{border-color:var(--redB);color:var(--txt);background:color-mix(in srgb,var(--redA) 35%,transparent)}
-.turn.cpu{border-color:var(--bluB);background:color-mix(in srgb,var(--bluA) 40%,transparent)}
-.turn.cpu::after{content:'';display:inline-block;width:12px;height:12px;margin-inline-start:8px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:-1px}
+.turn.red{border-color:var(--redB);color:var(--txt);background:color-mix(in srgb,var(--redA) 35%,transparent)}
+.turn.blue{border-color:var(--bluB);background:color-mix(in srgb,var(--bluA) 40%,transparent)}
+.turn.wait::after{content:'';display:inline-block;width:12px;height:12px;margin-inline-start:8px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:-1px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ---------- overlays ---------- */
@@ -202,6 +204,55 @@ input[type=text],select{width:100%;min-height:46px;border-radius:12px;border:1.5
 .obStep{font-size:13px;color:var(--mut);text-align:center}
 .obArt{display:flex;justify-content:center;gap:10px;margin:8px 0 4px;direction:ltr}
 .obArt .tb{width:54px;height:54px}
+
+/* ---------- v1.1 ---------- */
+[data-army=animals]{--redA:#9a4a12;--redB:#c8742c;--bluA:#1f5a4e;--bluB:#2f8371}
+[data-army=space]{--redA:#4f1f86;--redB:#7a3fc0;--bluA:#0d5468;--bluB:#16839c}
+.tok .emo{font:400 1.3em/1 'Noto Color Emoji','Apple Color Emoji','Segoe UI Emoji',sans-serif;position:relative;top:.02em;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.tok .rk{position:absolute;top:-8%;right:-8%;min-width:40%;height:40%;padding:0 3%;border-radius:999px;background:var(--rim);color:#1b1306;font:900 .48em/1 var(--fu);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px #0009}
+.board .tok,.tray button{touch-action:none}
+.dragGhost{position:fixed;left:0;top:0;z-index:80;pointer-events:none;container-type:inline-size;--n:1;display:flex;filter:drop-shadow(0 10px 14px rgba(0,0,0,.55))}
+.dragGhost .tok{width:100%;height:100%;transform:scale(1.05)}
+.dragsrc{opacity:.3}
+.cell.hov{box-shadow:inset 0 0 0 3px var(--gold2)!important;background:color-mix(in srgb,var(--gold) 34%,transparent)}
+.cell.hintT::after{background:var(--gold2);width:40%;height:40%;animation:pulse .8s infinite}
+.poof{position:absolute;inset:-10%;border-radius:50%;border:3px solid rgba(255,240,200,.9);animation:poof .7s ease-out forwards;pointer-events:none;z-index:4}
+.poof.boom{border-color:#ffb347;box-shadow:0 0 22px #ff7a1a,inset 0 0 18px #ffb347}
+@keyframes poof{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}
+.board.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translate(-5px,2px)}40%{transform:translate(5px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(3px,0)}}
+.hand{position:fixed;inset:0;z-index:75;background:var(--bg);display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;animation:fadeIn .2s}
+.hand>div{max-width:380px;width:100%}
+.handIc{font-size:60px;margin-bottom:6px}
+.hand h2{font-size:26px}
+.hand .btn{margin-top:18px}
+.modes button{font-size:13px;line-height:1.3;min-height:58px}
+.names{display:flex;align-items:center;gap:8px;margin:6px 0}
+.dot{width:18px;height:18px;border-radius:50%;flex:none;box-shadow:0 0 0 2px var(--rim)}
+.dot.o0{background:var(--redA)}.dot.o1{background:var(--bluA)}
+.net{display:inline-block;width:12px;height:12px;border-radius:50%;flex:none;background:var(--mut)}
+.net.on{background:var(--good);box-shadow:0 0 8px var(--good)}.net.mid{background:#e6b93a;animation:pulse 1s infinite}.net.off{background:var(--bad)}
+.code{font:900 44px/1.1 var(--fd);letter-spacing:8px;color:var(--gt);direction:ltr;margin:6px 0 12px}
+.netst{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 0;font-weight:700}
+.emos{display:flex;justify-content:center;gap:6px;margin-top:6px}
+.emos button{border:1px solid var(--line);background:var(--s1);border-radius:12px;width:44px;height:40px;font-size:20px}
+.floatE{position:fixed;left:50%;top:22%;z-index:65;font-size:64px;pointer-events:none;animation:floatE 2.2s ease-out forwards;transform:translateX(-50%)}
+.floatE.mine{top:auto;bottom:18%}
+@keyframes floatE{0%{opacity:0;transform:translate(-50%,20px) scale(.5)}15%{opacity:1;transform:translate(-50%,0) scale(1.15)}80%{opacity:1}to{opacity:0;transform:translate(-50%,-40px) scale(1)}}
+.checks{display:grid;gap:8px}
+.chk{display:flex;gap:10px;align-items:flex-start;background:var(--s2);border-radius:12px;padding:10px 12px;border-inline-start:4px solid var(--line)}
+.chk b{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:14px;color:#111}
+.chk.ok{border-color:var(--good)}.chk.ok b{background:var(--good)}
+.chk.warn{border-color:#e6b93a}.chk.warn b{background:#e6b93a}
+.chk.bad{border-color:var(--bad)}.chk.bad b{background:var(--bad);color:#fff}
+.armies{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.armies button{border:1.5px solid var(--line);background:var(--s2);border-radius:12px;padding:8px 2px;font-size:12px;font-weight:700}
+.armies button.on{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 16%,var(--s1))}
+.armyP{display:flex;justify-content:center;gap:2px;margin-bottom:4px;direction:ltr}
+.armyP .tb{width:30px;height:30px}
+.rpc{display:flex;justify-content:center;gap:8px;margin-top:6px;direction:ltr}
+.rpc .big{width:58px;background:var(--gold);color:#111;border-color:var(--gold)}
+input[type=range]{width:100%;accent-color:var(--gold);margin:6px 0}
 @media (max-height:700px){:root{--boardReserve:236px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition:none!important}}
 </style>
@@ -230,6 +281,7 @@ const VARIANTS = {
 const VAL = {0:1000, 11:12, 1:30, 2:8, 3:19, 4:12, 5:20, 6:30, 7:42, 8:58, 9:85, 10:130};
 const PROG = {1:.15, 2:.45, 3:.55, 4:.5, 5:.55, 6:.6, 7:.65, 8:.75, 9:.85, 10:1};
 const DIRS = [[-1,0],[1,0],[0,-1],[0,1]];
+const CFG = { tw: .7, iw: .25, top: 12, bluff: false, noiseX: .5, mc: true, K: 8, cand: 10, bw: .5, deep: true, lam: .6 };
 
 function fight(a, d) {               // 'A' attacker wins, 'D' defender wins, 'T' both die
   if (d === FLAG) return 'A';
@@ -362,6 +414,7 @@ function applyMove(g, m) {
   const p = g.pcs[m.id], from = p.pos, to = m.to, tid = g.board[to];
   p.mv = true; if (m.long) p.rev = true;           // a long move gives the scout away
   g.hist.push({ o: p.o, id: p.id, f: from, t: to }); if (g.hist.length > 80) g.hist.shift();
+  if (g.rec) g.rec.push([from, to]);
   // remember aggressive approaches (for the AI's bluff reading)
   if (p.o === 0) {
     delete g.aggr[p.id];
@@ -413,7 +466,9 @@ function belief(g, viewer, diff) {          // probability over ranks for each u
       if (p.mv && !movable(r)) continue;
       let w = cnt[r];
       if (!p.mv && !movable(r)) { w *= fbBoost; if (r === FLAG && rowOf(g, p.pos) === backRow) w *= 2.5; }
-      if (diff === 'hard' && g.aggr[p.id] != null && r > g.aggr[p.id] && movable(r)) w *= 2.2;   // it walked up to a known piece — probably stronger
+      const smart = diff === 'hard' || diff === 'expert';
+      if (smart && r === FLAG && !p.mv && g.flagPrior && g.flagPrior[p.pos]) w *= g.flagPrior[p.pos];      // remembers where you like to hide it
+      if (smart && g.aggr[p.id] != null && r > g.aggr[p.id] && movable(r)) w *= diff === 'expert' ? 2.6 : 2.2;  // walked up to a known piece — probably stronger
       a[r] = w; tot += w;
     }
     if (tot > 0) for (let r = 0; r < 12; r++) a[r] /= tot;
@@ -450,6 +505,7 @@ function distField(ctx, p) {                // BFS distance from squares worth g
     let good = win >= .62;
     if (p.r === MINER && (d[BOMB] > .25 || d[FLAG] > .08)) good = true;
     if ((p.r === SCOUT || p.r === 4) && !e.mv && !e.rev) good = true;               // cheap pieces probe the unknown
+    if (ctx.smart && !e.mv && !e.rev && p.r >= 2 && p.r <= 7 && d[FLAG] >= .1) good = true;       // go look for the flag
     if (p.r === SPY) good = e.rev && e.r === MARSHAL;
     if (good) { D[e.pos] = 0; Q.push(e.pos); }
   }
@@ -485,11 +541,16 @@ function scoreMove(ctx, m) {
     const before = risk(ctx, p, p.pos, p.rev), after = risk(ctx, p, m.to, p.rev || m.long);
     s += (before - after) * (ctx.diff === 'easy' ? .5 : 1);
     const D = distField(ctx, p), a = D[p.pos], b = D[m.to];
-    if (a < 1e9 && b < 1e9) s += (a - b) * PROG[p.r] * 2.2;
+    if (a < 1e9 && b < 1e9) s += (a - b) * PROG[p.r] * 2.2 * (ctx.smart && g.ply > 220 ? 1.6 : 1);
     else if (b < 1e9) s += PROG[p.r];
     if (m.long && !p.rev) s -= 2.5;
     if (prevPosOf(g, p.id) === m.to) s -= 3.5;
-    if (ctx.diff === 'hard') {                                                    // initiative: threaten something we beat
+    if (ctx.diff === 'expert' && CFG.bluff && !p.rev && p.r <= 4 && ctx.bluffy) {            // bluff: a weak unknown piece "hunts" a known mid piece
+      const n = g.n, r0 = rowOf(g, m.to), c0 = colOf(g, m.to);
+      for (const [dr, dc] of DIRS) { const r = r0 + dr, c = c0 + dc; if (r < 0 || c < 0 || r >= n || c >= n) continue;
+        const q = g.board[r * n + c]; if (q != null && g.pcs[q].o !== p.o && g.pcs[q].rev && g.pcs[q].r >= 4 && g.pcs[q].r <= 8 && g.pcs[q].r > p.r) s += 4; }
+    }
+    if (ctx.smart) {                                                              // initiative: threaten something we beat
       const n = g.n, r0 = rowOf(g, m.to), c0 = colOf(g, m.to);
       for (const [dr, dc] of DIRS) {
         const r = r0 + dr, c = c0 + dc; if (r < 0 || c < 0 || r >= n || c >= n) continue;
@@ -501,33 +562,169 @@ function scoreMove(ctx, m) {
   }
   return s;
 }
+function threatOn(ctx, owner) {            // the worst single hit the other side can land next turn
+  const g = ctx.g; let worst = 0;
+  for (const id in g.pcs) { const q = g.pcs[id]; if (q.o !== owner || q.dead || q.r === BOMB) continue; const r = risk(ctx, q, q.pos, q.rev); if (r > worst) worst = r; }
+  return worst;
+}
+function initiative(ctx, owner) {           // the best hit we threaten next turn
+  const g = ctx.g, n = g.n; let best = 0;
+  for (const id in g.pcs) {
+    const q = g.pcs[id]; if (q.o !== owner || q.dead || !movable(q.r)) continue;
+    for (const [dr, dc] of DIRS) {
+      const r = rowOf(g, q.pos) + dr, c = colOf(g, q.pos) + dc; if (r < 0 || c < 0 || r >= n || c >= n) continue;
+      const t = g.board[r * n + c]; if (t == null || g.pcs[t].o === owner) continue;
+      const d = distOf(ctx, g.pcs[t]); let ev = 0;
+      for (let k = 0; k < 12; k++) { if (!d[k]) continue; const f = fight(q.r, k); ev += d[k] * (f === 'A' ? VAL[k] : f === 'D' ? -VAL[q.r] : VAL[k] - VAL[q.r]); }
+      if (ev > best) best = ev;
+    }
+  }
+  return best;
+}
+function simulate(g, m, ctx) {               // light copy + the most likely outcome of the move
+  const g2 = { n: g.n, lake: g.lake, board: g.board.slice(), pcs: {}, hist: g.hist, ply: g.ply, aggr: g.aggr, size: g.size };
+  for (const id in g.pcs) g2.pcs[id] = Object.assign({}, g.pcs[id]);
+  const p = g2.pcs[m.id], tid = g2.board[m.to];
+  g2.board[m.from] = null;
+  if (tid == null) { g2.board[m.to] = p.id; p.pos = m.to; if (m.long) p.rev = true; }
+  else {
+    const d = distOf(ctx, g.pcs[tid]); let pw = 0; for (let k = 0; k < 12; k++) if (d[k] && fight(p.r, k) === 'A') pw += d[k];
+    if (pw >= .5) { g2.pcs[tid].dead = true; g2.board[m.to] = p.id; p.pos = m.to; p.rev = true; }
+    else { p.dead = true; p.pos = -1; }
+  }
+  return g2;
+}
 function aiChoose(g, owner) {
   owner = owner == null ? 1 : owner;
   const moves = allMoves(g, owner); if (!moves.length) return null;
   const diff = g.diff;
   if (diff === 'easy' && Math.random() < .28) return moves[Math.floor(Math.random() * moves.length)];
   let flag = -1; for (const id in g.pcs) { const p = g.pcs[id]; if (p.o === owner && p.r === FLAG && !p.dead) flag = p.pos; }
-  const ctx = { g, diff, flag, B: belief(g, owner, diff), df: {} };
-  const noise = diff === 'easy' ? 22 : diff === 'medium' ? 5 : 1.2;
-  let best = null, bs = -1e18;
-  for (const m of moves) { const s = scoreMove(ctx, m) + (Math.random() - .5) * 2 * noise; if (s > bs) { bs = s; best = m; } }
+  if (g.bluffy == null) g.bluffy = Math.random() < .6;
+  const ctx = { g, diff, flag, smart: diff === 'hard' || diff === 'expert', bluffy: g.bluffy, B: belief(g, owner, diff), df: {} };
+  const noise = diff === 'easy' ? 22 : diff === 'medium' ? 5 : diff === 'hard' ? 1.2 : CFG.noiseX;
+  const scored = moves.map(m => ({ m, s: scoreMove(ctx, m) + (Math.random() - .5) * 2 * noise }));
+  scored.sort((a, b) => b.s - a.s);
+  if (diff !== 'expert') return scored[0].m;
+  if (CFG.mc) return mcChoose(g, owner, ctx, scored);
+  // expert: look one reply ahead for the best candidates
+  const t0 = threatOn(ctx, owner), i0 = initiative(ctx, owner);
+  let best = scored[0].m, bs = -1e18;
+  for (const c of scored.slice(0, CFG.top)) {
+    const g2 = simulate(g, c.m, ctx), ctx2 = { g: g2, diff, flag, smart: true, B: ctx.B, df: {} };
+    const s = c.s - CFG.tw * (threatOn(ctx2, owner) - t0) + CFG.iw * (initiative(ctx2, owner) - i0);
+    if (s > bs) { bs = s; best = c.m; }
+  }
   return best;
 }
+/* expert: sample worlds consistent with what we know, play our move + their reply, compare material */
+function sampleWorld(g, owner, B) {
+  const foe = 1 - owner, set = VARIANTS[g.size].set, cnt = {};
+  for (const k of RANK_ORDER) cnt[k] = set[k] || 0;
+  const U = [];
+  for (const id in g.pcs) { const p = g.pcs[id]; if (p.o !== foe) continue; if (p.dead || p.rev) cnt[p.r]--; else U.push(p); }
+  shuffle(U);
+  U.sort((a, b) => (a.mv ? 0 : 1) - (b.mv ? 0 : 1));      // moved pieces first: they cannot hold flag/bombs
+  const out = {};
+  for (const p of U) {
+    const d = B[p.id] || []; let tot = 0; const w = [];
+    for (const k of RANK_ORDER) { const x = cnt[k] > 0 && (!p.mv || movable(k)) ? (d[k] || 0) + 1e-6 : 0; w.push([k, x]); tot += x; }
+    if (tot <= 0) { for (const k of RANK_ORDER) if (cnt[k] > 0) { out[p.id] = k; cnt[k]--; break; } continue; }
+    let r = Math.random() * tot, pick = w[w.length - 1][0];
+    for (const [k, x] of w) { r -= x; if (r <= 0 && x > 0) { pick = k; break; } }
+    out[p.id] = pick; cnt[pick]--;
+  }
+  return out;
+}
+function cloneGame(g) {
+  const g2 = Object.assign({}, g, { board: g.board.slice(), pcs: {}, hist: g.hist.slice(-8), aggr: Object.assign({}, g.aggr), rec: null, log: [] });
+  for (const id in g.pcs) g2.pcs[id] = Object.assign({}, g.pcs[id]);
+  return g2;
+}
+function material(g, owner) {
+  if (g.winner === owner) return 5000; if (g.winner === 1 - owner) return -5000;
+  let s = 0; for (const id in g.pcs) { const p = g.pcs[id]; if (p.dead) continue; const v = p.r === FLAG ? 0 : VAL[p.r]; s += p.o === owner ? v : -v; }
+  return s;
+}
+function mcChoose(g, owner, ctx, scored) {
+  const cands = scored.slice(0, CFG.cand), K = CFG.K, foe = 1 - owner;
+  const worlds = []; for (let k = 0; k < K; k++) worlds.push(sampleWorld(g, owner, ctx.B));
+  let best = cands[0].m, bs = -1e18;
+  for (const c of cands) {
+    let tot = 0;
+    for (const w of worlds) {
+      const g2 = cloneGame(g);
+      for (const id in w) g2.pcs[id].r = w[id];
+      applyMove(g2, Object.assign({}, c.m));
+      if (g2.phase === 'over') continue;
+      const base = material(g2, owner);                 // our move itself is already valued exactly by scoreMove
+      g2.diff = 'hard'; const rep = aiChoose(g2, foe); if (rep) applyMove(g2, rep);
+      if (CFG.deep && g2.phase !== 'over') { const fol = aiChoose(g2, owner); if (fol) applyMove(g2, fol); }
+      tot += material(g2, owner) - base;
+    }
+    const s = c.s + CFG.lam * tot / K;
+    if (s > bs) { bs = s; best = c.m; }
+  }
+  return best;
+}
+// rebuild a finished game for the replay viewer
+function replayGame(rp, upto) {
+  const g = makeGame(rp.size, 'medium');
+  applySetup(g, 0, rp.init[0]); applySetup(g, 1, rp.init[1]); g.phase = 'play';
+  let b = null;
+  for (let k = 0; k < Math.min(upto, rp.rec.length); k++) {
+    const [f, t] = rp.rec[k], id = g.board[f]; if (id == null) break;
+    const dist = Math.abs(rowOf(g, f) - rowOf(g, t)) + Math.abs(colOf(g, f) - colOf(g, t));
+    b = applyMove(g, { id, from: f, to: t, long: dist > 1 });
+  }
+  return { g, b };
+}
 
-if (typeof module !== 'undefined') module.exports = { VARIANTS, RANK_ORDER, makeGame, genSetup, applySetup, readSetup, allMoves, applyMove, aiChoose, fight, trayCounts, zoneCells, inZone, setTotal };
 /* ===================== translations ===================== */
 const LANGS = {
 he: {
   dir:'rtl', langName:'עברית',
+  expert:'מומחה', diffExpert:'בודק כמה עתידים אפשריים לפני כל מהלך, צופה את התגובה שלך וזוכר איפה אתה מחביא את הדגל',
+  diffHard:'קורא בלופים, זוכר איפה אתה מחביא את הדגל ויוצא לצוד אותו',
+  mCpu:'מול המחשב', mLocal:'שניים בטלפון אחד', mOnline:'אונליין מול חבר',
+  onlineIntro:'אתה יוצר חדר ושולח לחבר קוד או קישור. כל אחד משחק מהטלפון שלו.',
+  names:'שמות השחקנים', p1:'אדום', p2:'כחול',
+  passTo:'העבר את הטלפון ל{n}', passSub:'רק {n} מסתכל עכשיו על המסך', imReady:'אני {n} — הצג את הלוח',
+  setupOf:'הסידור של {n}', doneSetupPass:'סיימתי — העבר ל{n}', turnOf:'התור של {n}', winOf:'{n} ניצח!',
+  rflagOf:'{n} כבש את הדגל', rresignOf:'{n} נכנע', rnomovesOf:'ל{n} לא נשארו מהלכים',
+  hint:'רמז', hintMsg:'רמז: הזז את ה{p} למשבצת המסומנת', hintsUsed:'רמזים', noHint:'אין מהלך מומלץ כרגע',
+  check:'בדיקה', checkT:'בדיקת הסידור', checkScore:'{a} מתוך {b} בדיקות עברו',
+  c_flagBack:'הדגל בשורה האחורית', c_flagMid:'הדגל לא בשורה האחורית — קל יותר להגיע אליו', c_flagFront:'הדגל בחזית! זה מסוכן מאוד',
+  c_flagSafe:'הדגל מוגן מכל הצדדים', c_flagOpen1:'לדגל יש צד אחד פתוח', c_flagOpenN:'לדגל יש {n} צדדים פתוחים',
+  c_bombsObv:'כל הפצצות צמודות לדגל — זה מסגיר איפה הוא', c_bombsMix:'הפצצות מפוזרות — קשה לנחש איפה הדגל',
+  c_corner:'דגל בפינה עם פצצות הוא הניחוש הראשון של כל יריב',
+  c_frontStrong:'{n} כלים חזקים (8 ומעלה) בשורה הקדמית — הם ייחשפו מהר', c_frontOk:'הכלים החזקים לא חשופים בחזית',
+  c_scouts:'יש סיירים בחזית לגילוי מידע', c_noScouts:'אין סיירים בחזית — יהיה לך פחות מידע על היריב',
+  c_miners:'רוב החבלנים מאחור, שמורים לסוף', c_minersFront:'רוב החבלנים בחזית — תצטרך אותם בסוף המשחק',
+  c_spy:'המרגל קרוב לגנרל', c_spyFar:'המרגל רחוק מהגנרל — יהיה קשה לצוד את המרשל של היריב',
+  c_memory:'המחשב זוכר: ב-{a} מתוך {b} משחקים הדגל שלך היה בדיוק כאן',
+  roomCode:'קוד החדר', createRoom:'צור חדר', joinRoom:'הצטרף לחדר עם קוד', enterCode:'הקלד את 5 התווים שהחבר שלח לך', join:'הצטרף',
+  waitFriend:'ממתין שהחבר יצטרף…', inviteText:'בוא לשחק נגדי בכבוש את הדגל! קוד החדר: {c}', sendWa:'שלח בוואטסאפ', shareInvite:'שתף הזמנה',
+  connecting:'מתחבר…', connected:'מחובר', disconnected:'החיבור נותק — מנסה להתחבר מחדש…',
+  netFail:'לא הצלחתי להתחבר לשירות החיבור. בדוק את האינטרנט ונסה שוב.', roomNotFound:'החדר עוד לא נמצא — ממשיך לנסות…',
+  ready2:'מוכן', waitOppSetup:'ממתין ש{n} יסיים לסדר…', oppReady:'{n} מוכן', oppTurn:'התור של {n}', waitOpp:'ממתין ל{n}…', friend:'החבר',
+  leaveRoom:'צא מהחדר', leaveQ:'לצאת מהחדר? המשחק המקוון יסתיים.', rematch:'משחק חוזר', rematchWait:'ממתין שהחבר יאשר משחק חוזר', rematchAsk:'{n} רוצה משחק חוזר — לחץ "משחק חוזר"',
+  oppResigned:'{n} נכנע', rOppResign:'היריב נכנע', verMismatch:'לחבר יש גרסה אחרת של האפליקציה — כדאי ששניכם תעדכנו',
+  onlineNote:'החיבור ישיר בין הטלפונים. ברשתות סלולריות מסוימות הוא עלול להיכשל — אם זה קורה, נסו שניכם על Wi-Fi.',
+  fairNote:'הדרגות שלך אף פעם לא נשלחות לטלפון של החבר. רק כלי שנכנס לקרב נחשף — בדיוק כמו בלוח אמיתי.',
+  onlineRec:'מול חברים', replay:'ריפליי', replays:'משחקים אחרונים', step:'מהלך {a} מתוך {b}',
+  army:'ערכת צבא', arClassic:'קלאסי', arKnights:'אבירים', arAnimals:'חיות', arSpace:'חלל',
+  setupHint:'גרור כלי מהמגש למשבצת מוארת, או בחר כלי ולחץ על משבצת. אפשר לגרור כלים על הלוח כדי להחליף ביניהם.',
+
   app:'כבוש את הדגל', sub:'FlagNest · משחק אסטרטגיה של דרגות נסתרות',
   tag:'הסתר את הדגל. נחש את הדרגות. כבוש את הדגל של המחשב.',
-  newGame:'משחק חדש מול המחשב', resume:'המשך את המשחק', rules:'חוקים', stats:'סטטיסטיקה', settings:'הגדרות', about:'אודות',
+  newGame:'משחק חדש', newGameCpu:'משחק חדש מול המחשב', resume:'המשך את המשחק', rules:'חוקים', stats:'סטטיסטיקה', settings:'הגדרות', about:'אודות',
   home:'בית', back:'חזרה', ok:'אישור', cancel:'ביטול', close:'סגור', save:'שמור', del:'מחק', edit:'ערוך', next:'הבא', skip:'דלג', done:'סיום',
   boardSize:'גודל לוח', s10:'רגיל 10×10', s7:'מהיר 7×7', s5:'בזק 5×5', pieces:'{n} כלים',
   difficulty:'רמת קושי', easy:'קל', medium:'בינוני', hard:'קשה',
-  diffEasy:'טועה לא מעט ותוקף בלי לחשוב הרבה', diffMedium:'שוקל סיכונים וזוכר כל קרב', diffHard:'קורא בלופים, צד חלשים ושומר על הדגל',
+  diffEasy:'טועה לא מעט ותוקף בלי לחשוב הרבה', diffMedium:'שוקל סיכונים וזוכר כל קרב',
   toSetup:'לסידור הכלים', resumeQ:'יש משחק פתוח. להתחיל חדש במקומו?', startNew:'התחל חדש',
-  setupTitle:'סידור הצבא', setupHint:'בחר כלי מהמגש ולחץ על משבצת מוארת. לחיצה על כלי שהונח ואז על משבצת אחרת מחליפה ביניהם.',
+  setupTitle:'סידור הצבא',
   random:'אקראי', smart:'חכם', clear:'נקה', myBoards:'שמורים', start:'יוצאים לקרב', leftN:'נותרו {n} כלים להנחה', ready:'הצבא מוכן',
   toTray:'לחץ על המגש כדי להחזיר את הכלי',
   yourTurn:'התור שלך', cpuTurn:'המחשב חושב', you:'אתה', cpu:'המחשב', attacker:'תוקף', defender:'מגן',
@@ -573,19 +770,53 @@ he: {
 <h2>כלל שתי המשבצות</h2><p>אסור להזיז את אותו כלי הלוך-חזור בין אותן שתי משבצות יותר משלוש פעמים ברצף. הכלל מונע מרדפים אינסופיים, והוא חל גם על המחשב.</p>
 <h2>סוף המשחק</h2><p>מי שכובש את הדגל — מנצח. מי שאין לו אף מהלך חוקי בתורו — מפסיד. אם לאף צד אין מהלכים — תיקו.</p>
 <h2>סימנים על הלוח</h2><ul><li>לחיצה על כלי של המחשב פותחת סימון ניחוש — למשל "9?" או "פצצה?". הסימון רק בשבילך.</li><li>נקודה קטנה בתחתית כלי של המחשב: הוא כבר זז, אז הוא לא פצצה ולא דגל.</li><li>עין קטנה על כלי שלך: המחשב כבר ראה מה הוא.</li></ul>
+<h2>מצבי משחק</h2><ul><li><b>מול המחשב</b> — ארבע רמות. המומחה בודק כמה עתידים אפשריים לפני כל מהלך. מקשה ומעלה המחשב גם זוכר איפה אתה נוטה להחביא את הדגל.</li><li><b>שניים בטלפון אחד</b> — כל אחד מסדר בסוד, ובין התורות מופיע מסך "העבר את הטלפון" כדי שלא תראו זה את דרגות זה.</li><li><b>אונליין מול חבר</b> — יוצרים חדר ושולחים קוד או קישור. הדרגות שלך לא נשלחות לחבר; רק כלי שנכנס לקרב נחשף.</li></ul>
+<h2>כלי עזר</h2><ul><li>💡 רמז — מסמן מהלך מומלץ (לא זמין באונליין).</li><li>🔍 בדיקה במסך הסידור — מנתחת את הסידור שלך ומצביעה על נקודות תורפה.</li><li>▶ ריפליי — אחרי כל משחק אפשר לצפות בו מההתחלה עם כל הכלים חשופים.</li></ul>
 <h2>טיפים</h2><ul><li>הקף את הדגל בפצצות — אבל אל תשים אותו במקום הכי ברור. פינה עם פצצות היא הדבר הראשון שהמחשב בודק.</li><li>שמור את המרגל ליד הגנרל: כשהמרשל של המחשב בא לצוד אותו, המרגל מחכה.</li><li>שלח סיירים וסמלים לגלות דרגות לפני שאתה מסכן כלים חזקים.</li><li>אל תחשוף את המרשל מוקדם. כל עוד המחשב לא יודע איפה הוא — הוא נזהר מכל הכלים שלך.</li></ul>`
 },
 en: {
   dir:'ltr', langName:'English',
+  expert:'Expert', diffExpert:'Checks several possible futures before each move, predicts your reply and remembers where you hide your flag',
+  diffHard:'Reads bluffs, remembers where you hide your flag and goes hunting for it',
+  mCpu:'vs computer', mLocal:'Two on one phone', mOnline:'Online vs a friend',
+  onlineIntro:'You create a room and send your friend a code or link. Each of you plays on your own phone.',
+  names:'Player names', p1:'Red', p2:'Blue',
+  passTo:'Pass the phone to {n}', passSub:'Only {n} should look at the screen now', imReady:'I’m {n} — show the board',
+  setupOf:'{n}’s setup', doneSetupPass:'Done — pass to {n}', turnOf:'{n}’s turn', winOf:'{n} wins!',
+  rflagOf:'{n} captured the flag', rresignOf:'{n} resigned', rnomovesOf:'{n} has no moves left',
+  hint:'Hint', hintMsg:'Hint: move the {p} to the marked square', hintsUsed:'Hints', noHint:'No suggested move right now',
+  check:'Check', checkT:'Setup check', checkScore:'{a} of {b} checks passed',
+  c_flagBack:'The flag is on the back row', c_flagMid:'The flag is not on the back row — easier to reach', c_flagFront:'The flag is on the front line! Very risky',
+  c_flagSafe:'The flag is protected on every side', c_flagOpen1:'The flag has one open side', c_flagOpenN:'The flag has {n} open sides',
+  c_bombsObv:'All bombs touch the flag — that gives it away', c_bombsMix:'Bombs are spread out — hard to guess the flag',
+  c_corner:'A bombed corner flag is every opponent’s first guess',
+  c_frontStrong:'{n} strong pieces (8+) on the front row — they’ll be revealed fast', c_frontOk:'Strong pieces are not exposed up front',
+  c_scouts:'Scouts up front to gather information', c_noScouts:'No scouts up front — you’ll learn less about the enemy',
+  c_miners:'Most miners are kept back for the endgame', c_minersFront:'Most miners are up front — you’ll need them late',
+  c_spy:'The spy is near the general', c_spyFar:'The spy is far from the general — hunting the enemy marshal gets harder',
+  c_memory:'The computer remembers: in {a} of {b} games your flag was exactly here',
+  roomCode:'Room code', createRoom:'Create room', joinRoom:'Join with a code', enterCode:'Type the 5 characters your friend sent', join:'Join',
+  waitFriend:'Waiting for your friend to join…', inviteText:'Come play me at Capture the Flag! Room code: {c}', sendWa:'Send on WhatsApp', shareInvite:'Share invite',
+  connecting:'Connecting…', connected:'Connected', disconnected:'Connection lost — reconnecting…',
+  netFail:'Couldn’t reach the connection service. Check your internet and try again.', roomNotFound:'Room not found yet — still trying…',
+  ready2:'Ready', waitOppSetup:'Waiting for {n} to finish setting up…', oppReady:'{n} is ready', oppTurn:'{n}’s turn', waitOpp:'Waiting for {n}…', friend:'Friend',
+  leaveRoom:'Leave room', leaveQ:'Leave the room? The online game will end.', rematch:'Rematch', rematchWait:'Waiting for your friend to accept the rematch', rematchAsk:'{n} wants a rematch — tap "Rematch"',
+  oppResigned:'{n} resigned', rOppResign:'Your opponent resigned', verMismatch:'Your friend has a different app version — you should both update',
+  onlineNote:'The connection is direct between the phones. On some mobile networks it may fail — if so, both of you try Wi-Fi.',
+  fairNote:'Your ranks are never sent to your friend’s phone. A piece is revealed only when it fights — just like a real board.',
+  onlineRec:'vs friends', replay:'Replay', replays:'Recent games', step:'Move {a} of {b}',
+  army:'Army set', arClassic:'Classic', arKnights:'Knights', arAnimals:'Animals', arSpace:'Space',
+  setupHint:'Drag a piece from the tray onto a lit square, or pick one and tap a square. Drag pieces on the board to swap them.',
+
   app:'Capture the Flag', sub:'FlagNest · a strategy game of hidden ranks',
   tag:'Hide your flag. Read the ranks. Capture the computer’s flag.',
-  newGame:'New game vs computer', resume:'Resume game', rules:'Rules', stats:'Statistics', settings:'Settings', about:'About',
+  newGame:'New game', newGameCpu:'New game vs computer', resume:'Resume game', rules:'Rules', stats:'Statistics', settings:'Settings', about:'About',
   home:'Home', back:'Back', ok:'OK', cancel:'Cancel', close:'Close', save:'Save', del:'Delete', edit:'Edit', next:'Next', skip:'Skip', done:'Done',
   boardSize:'Board size', s10:'Classic 10×10', s7:'Quick 7×7', s5:'Blitz 5×5', pieces:'{n} pieces',
   difficulty:'Difficulty', easy:'Easy', medium:'Medium', hard:'Hard',
-  diffEasy:'Makes mistakes and attacks without much thought', diffMedium:'Weighs risk and remembers every battle', diffHard:'Reads bluffs, hunts weak pieces, guards its flag',
+  diffEasy:'Makes mistakes and attacks without much thought', diffMedium:'Weighs risk and remembers every battle',
   toSetup:'Arrange pieces', resumeQ:'A game is in progress. Start a new one instead?', startNew:'Start new',
-  setupTitle:'Arrange your army', setupHint:'Pick a piece from the tray and tap a lit square. Tap a placed piece, then another square, to swap them.',
+  setupTitle:'Arrange your army',
   random:'Random', smart:'Smart', clear:'Clear', myBoards:'Saved', start:'To battle', leftN:'{n} pieces left to place', ready:'Army ready',
   toTray:'Tap the tray to put the piece back',
   yourTurn:'Your turn', cpuTurn:'Computer is thinking', you:'You', cpu:'Computer', attacker:'Attacker', defender:'Defender',
@@ -631,12 +862,20 @@ en: {
 <h2>Two-square rule</h2><p>A piece may not move back and forth between the same two squares more than three times in a row. This stops endless chases and applies to the computer too.</p>
 <h2>End of the game</h2><p>Capture the flag and you win. A player with no legal move on their turn loses. If neither side can move, it is a draw.</p>
 <h2>Marks on the board</h2><ul><li>Tap a computer piece to mark a guess — like "9?" or "bomb?". Only you see it.</li><li>A small dot at the bottom of a computer piece: it has moved, so it is not a bomb or the flag.</li><li>A small eye on your piece: the computer has already seen what it is.</li></ul>
+<h2>Game modes</h2><ul><li><b>vs computer</b> — four levels. Expert checks several possible futures before each move. From hard upward the computer also remembers where you tend to hide your flag.</li><li><b>Two on one phone</b> — each player sets up in secret, and a "pass the phone" screen appears between turns.</li><li><b>Online vs a friend</b> — create a room and send a code or link. Your ranks are never sent to your friend; only pieces that fight are revealed.</li></ul>
+<h2>Helpers</h2><ul><li>💡 Hint — marks a suggested move (not available online).</li><li>🔍 Check on the setup screen — analyses your setup and points out weak spots.</li><li>▶ Replay — after each game, watch it from the start with every piece revealed.</li></ul>
 <h2>Tips</h2><ul><li>Surround your flag with bombs — but don’t put it in the most obvious spot. A bombed corner is the first thing the computer checks.</li><li>Keep the spy near your general: when the enemy marshal comes hunting, the spy is waiting.</li><li>Send scouts and sergeants to discover ranks before risking strong pieces.</li><li>Don’t reveal your marshal early. While the computer doesn’t know where it is, it has to respect all your pieces.</li></ul>`
 },
 ru: {
   dir:'ltr', langName:'Русский',
+  expert:'Эксперт', mCpu:'С компьютером', mLocal:'Вдвоём на одном телефоне', mOnline:'Онлайн с другом', names:'Имена игроков', p1:'Красный', p2:'Синий',
+  passTo:'Передай телефон: {n}', imReady:'Я {n} — показать доску', turnOf:'Ход: {n}', winOf:'{n} побеждает!', hint:'Подсказка', check:'Проверка', checkT:'Проверка расстановки',
+  roomCode:'Код комнаты', createRoom:'Создать комнату', joinRoom:'Войти по коду', join:'Войти', sendWa:'Отправить в WhatsApp', shareInvite:'Пригласить',
+  connecting:'Подключение…', connected:'Подключено', disconnected:'Связь потеряна — переподключение…', waitFriend:'Ждём друга…', ready2:'Готов', leaveRoom:'Выйти из комнаты', rematch:'Реванш',
+  replay:'Повтор', replays:'Последние игры', army:'Армия', arClassic:'Классика', arKnights:'Рыцари', arAnimals:'Животные', arSpace:'Космос', friend:'Друг', oppTurn:'Ход: {n}',
+
   app:'Захвати флаг', sub:'FlagNest · стратегия скрытых рангов', tag:'Спрячь флаг. Разгадай ранги. Захвати флаг компьютера.',
-  newGame:'Новая игра с компьютером', resume:'Продолжить игру', rules:'Правила', stats:'Статистика', settings:'Настройки', about:'О приложении',
+  newGame:'Новая игра', resume:'Продолжить игру', rules:'Правила', stats:'Статистика', settings:'Настройки', about:'О приложении',
   home:'Домой', back:'Назад', ok:'OK', cancel:'Отмена', close:'Закрыть', save:'Сохранить', del:'Удалить', edit:'Изменить', next:'Далее', skip:'Пропустить', done:'Готово',
   boardSize:'Размер доски', s10:'Классика 10×10', s7:'Быстро 7×7', s5:'Блиц 5×5', pieces:'{n} фигур',
   difficulty:'Сложность', easy:'Легко', medium:'Средне', hard:'Сложно', toSetup:'Расставить фигуры', startNew:'Начать новую',
@@ -654,8 +893,14 @@ ru: {
 },
 es: {
   dir:'ltr', langName:'Español',
+  expert:'Experto', mCpu:'Contra el ordenador', mLocal:'Dos en un teléfono', mOnline:'Online con un amigo', names:'Nombres', p1:'Rojo', p2:'Azul',
+  passTo:'Pasa el teléfono a {n}', imReady:'Soy {n} — mostrar tablero', turnOf:'Turno de {n}', winOf:'¡{n} gana!', hint:'Pista', check:'Revisar', checkT:'Revisión de la colocación',
+  roomCode:'Código de sala', createRoom:'Crear sala', joinRoom:'Unirse con código', join:'Unirse', sendWa:'Enviar por WhatsApp', shareInvite:'Invitar',
+  connecting:'Conectando…', connected:'Conectado', disconnected:'Conexión perdida — reconectando…', waitFriend:'Esperando a tu amigo…', ready2:'Listo', leaveRoom:'Salir de la sala', rematch:'Revancha',
+  replay:'Repetición', replays:'Partidas recientes', army:'Ejército', arClassic:'Clásico', arKnights:'Caballeros', arAnimals:'Animales', arSpace:'Espacio', friend:'Amigo', oppTurn:'Turno de {n}',
+
   app:'Captura la bandera', sub:'FlagNest · estrategia de rangos ocultos', tag:'Esconde tu bandera. Descifra los rangos. Captura la del ordenador.',
-  newGame:'Nueva partida contra el ordenador', resume:'Continuar partida', rules:'Reglas', stats:'Estadísticas', settings:'Ajustes', about:'Acerca de',
+  newGame:'Nueva partida', resume:'Continuar partida', rules:'Reglas', stats:'Estadísticas', settings:'Ajustes', about:'Acerca de',
   home:'Inicio', back:'Atrás', ok:'OK', cancel:'Cancelar', close:'Cerrar', save:'Guardar', del:'Borrar', edit:'Editar', next:'Siguiente', skip:'Saltar', done:'Listo',
   boardSize:'Tamaño del tablero', s10:'Clásico 10×10', s7:'Rápido 7×7', s5:'Relámpago 5×5', pieces:'{n} piezas',
   difficulty:'Dificultad', easy:'Fácil', medium:'Media', hard:'Difícil', toSetup:'Colocar piezas', startNew:'Empezar nueva',
@@ -673,8 +918,14 @@ es: {
 },
 ar: {
   dir:'rtl', langName:'العربية',
+  expert:'خبير', mCpu:'ضد الحاسوب', mLocal:'لاعبان على هاتف واحد', mOnline:'أونلاين مع صديق', names:'أسماء اللاعبين', p1:'أحمر', p2:'أزرق',
+  passTo:'مرّر الهاتف إلى {n}', imReady:'أنا {n} — اعرض اللوحة', turnOf:'دور {n}', winOf:'{n} فاز!', hint:'تلميح', check:'فحص', checkT:'فحص الترتيب',
+  roomCode:'رمز الغرفة', createRoom:'إنشاء غرفة', joinRoom:'الانضمام برمز', join:'انضمام', sendWa:'إرسال عبر واتساب', shareInvite:'دعوة',
+  connecting:'جارٍ الاتصال…', connected:'متصل', disconnected:'انقطع الاتصال — إعادة المحاولة…', waitFriend:'بانتظار صديقك…', ready2:'جاهز', leaveRoom:'مغادرة الغرفة', rematch:'مباراة أخرى',
+  replay:'إعادة', replays:'آخر الألعاب', army:'الجيش', arClassic:'كلاسيكي', arKnights:'فرسان', arAnimals:'حيوانات', arSpace:'فضاء', friend:'صديق', oppTurn:'دور {n}',
+
   app:'التقط العلم', sub:'FlagNest · لعبة استراتيجية بالرتب المخفية', tag:'أخفِ علمك. اكشف الرتب. التقط علم الحاسوب.',
-  newGame:'لعبة جديدة ضد الحاسوب', resume:'متابعة اللعبة', rules:'القواعد', stats:'الإحصائيات', settings:'الإعدادات', about:'حول',
+  newGame:'لعبة جديدة', resume:'متابعة اللعبة', rules:'القواعد', stats:'الإحصائيات', settings:'الإعدادات', about:'حول',
   home:'الرئيسية', back:'رجوع', ok:'موافق', cancel:'إلغاء', close:'إغلاق', save:'حفظ', del:'حذف', edit:'تعديل', next:'التالي', skip:'تخطٍ', done:'تم',
   boardSize:'حجم اللوحة', s10:'كلاسيكي 10×10', s7:'سريع 7×7', s5:'خاطف 5×5', pieces:'{n} قطعة',
   difficulty:'الصعوبة', easy:'سهل', medium:'متوسط', hard:'صعب', toSetup:'ترتيب القطع', startNew:'ابدأ جديدة',
@@ -692,10 +943,11 @@ ar: {
 }
 };
 /* ===================== FlagNest app ===================== */
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.1.0';
 const P = 'flagnest_';
 const STORE_URL = 'https://appnest-store.pages.dev';
 const FEEDBACK = 'mailto:appnest55@gmail.com?subject=FlagNest%20' + APP_VERSION;
+const PEER_CDNS = ['https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js', 'https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js'];
 
 /* ---------- storage shim (falls back to memory) ---------- */
 const MEM = {};
@@ -704,7 +956,7 @@ const S = {
   set(k, v) { MEM[k] = v; try { localStorage.setItem(P + k, JSON.stringify(v)); return true; } catch (e) { if (!S._warned) { S._warned = 1; setTimeout(() => toast(T('saveFail')), 50); } return false; } },
   del(k) { delete MEM[k]; try { localStorage.removeItem(P + k); } catch (e) {} }
 };
-const DEF = { lang: 'he', pal: 'gold', mode: 'night', board: 'field', sound: true, vib: true, speed: 1, hints: true, hideRev: false, name: '', onboarded: false, lastSize: 10, lastDiff: 'medium' };
+const DEF = { lang: 'he', pal: 'gold', mode: 'night', board: 'field', army: 'classic', sound: true, vib: true, speed: 1, hints: true, hideRev: false, name: '', p2name: '', onboarded: false, lastSize: 10, lastDiff: 'medium', lastMode: 'cpu' };
 let ST = Object.assign({}, DEF, S.get('settings', {}));
 const saveST = () => S.set('settings', ST);
 
@@ -715,14 +967,15 @@ function T(k, v) {
 }
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const $ = s => document.querySelector(s);
+const isRTL = () => document.documentElement.dir === 'rtl';
 function applyLook() {
   const h = document.documentElement;
   h.lang = ST.lang; h.dir = (LANGS[ST.lang] || LANGS.en).dir || 'ltr';
-  h.dataset.pal = ST.pal; h.dataset.mode = ST.mode; h.dataset.board = ST.board;
+  h.dataset.pal = ST.pal; h.dataset.mode = ST.mode; h.dataset.board = ST.board; h.dataset.army = ST.army;
   const tc = document.querySelector('meta[name=theme-color]'); if (tc) tc.content = ST.mode === 'day' ? '#f3eee1' : '#000000';
 }
 
-/* ---------- icons ---------- */
+/* ---------- icons + armies ---------- */
 const ICON = {
   0: '<svg viewBox="0 0 24 24"><path d="M6 2.5v19" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M7 3.5h12l-3.2 4.3L19 12H7z" stroke="none"/></svg>',
   11: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="14" r="7" stroke="none"/><path d="M14.6 8.2l2.2-2.2" stroke-width="2.4" fill="none"/><path d="M17.3 5.3c.7-1.5 2-2 3.2-1.6" stroke-width="1.4" fill="none" stroke-linecap="round"/><circle cx="8" cy="11.5" r="1.6" fill="rgba(255,255,255,.45)" stroke="none"/></svg>',
@@ -731,17 +984,24 @@ const ICON = {
   3: '<svg viewBox="0 0 24 24"><path d="M4 8c4-4.5 12-4.5 16 0" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M12 5.5V21" stroke-width="2.6" stroke-linecap="round"/></svg>',
   eye: '<svg viewBox="0 0 24 24"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3.2" fill="#000"/></svg>'
 };
+const ARMIES = {
+  classic: null,
+  knights: { 0: '🏰', 11: '🔥', 1: '🗡️', 2: '🐎', 3: '⛏️', 4: '🏹', 5: '🛡️', 6: '⚔️', 7: '🏇', 8: '🧙', 9: '🤴', 10: '👑' },
+  animals: { 0: '🥚', 11: '🦔', 1: '🐍', 2: '🐆', 3: '🦡', 4: '🦊', 5: '🐺', 6: '🐗', 7: '🐻', 8: '🦏', 9: '🦁', 10: '🐘' },
+  space: { 0: '🌍', 11: '☢️', 1: '🕵️', 2: '☄️', 3: '🔧', 4: '🧑‍🚀', 5: '🛰️', 6: '👽', 7: '🤖', 8: '👾', 9: '🚀', 10: '🛸' }
+};
 const pname = r => T('r' + r);
-function face(r) {
+function face(r, army) {
+  const A = ARMIES[army || ST.army];
+  if (A) return '<span class="emo">' + A[r] + '</span>' + (r !== 0 && r !== 11 ? '<span class="rk">' + r + '</span>' : '');
   if (r === 0 || r === 11) return '<span class="big" style="display:flex;width:56%;height:56%">' + ICON[r] + '</span>';
   return '<span class="n">' + r + '</span>' + (r <= 3 ? '<span class="sm">' + ICON[r] + '</span>' : '');
 }
-// a token. opts: {show, note, mv, eye, id}
 function tokHTML(o, r, opts) {
   opts = opts || {};
-  const show = opts.show !== false;
-  let cls = 'tok o' + o + (show ? '' : ' hid') + (opts.mv ? ' mv' : '') + (opts.dead ? ' dead' : '');
-  let inner = show ? face(r) : '';
+  const show = opts.show !== false && r >= 0;
+  let cls = 'tok o' + o + (show ? '' : ' hid') + (opts.mv ? ' mv' : '');
+  let inner = show ? face(r, opts.army) : '';
   if (opts.eye) inner += '<span class="eye">' + ICON.eye + '</span>';
   if (opts.note != null) inner += '<span class="note">' + (opts.note === 0 || opts.note === 11 ? ICON[opts.note] : esc(opts.note === 'q' ? '' : opts.note)) + '?</span>';
   return '<div class="' + cls + '"' + (opts.id ? ' data-id="' + opts.id + '"' : '') + '>' + inner + '</div>';
@@ -778,6 +1038,7 @@ function snd(k) {
     else if (k === 'win') [523, 659, 784, 1046].forEach((f, i) => tone(f, i * .12, .3, 'triangle', .14));
     else if (k === 'lose') [392, 330, 262, 196].forEach((f, i) => tone(f, i * .16, .35, 'sine', .14));
     else if (k === 'bad') tone(150, 0, .15, 'square', .06);
+    else if (k === 'ping') { tone(988, 0, .12, 'sine', .1); tone(1319, .1, .18, 'sine', .1); }
   } catch (e) {}
 }
 const buzz = p => { if (ST.vib && navigator.vibrate) try { navigator.vibrate(p); } catch (e) {} };
@@ -795,13 +1056,13 @@ function openSheet(html, onMount, opts) {
   ov.close = () => { ov.remove(); ovStack = ovStack.filter(x => x !== ov); if (prev && prev.focus) try { prev.focus(); } catch (e) {} };
   if (!(opts && opts.sticky)) ov.addEventListener('click', e => { if (e.target === ov) ov.close(); });
   $('#ovl').appendChild(ov); ovStack.push(ov);
-  const f = ov.querySelector('button,input,select'); if (f) setTimeout(() => f.focus(), 30);
+  const f = ov.querySelector('button,input,select'); if (f) setTimeout(() => { try { f.focus({ preventScroll: true }); } catch (e) {} }, 30);
   if (onMount) onMount(ov);
   return ov;
 }
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && ovStack.length) { const top = ovStack[ovStack.length - 1]; if (top._esc) top._esc(); else top.close(); }
-  if (e.key === 'Tab' && ovStack.length) {             // focus trap
+  if (e.key === 'Tab' && ovStack.length) {
     const top = ovStack[ovStack.length - 1], f = [...top.querySelectorAll('button,input,select,[tabindex]')].filter(x => !x.disabled);
     if (!f.length) return; const a = f[0], z = f[f.length - 1];
     if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
@@ -826,32 +1087,61 @@ function askText(title, val) {
     });
   });
 }
+// full-screen "pass the phone" curtain (two players, one phone)
+function handoff(name, sub) {
+  return new Promise(res => {
+    const ov = document.createElement('div'); ov.className = 'hand';
+    ov.innerHTML = '<div><div class="handIc">📱</div><h2>' + esc(T('passTo', { n: name })) + '</h2><p class="muted">' + esc(sub || T('passSub', { n: name })) + '</p><button class="btn pri" id="hGo">' + esc(T('imReady', { n: name })) + '</button></div>';
+    document.body.appendChild(ov); setTimeout(() => ov.querySelector('#hGo').focus(), 50);
+    ov.querySelector('#hGo').onclick = () => { ov.remove(); res(); };
+  });
+}
 
 /* ---------- navigation ---------- */
-let scr = 'home', G = S.get('game', null), UI = { sel: null, moves: [], trayR: null, cell: null, busy: false };
+let scr = 'home', G = S.get('game', null);
+const UI = { sel: null, moves: [], trayR: null, cell: null, busy: false, hint: null, rp: null, rk: 0, rpTimer: null };
 const SCREENS = {};
-function go(name) { scr = name; UI.sel = null; UI.moves = []; UI.cell = null; render(); window.scrollTo(0, 0); }
-function render() { applyLook(); $('#app').innerHTML = '<div class="scr">' + SCREENS[scr]() + '</div>'; if (SCREENS[scr].mount) SCREENS[scr].mount(); }
-function barHTML(title, right) {
-  return '<div class="bar"><button class="back" onclick="go(\'home\')" aria-label="' + T('home') + '">' + (document.documentElement.dir === 'rtl' ? '› ' : '‹ ') + T('home') + '</button><div class="ttl">' + esc(title) + '</div>' + (right || '<span style="width:44px"></span>') + '</div>';
+function go(name) {
+  if (UI.rpTimer) { clearInterval(UI.rpTimer); UI.rpTimer = null; }
+  scr = name; UI.sel = null; UI.moves = []; UI.cell = null; UI.hint = null; render(); window.scrollTo(0, 0);
 }
-const saveGame = () => { if (G && G.phase !== 'over') S.set('game', G); else S.del('game'); };
+function render() { applyLook(); $('#app').innerHTML = '<div class="scr">' + SCREENS[scr]() + '</div>'; if (SCREENS[scr].mount) SCREENS[scr].mount(); }
+const backArrow = () => isRTL() ? '› ' : '‹ ';
+function barHTML(title, right) {
+  return '<div class="bar"><button class="back" onclick="go(\'home\')" aria-label="' + T('home') + '">' + backArrow() + T('home') + '</button><div class="ttl">' + esc(title) + '</div>' + (right || '<span style="width:44px"></span>') + '</div>';
+}
+const saveGame = () => { if (G && (G.phase !== 'over' || (G.mode === 'online' && !G.closed))) S.set('game', G); else S.del('game'); };
+
+/* ---------- who's who ---------- */
+const VW = () => !G ? 0 : G.mode === 'online' ? G.net.me : G.mode === 'local' ? (G.view || 0) : 0;
+const SO = () => !G ? 0 : G.mode === 'local' ? G.setupO : VW();
+function nameOf(o) {
+  if (G.mode === 'cpu') return o === 0 ? T('you') : T('cpu');
+  if (G.mode === 'local') return G.names[o];
+  return o === G.net.me ? T('you') : (G.net.oppName || T('friend'));
+}
+function canAct() {
+  if (!G || G.phase !== 'play' || UI.busy || G.turn !== VW()) return false;
+  if (G.mode === 'online') return NET.open && !G.net.pending;
+  return true;
+}
 
 /* ---------- home ---------- */
 SCREENS.home = () => {
-  const live = G && (G.phase === 'setup' || G.phase === 'play');
-  const pals = ['gold', 'silver', 'emerald', 'sapphire', 'ruby'];
-  return '<div class="homeTop"><button class="icon" id="palBtn" aria-label="' + T('theme') + '" title="' + T('theme') + '">🎨</button>' +
+  const live = G && (G.phase === 'setup' || G.phase === 'play' || G.phase === 'lobby');
+  const liveLbl = live ? (G.mode === 'online' ? '🌐 ' : G.mode === 'local' ? '👥 ' : '▶ ') + T('resume') : '';
+  return '<div class="homeTop"><button class="icon" id="palBtn" aria-label="' + T('theme') + '">🎨</button>' +
     '<button class="icon" id="modeBtn" aria-label="' + T('mode') + '">' + (ST.mode === 'day' ? '🌙' : '☀️') + '</button>' +
     '<span style="flex:1"></span><button class="icon" onclick="go(\'about\')" aria-label="' + T('about') + '">ℹ️</button></div>' +
     '<div class="hero"><div class="mini" aria-hidden="true">' +
       '<div class="cell"></div><div class="cell">' + tokHTML(1, 0, { show: false }) + '</div><div class="cell"></div>' +
-      '<div class="cell">' + tokHTML(1, 11, { show: false, mv: false }) + '</div><div class="cell" style="background:rgba(255,226,120,.2)"></div><div class="cell">' + tokHTML(1, 9, { show: false, mv: true }) + '</div>' +
+      '<div class="cell">' + tokHTML(1, 11, { show: false }) + '</div><div class="cell" style="background:rgba(255,226,120,.2)"></div><div class="cell">' + tokHTML(1, 9, { show: false, mv: true }) + '</div>' +
       '<div class="cell"></div><div class="cell sel">' + tokHTML(0, 10) + '</div><div class="cell">' + tokHTML(0, 2) + '</div>' +
     '</div></div>' +
     '<h1 class="title">' + T('app') + '<small>' + T('sub') + '</small></h1><p class="tag">' + T('tag') + '</p>' +
-    '<div class="menu">' + (live ? '<button class="btn pri" onclick="resumeGame()">▶ ' + T('resume') + '</button>' : '') +
+    '<div class="menu">' + (live ? '<button class="btn pri" onclick="resumeGame()">' + liveLbl + '</button>' : '') +
     '<button class="btn ' + (live ? '' : 'pri') + '" onclick="newGameSheet()">⚔ ' + T('newGame') + '</button>' +
+    '<button class="btn ghost" onclick="newGameSheet(\'online\')">🌐 ' + T('mOnline') + '</button>' +
     '<div class="two"><button class="btn ghost" onclick="go(\'rules\')">📜 ' + T('rules') + '</button><button class="btn ghost" onclick="go(\'stats\')">🏅 ' + T('stats') + '</button></div>' +
     '<button class="btn ghost" onclick="go(\'settings\')">⚙️ ' + T('settings') + '</button></div>' +
     '<div class="badge">AppNest · <b>FlagNest</b> v' + APP_VERSION + '</div>';
@@ -862,138 +1152,302 @@ SCREENS.home.mount = () => {
   $('#modeBtn').onclick = () => { ST.mode = ST.mode === 'day' ? 'night' : 'day'; saveST(); render(); };
   if (!ST.onboarded) setTimeout(onboarding, 250);
 };
-function resumeGame() { if (!G) return; go(G.phase === 'setup' ? 'setup' : 'game'); }
+function resumeGame() {
+  if (!G) return;
+  if (G.mode === 'online') { netEnsure(); go(G.phase === 'lobby' ? 'online' : G.phase === 'setup' ? 'setup' : 'game'); return; }
+  if (G.mode === 'local') {
+    if (G.phase === 'setup') { const o = G.setupO; G.view = o; handoff(G.names[o]).then(() => go('setup')); }
+    else { G.view = G.turn; handoff(G.names[G.turn]).then(() => go('game')); }
+    return;
+  }
+  go(G.phase === 'setup' ? 'setup' : 'game');
+}
 
-function newGameSheet() {
-  let size = ST.lastSize, diff = ST.lastDiff;
-  const body = () => '<h2>' + T('newGame') + '</h2><h3>' + T('boardSize') + '</h3><div class="seg" id="sz">' +
+function newGameSheet(startMode) {
+  let mode = startMode || (ST.lastMode === 'online' ? 'cpu' : ST.lastMode), size = ST.lastSize, diff = ST.lastDiff;
+  const diffs = ['easy', 'medium', 'hard', 'expert'];
+  const body = () => '<h2>' + T('newGame') + '</h2><div class="seg modes">' +
+    ['cpu', 'local', 'online'].map(m => '<button data-m="' + m + '" class="' + (m === mode ? 'on' : '') + '">' + { cpu: '🤖', local: '👥', online: '🌐' }[m] + '<br>' + T('m' + m[0].toUpperCase() + m.slice(1)) + '</button>').join('') + '</div>' +
+    (mode === 'online' ? '<div class="card" style="margin-bottom:0"><p style="margin:0">' + T('onlineIntro') + '</p></div>' : '') +
+    '<h3>' + T('boardSize') + '</h3><div class="seg" id="sz">' +
     [10, 7, 5].map(s => '<button data-s="' + s + '" class="' + (s === size ? 'on' : '') + '">' + T('s' + s) + '<br><span class="muted">' + T('pieces', { n: setTotal(VARIANTS[s].set) }) + '</span></button>').join('') + '</div>' +
-    '<h3>' + T('difficulty') + '</h3><div class="seg" id="df">' + ['easy', 'medium', 'hard'].map(d => '<button data-d="' + d + '" class="' + (d === diff ? 'on' : '') + '">' + T(d) + '</button>').join('') + '</div>' +
-    '<p class="muted" style="min-height:42px">' + T('diff' + diff[0].toUpperCase() + diff.slice(1)) + '</p>' +
-    '<div class="acts two"><button class="btn ghost" data-a="0">' + T('cancel') + '</button><button class="btn pri" data-a="1">' + T('toSetup') + '</button></div>';
+    (mode === 'cpu' ? '<h3>' + T('difficulty') + '</h3><div class="seg" id="df">' + diffs.map(d => '<button data-d="' + d + '" class="' + (d === diff ? 'on' : '') + '">' + T(d) + '</button>').join('') + '</div>' +
+      '<p class="muted" style="min-height:42px">' + T('diff' + diff[0].toUpperCase() + diff.slice(1)) + '</p>' : '') +
+    (mode === 'local' ? '<h3>' + T('names') + '</h3><div class="names"><span class="dot o0"></span><input type="text" id="n0" maxlength="20" value="' + esc(ST.name || T('p1')) + '"></div><div class="names"><span class="dot o1"></span><input type="text" id="n1" maxlength="20" value="' + esc(ST.p2name || T('p2')) + '"></div>' : '') +
+    (mode === 'online' ? '' : '') +
+    '<div class="acts two"><button class="btn ghost" data-a="0">' + T('cancel') + '</button><button class="btn pri" data-a="1">' + (mode === 'online' ? T('createRoom') : T('toSetup')) + '</button></div>' +
+    (mode === 'online' ? '<button class="btn ghost" style="margin-top:8px" data-a="j">' + T('joinRoom') + '</button>' : '');
   openSheet(body(), function mount(o) {
     const sheet = o.querySelector('.sheet');
     const bind = () => {
+      sheet.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { mode = b.dataset.m; sheet.innerHTML = body(); bind(); });
       sheet.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { size = +b.dataset.s; sheet.innerHTML = body(); bind(); });
       sheet.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { diff = b.dataset.d; sheet.innerHTML = body(); bind(); });
       sheet.querySelector('[data-a="0"]').onclick = () => o.close();
+      const j = sheet.querySelector('[data-a="j"]'); if (j) j.onclick = () => { o.close(); joinSheet(); };
       sheet.querySelector('[data-a="1"]').onclick = async () => {
-        if (G && G.phase === 'play' && !(await ask(T('resumeQ'), T('startNew'), true))) return;
-        o.close(); ST.lastSize = size; ST.lastDiff = diff; saveST(); startSetup(size, diff);
+        const n0 = sheet.querySelector('#n0'), n1 = sheet.querySelector('#n1');
+        if (G && (G.phase === 'play' || G.phase === 'setup' || G.phase === 'lobby') && !(await ask(T('resumeQ'), T('startNew'), true))) return;
+        o.close(); netClose(); ST.lastSize = size; ST.lastMode = mode; if (mode === 'cpu') ST.lastDiff = diff;
+        if (mode === 'local') { ST.p2name = n1.value.trim(); if (!ST.name && n0.value.trim() !== T('p1')) ST.name = n0.value.trim(); }
+        saveST();
+        if (mode === 'online') hostRoom(size);
+        else if (mode === 'local') startLocal(size, [n0.value.trim() || T('p1'), n1.value.trim() || T('p2')]);
+        else startSetup(size, diff);
       };
     };
     bind();
   });
 }
 function startSetup(size, diff, grid) {
-  G = makeGame(size, diff);
+  G = makeGame(size, diff); G.mode = 'cpu';
   applySetup(G, 1, genSetup(size, 'smart'));
   const last = S.get('lastSetup_' + size, null);
   if (grid) applySetup(G, 0, grid); else if (last) applySetup(G, 0, last);
   UI.trayR = null; saveGame(); go('setup');
 }
+function startLocal(size, names) {
+  G = makeGame(size, 'medium'); G.mode = 'local'; G.names = names; G.setupO = 0; G.view = 0;
+  const last = S.get('lastSetup_' + size, null); if (last) applySetup(G, 0, last);
+  UI.trayR = null; saveGame(); handoff(names[0], T('setupOf', { n: names[0] })).then(() => go('setup'));
+}
 
 /* ---------- board rendering ---------- */
-function lakeCorners(g, i) {
-  const n = g.n, r = Math.floor(i / n), c = i % n, L = (rr, cc) => rr >= 0 && cc >= 0 && rr < n && cc < n && g.lake[rr * n + cc];
-  const up = L(r - 1, c), dn = L(r + 1, c), lf = L(r, c - 1), rt = L(r, c + 1), R = '38%';
-  return 'border-radius:' + (!up && !lf ? R : '0') + ' ' + (!up && !rt ? R : '0') + ' ' + (!dn && !rt ? R : '0') + ' ' + (!dn && !lf ? R : '0');
-}
-function cellsHTML(mode) {
-  const g = G, n = g.n, over = g.phase === 'over';
-  const tg = {}; UI.moves.forEach(m => tg[m.to] = m.atk ? 'atk' : 'tgt');
+function cellsHTML(g, mode, view, all) {
+  const n = g.n, N = n * n, flip = view === 1, map = d => flip ? N - 1 - d : d, over = g.phase === 'over';
+  const L = (r, c) => r >= 0 && c >= 0 && r < n && c < n && g.lake[map(r * n + c)];
+  const tg = {}; if (mode === 'play') UI.moves.forEach(m => tg[m.to] = m.atk ? 'atk' : 'tgt');
+  const zo = mode === 'setup' ? SO() : -1;
   let h = '';
-  for (let i = 0; i < n * n; i++) {
+  for (let d = 0; d < N; d++) {
+    const i = map(d), r = Math.floor(d / n), c = d % n;
     let cls = 'cell', style = '';
-    if (g.lake[i]) { cls += ' lake'; style = lakeCorners(g, i); }
-    if (mode === 'setup' && inZone(g, 0, i)) cls += ' zone' + (UI.trayR != null || UI.cell != null ? ' drop' : '');
-    if (mode === 'play' && g.last) { if (g.last.f === i) cls += ' lastf'; if (g.last.t === i) cls += ' lastt'; }
-    if (tg[i]) cls += ' ' + tg[i];
+    if (g.lake[i]) { cls += ' lake'; const R = '38%', up = L(r - 1, c), dn = L(r + 1, c), lf = L(r, c - 1), rt = L(r, c + 1);
+      style = 'border-radius:' + (!up && !lf ? R : '0') + ' ' + (!up && !rt ? R : '0') + ' ' + (!dn && !rt ? R : '0') + ' ' + (!dn && !lf ? R : '0'); }
+    if (zo >= 0 && inZone(g, zo, i)) cls += ' zone' + (UI.trayR != null || UI.cell != null ? ' drop' : '');
+    if ((mode === 'play' || mode === 'replay') && g.last) { if (g.last.f === i) cls += ' lastf'; if (g.last.t === i) cls += ' lastt'; }
+    if (tg[i]) cls += ' ' + tg[i] + (UI.hint && UI.hint.to === i ? ' hintT' : '');
     const id = g.board[i];
     if ((mode === 'play' && UI.sel === id && id != null) || (mode === 'setup' && UI.cell === i)) cls += ' sel';
     let inner = '';
     if (id != null) {
       const p = g.pcs[id];
-      if (p.o === 0) inner = tokHTML(0, p.r, { id, eye: mode === 'play' && p.rev && !over });
+      if (all) inner = tokHTML(p.o, p.r, { id, show: p.r >= 0 });
+      else if (p.o === view) inner = tokHTML(p.o, p.r, { id, eye: mode === 'play' && p.rev && !over });
       else {
-        const show = over || (p.rev && !ST.hideRev);
-        inner = tokHTML(1, p.r, { id, show, mv: !show && ST.hints && p.mv, note: !show && p.note != null ? p.note : null });
+        const show = p.r >= 0 && (over || (p.rev && !ST.hideRev && mode !== 'setup'));
+        inner = tokHTML(p.o, p.r, { id, show, mv: !show && ST.hints && p.mv, note: !show && p.note != null ? p.note : null });
       }
     }
-    h += '<div class="' + cls + '" data-i="' + i + '"' + (style ? ' style="' + style + '"' : '') + (g.lake[i] ? ' aria-hidden="true"' : ' role="gridcell"') + '>' + inner + '</div>';
+    h += '<div class="' + cls + '" data-i="' + i + '"' + (style ? ' style="' + style + '"' : '') + (g.lake[i] ? ' aria-hidden="true"' : '') + '>' + inner + '</div>';
   }
   return h;
 }
-function stripHTML(o) {
-  const set = VARIANTS[G.size].set, alive = {};
-  for (const id in G.pcs) { const p = G.pcs[id]; if (p.o === o && !p.dead) alive[p.r] = (alive[p.r] || 0) + 1; }
-  return RANK_ORDER.filter(r => set[r]).map(r => { const c = alive[r] || 0; return '<div class="chip' + (c ? '' : ' zero') + '" title="' + pname(r) + '">' + tb(o, r) + '<span class="c">×' + c + '</span></div>'; }).join('');
+function stripHTML(g, o) {
+  const set = VARIANTS[g.size].set, dead = {};
+  for (const id in g.pcs) { const p = g.pcs[id]; if (p.o === o && p.dead) dead[p.r] = (dead[p.r] || 0) + 1; }
+  return RANK_ORDER.filter(r => set[r]).map(r => { const c = set[r] - (dead[r] || 0); return '<div class="chip' + (c ? '' : ' zero') + '" title="' + pname(r) + '">' + tb(o, r) + '<span class="c">×' + c + '</span></div>'; }).join('');
+}
+function dispDelta(fromIdx, toIdx) {
+  const n = G.n, N = n * n, fl = VW() === 1, a = fl ? N - 1 - fromIdx : fromIdx, b = fl ? N - 1 - toIdx : toIdx;
+  const cs = $('#board').clientWidth / n;
+  return [((a % n) - (b % n)) * cs, (Math.floor(a / n) - Math.floor(b / n)) * cs];
 }
 function animateMove(id, fromIdx, dur) {
   const el = document.querySelector('#board .tok[data-id="' + id + '"]'); if (!el || !G.pcs[id] || G.pcs[id].dead) return;
-  const board = $('#board'), cs = board.clientWidth / G.n, to = G.pcs[id].pos;
-  const dx = ((fromIdx % G.n) - (to % G.n)) * cs, dy = (Math.floor(fromIdx / G.n) - Math.floor(to / G.n)) * cs;
+  const [dx, dy] = dispDelta(fromIdx, G.pcs[id].pos);
   el.style.transition = 'none'; el.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; el.style.zIndex = 5; void el.offsetWidth;
   el.style.transition = 'transform ' + dur + 'ms cubic-bezier(.2,.8,.2,1)'; el.style.transform = '';
   setTimeout(() => { el.style.zIndex = ''; el.style.transition = ''; }, dur + 30);
 }
+function slideToward(fromIdx, toIdx, dur) {      // attacker lunges toward the defender before the duel
+  return new Promise(res => {
+    const el = document.querySelector('#board .cell[data-i="' + fromIdx + '"] .tok'); if (!el) return res();
+    const [dx, dy] = dispDelta(toIdx, fromIdx);
+    el.style.transition = 'transform ' + dur + 'ms cubic-bezier(.5,0,.8,.4)'; el.style.zIndex = 6;
+    el.style.transform = 'translate(' + dx * .62 + 'px,' + dy * .62 + 'px) scale(1.12)';
+    setTimeout(res, dur);
+  });
+}
+function poof(i, boom) {
+  const c = document.querySelector('#board .cell[data-i="' + i + '"]'); if (!c) return;
+  const p = document.createElement('span'); p.className = 'poof' + (boom ? ' boom' : ''); c.appendChild(p); setTimeout(() => p.remove(), 800);
+  if (boom) { const b = $('#board'); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); }
+}
 const SPEED = () => [1.7, 1, .55][ST.speed] || 1;
+
+/* ---------- drag & drop (setup + game) ---------- */
+const DRG = { on: null, sup: 0 };
+function pressStart(e, src, info) {
+  if (e.button > 0) return;
+  DRG.on = { x: e.clientX, y: e.clientY, src, info, moved: false, ghost: null, hov: null };
+}
+function cellUnder(x, y) {
+  const el = document.elementFromPoint(x, y); if (!el) return null;
+  const c = el.closest('#board .cell'); if (c) return +c.dataset.i;
+  if (el.closest('#tray')) return 'tray';
+  return null;
+}
+window.addEventListener('pointermove', e => {
+  const d = DRG.on; if (!d) return;
+  if (!d.moved) {
+    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < 9) return;
+    d.moved = true;
+    const tok = d.src.querySelector('.tok') || d.src, b = $('#board'), cs = b ? b.clientWidth / G.n : 40;
+    const gh = document.createElement('div'); gh.className = 'dragGhost'; gh.style.width = gh.style.height = Math.max(44, cs * 1.25) + 'px';
+    gh.innerHTML = tok.outerHTML; document.body.appendChild(gh); d.ghost = gh; d.size = Math.max(44, cs * 1.25);
+    d.src.classList.add('dragsrc');
+    if (d.info.start) d.info.start();
+  }
+  d.ghost.style.transform = 'translate(' + (e.clientX - d.size / 2) + 'px,' + (e.clientY - d.size * .95) + 'px)';
+  const c = cellUnder(e.clientX, e.clientY - d.size * .45);
+  if (c !== d.hov) {
+    document.querySelectorAll('#board .hov').forEach(x => x.classList.remove('hov'));
+    if (typeof c === 'number') { const el = document.querySelector('#board .cell[data-i="' + c + '"]'); if (el) el.classList.add('hov'); }
+    d.hov = c;
+  }
+}, { passive: true });
+function pressEnd(cancel) {
+  const d = DRG.on; DRG.on = null; if (!d || !d.moved) return;
+  DRG.sup = Date.now(); d.ghost.remove();
+  document.querySelectorAll('.dragsrc,.hov').forEach(x => x.classList.remove('dragsrc', 'hov'));
+  d.info.drop(cancel ? null : d.hov);
+}
+window.addEventListener('pointerup', () => pressEnd(false));
+window.addEventListener('pointercancel', () => pressEnd(true));
+const dragJustEnded = () => Date.now() - DRG.sup < 400;
 
 /* ---------- setup screen ---------- */
 SCREENS.setup = () => {
   if (!G || G.phase !== 'setup') { setTimeout(() => go('home')); return ''; }
-  return barHTML(T('setupTitle'), '<button class="icon" onclick="go(\'rules\')" aria-label="' + T('rules') + '">?</button>') +
-    '<div class="boardWrap"><div class="board" id="board" style="--n:' + G.n + '" role="grid" aria-label="' + T('setupTitle') + '"></div></div>' +
+  const title = G.mode === 'local' ? T('setupOf', { n: G.names[G.setupO] }) : T('setupTitle');
+  return barHTML(title, '<button class="icon" onclick="go(\'rules\')" aria-label="' + T('rules') + '">?</button>') +
+    '<div class="boardWrap"><div class="board" id="board" style="--n:' + G.n + '"></div></div>' +
     '<div class="tray" id="tray"></div>' +
-    '<div class="tools"><button class="btn small ghost" id="tRand">🎲 ' + T('random') + '</button><button class="btn small ghost" id="tSmart">🧠 ' + T('smart') + '</button>' +
-    '<button class="btn small ghost" id="tClear">✕ ' + T('clear') + '</button><button class="btn small ghost" id="tSaved">💾 ' + T('myBoards') + '</button></div>' +
+    '<div class="tools"><button class="btn small ghost" id="tRand"><span>🎲</span>' + T('random') + '</button><button class="btn small ghost" id="tSmart"><span>🧠</span>' + T('smart') + '</button>' +
+    '<button class="btn small ghost" id="tClear"><span>✕</span>' + T('clear') + '</button><button class="btn small ghost" id="tSaved"><span>💾</span>' + T('myBoards') + '</button><button class="btn small ghost" id="tCheck"><span>🔍</span>' + T('check') + '</button></div>' +
     '<button class="btn pri" id="goBtn"></button><p class="muted" id="sHint" style="text-align:center;margin:8px 0 0"></p>';
 };
 SCREENS.setup.mount = () => {
-  $('#board').addEventListener('click', e => { const c = e.target.closest('.cell'); if (c) onSetupCell(+c.dataset.i); });
-  $('#tRand').onclick = () => { applySetup(G, 0, genSetup(G.size, 'random')); UI.cell = null; UI.trayR = null; snd('place'); refreshSetup(); };
-  $('#tSmart').onclick = () => { applySetup(G, 0, genSetup(G.size, 'smart')); UI.cell = null; UI.trayR = null; snd('place'); refreshSetup(); };
-  $('#tClear').onclick = () => { zoneCells(G, 0).forEach(i => { const id = G.board[i]; if (id != null) { delete G.pcs[id]; G.board[i] = null; } }); UI.cell = null; UI.trayR = firstTray(); refreshSetup(); };
+  const b = $('#board');
+  b.addEventListener('click', e => { if (dragJustEnded()) return; const c = e.target.closest('.cell'); if (c) onSetupCell(+c.dataset.i); });
+  b.addEventListener('pointerdown', e => {
+    const c = e.target.closest('.cell'); if (!c || !e.target.closest('.tok') || G.net && G.net.ready && G.net.ready[G.net.me]) return;
+    const i = +c.dataset.i, id = G.board[i]; if (id == null || !inZone(G, SO(), i)) return;
+    pressStart(e, c, { drop: to => {
+      if (to === 'tray') { delete G.pcs[id]; G.board[i] = null; snd('place'); }
+      else if (typeof to === 'number' && inZone(G, SO(), to) && to !== i) { movePiece(i, to); snd('place'); buzz(8); }
+      UI.cell = null; refreshSetup();
+    } });
+  });
+  $('#tRand').onclick = () => { applySetup(G, SO(), genSetup(G.size, 'random')); UI.cell = null; UI.trayR = null; snd('place'); refreshSetup(); };
+  $('#tSmart').onclick = () => { applySetup(G, SO(), genSetup(G.size, 'smart')); UI.cell = null; UI.trayR = null; snd('place'); refreshSetup(); };
+  $('#tClear').onclick = () => { zoneCells(G, SO()).forEach(i => { const id = G.board[i]; if (id != null) { delete G.pcs[id]; G.board[i] = null; } }); UI.cell = null; UI.trayR = firstTray(); refreshSetup(); };
   $('#tSaved').onclick = savedBoards;
-  $('#goBtn').onclick = beginBattle;
+  $('#tCheck').onclick = () => setupCheck(SO());
+  $('#goBtn').onclick = setupDone;
   refreshSetup();
 };
-function firstTray() { const t = trayCounts(G, 0); for (const r of RANK_ORDER) if (t[r] > 0) return r; return null; }
+function firstTray() { const t = trayCounts(G, SO()); for (const r of RANK_ORDER) if (t[r] > 0) return r; return null; }
 function refreshSetup() {
-  $('#board').innerHTML = cellsHTML('setup');
-  const t = trayCounts(G, 0); let left = 0;
-  $('#tray').innerHTML = RANK_ORDER.filter(r => t[r] != null).map(r => { left += t[r]; return '<button data-r="' + r + '" class="' + (UI.trayR === r ? 'on' : '') + '" ' + (t[r] <= 0 && UI.cell == null ? 'disabled' : '') + ' aria-label="' + pname(r) + ' ×' + t[r] + '">' + tb(0, r) + '<span class="c">×' + t[r] + '</span></button>'; }).join('');
-  $('#tray').querySelectorAll('button').forEach(b => b.onclick = () => onTray(+b.dataset.r));
-  const gb = $('#goBtn'); gb.disabled = left > 0; gb.textContent = left > 0 ? T('leftN', { n: left }) : '⚔ ' + T('start');
-  $('#sHint').textContent = UI.cell != null ? T('toTray') : left > 0 ? T('setupHint') : T('ready');
+  if (scr !== 'setup' || !$('#board')) return;
+  const o = SO(), waiting = G.mode === 'online' && G.net.ready[G.net.me];
+  $('#board').innerHTML = cellsHTML(G, 'setup', o, false);
+  const t = trayCounts(G, o); let left = 0;
+  $('#tray').innerHTML = RANK_ORDER.filter(r => t[r] != null).map(r => { left += t[r]; return '<button data-r="' + r + '" class="' + (UI.trayR === r ? 'on' : '') + '" ' + (t[r] <= 0 && UI.cell == null ? 'disabled' : '') + ' aria-label="' + pname(r) + ' ×' + t[r] + '">' + tb(o, r) + '<span class="c">×' + t[r] + '</span></button>'; }).join('');
+  $('#tray').querySelectorAll('button').forEach(b => {
+    const r = +b.dataset.r;
+    b.onclick = () => { if (!dragJustEnded()) onTray(r); };
+    b.onpointerdown = e => { if (trayCounts(G, SO())[r] <= 0 || waiting) return; pressStart(e, b, { drop: to => {
+      if (typeof to === 'number' && inZone(G, SO(), to)) { const id = G.board[to]; if (id != null) { delete G.pcs[id]; G.board[to] = null; } addPiece(G, SO(), r, to); snd('place'); buzz(8); }
+      if (UI.trayR != null && trayCounts(G, SO())[UI.trayR] <= 0) UI.trayR = firstTray(); refreshSetup();
+    } }); };
+  });
+  const gb = $('#goBtn');
+  let label = '⚔ ' + T('start');
+  if (G.mode === 'local' && G.setupO === 0) label = T('doneSetupPass', { n: G.names[1] });
+  if (G.mode === 'online') label = waiting ? T('waitOppSetup', { n: nameOf(1 - G.net.me) }) : '✔ ' + T('ready2');
+  gb.disabled = left > 0 || waiting; gb.textContent = left > 0 ? T('leftN', { n: left }) : label;
+  let hint = UI.cell != null ? T('toTray') : left > 0 ? T('setupHint') : T('ready');
+  if (G.mode === 'online') hint = (G.net.ready[1 - G.net.me] ? T('oppReady', { n: nameOf(1 - G.net.me) }) + ' · ' : '') + (NET.open ? '' : T('disconnected') + ' · ') + hint;
+  $('#sHint').textContent = hint;
+  document.querySelectorAll('.tools button').forEach(x => x.disabled = waiting);
   saveGame();
 }
-function movePiece(a, b) {              // swap contents of two cells (either may be empty)
+function movePiece(a, b) {
   const ia = G.board[a], ib = G.board[b]; G.board[a] = ib; G.board[b] = ia;
   if (ia != null) G.pcs[ia].pos = b; if (ib != null) G.pcs[ib].pos = a;
 }
 function onSetupCell(i) {
-  if (!inZone(G, 0, i)) return;
+  if (G.mode === 'online' && G.net.ready[G.net.me]) return;
+  const o = SO(); if (!inZone(G, o, i)) return;
   const id = G.board[i];
   if (UI.cell != null) { if (UI.cell !== i) { movePiece(UI.cell, i); snd('place'); } UI.cell = null; }
   else if (UI.trayR != null) {
     if (id != null) { delete G.pcs[id]; G.board[i] = null; }
-    addPiece(G, 0, UI.trayR, i); snd('place'); buzz(8);
-    if (trayCounts(G, 0)[UI.trayR] <= 0) UI.trayR = firstTray();
+    addPiece(G, o, UI.trayR, i); snd('place'); buzz(8);
+    if (trayCounts(G, o)[UI.trayR] <= 0) UI.trayR = firstTray();
   } else if (id != null) { UI.cell = i; snd('tap'); }
   else UI.trayR = firstTray();
   refreshSetup();
 }
 function onTray(r) {
+  if (G.mode === 'online' && G.net.ready[G.net.me]) return;
   if (UI.cell != null) { const id = G.board[UI.cell]; if (id != null) { delete G.pcs[id]; G.board[UI.cell] = null; } UI.cell = null; UI.trayR = r; refreshSetup(); return; }
-  if (trayCounts(G, 0)[r] <= 0) return;
+  if (trayCounts(G, SO())[r] <= 0) return;
   UI.trayR = UI.trayR === r ? null : r; snd('tap'); refreshSetup();
 }
-function beginBattle() {
+function flagPriorFor(size) {          // computer's memory of where you hide the flag
+  const m = S.get('aiMem', {})[size]; if (!m || m.games < 2) return null;
+  const pr = {}; for (const k in m.flag) pr[k] = 1 + Math.min(4, 4 * m.flag[k] / m.games); return pr;
+}
+async function setupDone() {
   if (firstTray() != null) { toast(T('needFull')); return; }
-  S.set('lastSetup_' + G.size, readSetup(G, 0));
-  G.phase = 'play'; G.turn = 0; G.t0 = Date.now(); snd('clash'); buzz([20, 40, 20]);
-  saveGame(); go('game');
+  const o = SO(); S.set('lastSetup_' + G.size, readSetup(G, o));
+  G.init = G.init || {}; G.init[o] = readSetup(G, o);
+  if (G.mode === 'online') { G.net.ready[G.net.me] = true; netSend({ type: 'ready' }); refreshSetup(); maybeStartOnline(); return; }
+  if (G.mode === 'local' && G.setupO === 0) {
+    G.setupO = 1; G.view = 1; UI.trayR = null; UI.cell = null; saveGame();
+    await handoff(G.names[1], T('setupOf', { n: G.names[1] })); go('setup'); return;
+  }
+  G.phase = 'play'; G.turn = 0; G.t0 = Date.now(); G.rec = []; G.hints = 0;
+  if (G.mode === 'cpu') { G.init[1] = readSetup(G, 1); G.flagPrior = flagPriorFor(G.size); }
+  snd('clash'); buzz([20, 40, 20]); saveGame();
+  if (G.mode === 'local') { G.view = 0; await handoff(G.names[0]); }
+  go('game');
+}
+function setupCheck(o) {
+  const g = G, n = g.n, R = g.rows, grid = readSetup(g, o), items = [];
+  const at = (d, c) => d >= 0 && d < R && c >= 0 && c < n ? grid[d][c] : undefined;
+  let fd = -1, fc = -1, spy = null, gen = null, minersBack = 0, miners = 0, frontStrong = 0, frontScouts = 0, bombsNear = 0, bombs = 0;
+  for (let d = 0; d < R; d++) for (let c = 0; c < n; c++) {
+    const r = grid[d][c];
+    if (r === 0) { fd = d; fc = c; } if (r === 1) spy = [d, c]; if (r === 9) gen = [d, c];
+    if (r === 3) { miners++; if (d < Math.ceil(R / 2)) minersBack++; }
+    if (d === R - 1 && r >= 8 && r <= 10) frontStrong++; if (d === R - 1 && r === 2) frontScouts++;
+    if (r === 11) bombs++;
+  }
+  if (fd < 0) { toast(T('needFull')); return; }
+  const ok = (good, txt) => items.push([good, txt]);
+  ok(fd === 0 ? 1 : fd === R - 1 ? -1 : 0, fd === 0 ? T('c_flagBack') : fd === R - 1 ? T('c_flagFront') : T('c_flagMid'));
+  const sides = [[fd - 1, fc], [fd + 1, fc], [fd, fc - 1], [fd, fc + 1]];
+  let open = 0;
+  sides.forEach(([d, c]) => { const v = at(d, c); if (d < 0 && c >= 0 && c < n) return; if (v === undefined && d >= R) { open++; return; } if (v === undefined) return; if (v === 11) bombsNear++; else open++; });
+  ok(open === 0 ? 1 : open === 1 ? 0 : -1, open === 0 ? T('c_flagSafe') : open === 1 ? T('c_flagOpen1') : T('c_flagOpenN', { n: open }));
+  if (bombs >= 3) ok(bombsNear >= bombs ? -1 : 1, bombsNear >= bombs ? T('c_bombsObv') : T('c_bombsMix'));
+  if (n === 10 && fd === 0 && (fc === 0 || fc === n - 1) && bombsNear >= 1) ok(0, T('c_corner'));
+  if (R >= 3) ok(frontStrong >= 2 ? -1 : 1, frontStrong >= 2 ? T('c_frontStrong', { n: frontStrong }) : T('c_frontOk'));
+  if (R >= 3) ok(frontScouts ? 1 : 0, frontScouts ? T('c_scouts') : T('c_noScouts'));
+  if (miners >= 2) ok(minersBack >= miners / 2 ? 1 : 0, minersBack >= miners / 2 ? T('c_miners') : T('c_minersFront'));
+  if (spy && gen) { const near = Math.abs(spy[0] - gen[0]) + Math.abs(spy[1] - gen[1]) <= 2; ok(near ? 1 : 0, near ? T('c_spy') : T('c_spyFar')); }
+  if (g.mode === 'cpu') {
+    const m = S.get('aiMem', {})[g.size], idx = depthCell(g, o, fd, fc);
+    if (m && m.games >= 2 && (m.flag[idx] || 0) / m.games >= .4) ok(-1, T('c_memory', { a: m.flag[idx], b: m.games }));
+  }
+  const pass = items.filter(x => x[0] === 1).length;
+  openSheet('<h2>🔍 ' + T('checkT') + '</h2><p class="muted">' + T('checkScore', { a: pass, b: items.length }) + '</p><div class="checks">' +
+    items.map(([v, t]) => '<div class="chk ' + (v === 1 ? 'ok' : v === 0 ? 'warn' : 'bad') + '"><b>' + (v === 1 ? '✓' : v === 0 ? '!' : '✗') + '</b><span>' + esc(t) + '</span></div>').join('') +
+    '</div><div class="acts"><button class="btn ghost" id="ckX">' + T('close') + '</button></div>', o2 => { o2.querySelector('#ckX').onclick = () => o2.close(); });
 }
 function savedBoards() {
   const all = S.get('boards', {}), list = all[G.size] || [];
@@ -1005,15 +1459,15 @@ function savedBoards() {
     o.querySelector('#sbSave').onclick = async () => {
       if (firstTray() != null) { toast(T('needFull')); return; }
       const name = await askText(T('boardName'), T('s' + G.size) + ' #' + (list.length + 1)); if (!name) return;
-      list.unshift({ name, t: Date.now(), grid: readSetup(G, 0) }); all[G.size] = list.slice(0, 12); S.set('boards', all);
+      list.unshift({ name, t: Date.now(), grid: readSetup(G, SO()) }); all[G.size] = list.slice(0, 12); S.set('boards', all);
       toast(T('saved')); o.close(); savedBoards();
     };
     o.querySelectorAll('[data-k]').forEach(b => b.onclick = e => {
       const k = +b.dataset.k;
       if (e.target.closest('[data-e]')) { o.close(); editBoard(k); return; }
-      applySetup(G, 0, list[k].grid); UI.cell = null; UI.trayR = null; o.close(); refreshSetup(); toast(T('loaded'));
+      applySetup(G, SO(), list[k].grid); UI.cell = null; UI.trayR = null; o.close(); refreshSetup(); toast(T('loaded'));
     });
-    let lp; o.querySelectorAll('[data-k]').forEach(b => {           // long-press also edits
+    let lp; o.querySelectorAll('[data-k]').forEach(b => {
       b.addEventListener('pointerdown', () => { lp = setTimeout(() => { lp = 'done'; o.close(); editBoard(+b.dataset.k); }, 600); });
       ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => { if (lp !== 'done') clearTimeout(lp); }));
     });
@@ -1031,71 +1485,134 @@ function editBoard(k) {
 
 /* ---------- game screen ---------- */
 SCREENS.game = () => {
-  if (!G || G.phase === 'setup') { setTimeout(() => go(G ? 'setup' : 'home')); return ''; }
-  return '<div class="bar"><button class="back" onclick="go(\'home\')">' + (document.documentElement.dir === 'rtl' ? '› ' : '‹ ') + T('home') + '</button><div class="turn" id="turn"></div><button class="icon" onclick="gameMenu()" aria-label="' + T('menu') + '">☰</button></div>' +
-    '<div class="strip" id="stE" aria-label="' + T('cpu') + '"></div>' +
-    '<div class="boardWrap"><div class="board" id="board" style="--n:' + G.n + '" role="grid"></div></div>' +
-    '<div class="strip" id="stM" aria-label="' + T('you') + '"></div><div class="status" id="status" aria-live="polite"></div>';
+  if (!G || G.phase === 'setup' || G.phase === 'lobby') { setTimeout(() => go(G ? (G.phase === 'lobby' ? 'online' : 'setup') : 'home')); return ''; }
+  const online = G.mode === 'online';
+  return '<div class="bar"><button class="back" onclick="go(\'home\')">' + backArrow() + T('home') + '</button><div class="turn" id="turn"></div>' +
+    (online ? '<span class="net" id="netDot" title=""></span>' : '<button class="icon" id="hintBtn" aria-label="' + T('hint') + '">💡</button>') +
+    '<button class="icon" onclick="gameMenu()" aria-label="' + T('menu') + '">☰</button></div>' +
+    '<div class="strip" id="stE"></div>' +
+    '<div class="boardWrap"><div class="board" id="board" style="--n:' + G.n + '"></div></div>' +
+    '<div class="strip" id="stM"></div><div class="status" id="status" aria-live="polite"></div>' +
+    (online ? '<div class="emos" id="emos">' + EMOS.map(e => '<button data-e="' + e + '">' + e + '</button>').join('') + '</div>' : '');
 };
+const EMOS = ['👍', '😂', '😮', '😬', '🔥', '🤝'];
 SCREENS.game.mount = () => {
-  $('#board').addEventListener('click', e => { const c = e.target.closest('.cell'); if (c) onCell(+c.dataset.i); });
+  const b = $('#board');
+  b.addEventListener('click', e => { if (dragJustEnded()) return; const c = e.target.closest('.cell'); if (c) onCell(+c.dataset.i); });
+  b.addEventListener('pointerdown', e => {
+    const c = e.target.closest('.cell'); if (!c || !e.target.closest('.tok') || !canAct()) return;
+    const i = +c.dataset.i, id = G.board[i]; if (id == null) return; const p = G.pcs[id];
+    if (p.o !== VW() || p.r === 0 || p.r === 11) return;
+    pressStart(e, c, {
+      start: () => { UI.sel = id; UI.moves = allMoves(G, VW()).filter(x => x.id === id); UI.hint = null; refreshGame(); const t = document.querySelector('#board .tok[data-id="' + id + '"]'); if (t) t.classList.add('dragsrc'); },
+      drop: to => { const m = UI.moves.find(x => x.to === to); if (m) doMove(m); else refreshGame(); }
+    });
+  });
+  const hb = $('#hintBtn'); if (hb) hb.onclick = giveHint;
+  const em = $('#emos'); if (em) em.querySelectorAll('button').forEach(x => x.onclick = () => sendEmo(x.dataset.e));
   refreshGame();
-  if (G.phase === 'play' && G.turn === 1 && !UI.busy) aiTurn();
+  if (G.phase === 'play' && G.mode === 'cpu' && G.turn === 1 && !UI.busy) aiTurn();
+  if (G.phase === 'play' && G.mode === 'online') checkMyTurn();
   if (G.phase === 'over' && !G.shownEnd) endSheet();
 };
 function refreshGame(msg) {
   if (scr !== 'game' || !$('#board')) return;
-  $('#board').innerHTML = cellsHTML('play');
-  $('#stE').innerHTML = stripHTML(1); $('#stM').innerHTML = stripHTML(0);
-  const k = RANK_ORDER.filter(r => VARIANTS[G.size].set[r]).length; $('#stE').style.setProperty('--k', k); $('#stM').style.setProperty('--k', k);
+  const v = VW();
+  $('#board').innerHTML = cellsHTML(G, 'play', v, false);
+  const k = RANK_ORDER.filter(r => VARIANTS[G.size].set[r]).length;
+  $('#stE').innerHTML = stripHTML(G, 1 - v); $('#stM').innerHTML = stripHTML(G, v);
+  $('#stE').style.setProperty('--k', k); $('#stM').style.setProperty('--k', k);
   const t = $('#turn');
-  if (G.phase === 'over') { t.className = 'turn'; t.textContent = G.winner === 0 ? T('win') : G.winner === 1 ? T('lose') : T('draw'); }
-  else { t.className = 'turn ' + (G.turn === 0 ? 'me' : 'cpu'); t.textContent = G.turn === 0 ? T('yourTurn') : T('cpuTurn'); }
-  $('#status').textContent = msg != null ? msg : (G.phase === 'play' && G.turn === 0 ? (UI.sel != null ? T('pickTarget') : T('pickPiece')) : '');
+  if (G.phase === 'over') { t.className = 'turn'; t.textContent = G.winner === -1 ? T('draw') : G.mode === 'local' ? T('winOf', { n: G.names[G.winner] }) : G.winner === v ? T('win') : T('lose'); }
+  else {
+    const wait = (G.mode === 'cpu' && G.turn === 1) || (G.mode === 'online' && (G.turn !== v || G.net.pending));
+    t.className = 'turn ' + (G.turn === 0 ? 'red' : 'blue') + (wait ? ' wait' : '');
+    t.textContent = G.mode === 'local' ? T('turnOf', { n: G.names[G.turn] }) : G.mode === 'online' ? (G.turn === v ? T('yourTurn') : T('oppTurn', { n: nameOf(1 - v) })) : (G.turn === 0 ? T('yourTurn') : T('cpuTurn'));
+  }
+  let st = msg;
+  if (st == null) {
+    if (G.phase === 'play' && G.mode === 'online' && !NET.open) st = T('disconnected');
+    else if (G.phase === 'play' && G.mode === 'online' && G.net.pending) st = T('waitOpp', { n: nameOf(1 - v) });
+    else if (G.phase === 'play' && G.turn === v) st = UI.hint ? T('hintMsg', { p: pname(G.pcs[UI.hint.id].r) }) : UI.sel != null ? T('pickTarget') : T('pickPiece');
+    else st = '';
+  }
+  $('#status').textContent = st;
+  const nd = $('#netDot'); if (nd) { nd.className = 'net ' + (NET.open ? 'on' : NET.peer ? 'mid' : 'off'); nd.title = NET.open ? T('connected') : T('disconnected'); }
 }
 function onCell(i) {
-  if (G.phase !== 'play' || G.turn !== 0 || UI.busy) return;
+  const v = VW();
+  const id = G.board[i];
+  if (canAct()) { const m0 = UI.moves.find(x => x.to === i); if (m0) { doMove(m0); return; } }
+  if (id != null && G.pcs[id].o !== v && G.phase !== 'over') {
+    const p = G.pcs[id]; UI.sel = null; UI.moves = []; UI.hint = null; refreshGame();
+    if (!(p.rev && p.r >= 0 && !ST.hideRev)) noteSheet(id);
+    return;
+  }
+  if (!canAct()) return;
   const m = UI.moves.find(x => x.to === i);
   if (m) { doMove(m); return; }
-  const id = G.board[i];
-  if (id != null && G.pcs[id].o === 0) {
+  if (id != null && G.pcs[id].o === v) {
+    UI.hint = null;
     if (UI.sel === id) { UI.sel = null; UI.moves = []; refreshGame(); return; }
     const p = G.pcs[id];
     if (p.r === 0 || p.r === 11) { UI.sel = null; UI.moves = []; refreshGame(T('cantMove')); snd('bad'); return; }
-    const all = allMoves(G, 0).filter(x => x.id === id);
+    const all = allMoves(G, v).filter(x => x.id === id);
     UI.sel = id; UI.moves = all; snd('tap');
     if (!all.length) { const raw = []; pieceMoves(G, id, raw); refreshGame(raw.length ? T('twoSq') : T('cantMove')); return; }
     refreshGame(); return;
   }
-  if (id != null && G.pcs[id].o === 1) {
-    const p = G.pcs[id]; UI.sel = null; UI.moves = []; refreshGame();
-    if (!(p.rev && !ST.hideRev)) noteSheet(id);
-    return;
-  }
-  UI.sel = null; UI.moves = []; refreshGame();
+  UI.sel = null; UI.moves = []; UI.hint = null; refreshGame();
+}
+// play out a move that is already known on both sides; b = battle result or null
+async function playOut(m, from, b) {
+  if (b) {
+    if (scr === 'game') { await slideToward(from, m.to, 220 * SPEED()); await showBattle(b); }
+    refreshGame(); poof(b.at, b.d.r === 11 && b.res === 'D');
+  } else { refreshGame(); animateMove(m.id, from, 240 * SPEED()); snd('move'); }
 }
 async function doMove(m) {
-  UI.busy = true; UI.sel = null; UI.moves = [];
-  const from = m.from, b = applyMove(G, m); saveGame();
-  if (b) { refreshGame(''); await showBattle(b); refreshGame(); }
-  else { refreshGame(); animateMove(m.id, from, 230 * SPEED()); snd('move'); }
-  UI.busy = false;
+  UI.busy = true; UI.sel = null; UI.moves = []; UI.hint = null;
+  const p = G.pcs[m.id], from = m.from, tid = G.board[m.to];
+  if (G.mode === 'online') {
+    if (tid != null) {                       // ask the defender to reveal before resolving
+      G.net.pending = { f: from, t: m.to, ar: p.r }; netSend({ type: 'move', f: from, t: m.to, ar: p.r }); saveGame();
+      refreshGame(); await slideToward(from, m.to, 200 * SPEED()); UI.busy = false; return;
+    }
+    netSend({ type: 'move', f: from, t: m.to, ar: m.long ? p.r : null });
+  }
+  const b = applyMove(G, m); saveGame();
+  await playOut(m, from, b);
+  UI.busy = false; afterTurn();
+}
+function afterTurn() {
   if (G.phase === 'over') return finish();
-  aiTurn();
+  if (G.mode === 'cpu' && G.turn === 1) return aiTurn();
+  if (G.mode === 'local') {
+    setTimeout(async () => { await handoff(G.names[G.turn]); G.view = G.turn; saveGame(); refreshGame(); }, 650 * SPEED());
+    return;
+  }
+  if (G.mode === 'online') checkMyTurn();
 }
 function aiTurn() {
-  if (G.phase !== 'play' || G.turn !== 1) return;
+  if (G.phase !== 'play' || G.turn !== 1 || G.mode !== 'cpu') return;
   UI.busy = true; refreshGame('');
   setTimeout(async () => {
     if (!G || G.phase !== 'play' || G.turn !== 1) { UI.busy = false; return; }
     const m = aiChoose(G, 1);
     if (!m) { G.phase = 'over'; G.winner = 0; G.reason = 'nomoves'; UI.busy = false; return finish(); }
     const from = m.from, b = applyMove(G, m); saveGame();
-    if (b && scr === 'game') { refreshGame(''); await showBattle(b); refreshGame(); }
-    else { refreshGame(); if (!b) { animateMove(m.id, from, 260 * SPEED()); snd('move'); } }
+    await playOut(m, from, b);
     UI.busy = false;
-    if (G.phase === 'over') finish();
+    if (G.phase === 'over') finish(); else refreshGame();
   }, (380 + Math.random() * 320) * SPEED());
+}
+function giveHint() {
+  if (!canAct()) return;
+  const d = G.diff; G.diff = 'hard';
+  const m = aiChoose(G, VW()); G.diff = d;
+  if (!m) { toast(T('noHint')); return; }
+  G.hints = (G.hints || 0) + 1; saveGame();
+  UI.sel = m.id; UI.moves = [m]; UI.hint = m; snd('ping'); refreshGame();
 }
 function battleText(b) {
   const a = pname(b.a.r), d = pname(b.d.r);
@@ -1107,14 +1624,14 @@ function battleText(b) {
 }
 function showBattle(b) {
   return new Promise(res => {
-    const boom = b.d.r === 11 && b.res === 'D', who = o => o === 0 ? T('you') : T('cpu');
-    const aCls = 'bt a' + (b.res === 'D' || b.res === 'T' ? (boom ? ' lose' : ' lose') : '');
+    const boom = b.d.r === 11 && b.res === 'D';
+    const aCls = 'bt a' + (b.res === 'D' || b.res === 'T' ? ' lose' : '');
     const dCls = 'bt d' + (b.res === 'A' || b.res === 'T' ? ' lose' : '') + (boom ? ' boom' : '');
-    const good = (b.res === 'A' && b.a.o === 0) || (b.res === 'D' && b.d.o === 0);
+    const v = VW(), good = G.mode === 'local' ? true : (b.res === 'A' && b.a.o === v) || (b.res === 'D' && b.d.o === v);
     const ov = document.createElement('div'); ov.className = 'ov battle'; ov.setAttribute('role', 'alertdialog');
-    ov.innerHTML = '<div class="bcard"><div class="duel"><div class="side"><div class="' + aCls + '">' + tokHTML(b.a.o, b.a.r) + '</div><div class="who">' + who(b.a.o) + ' · ' + T('attacker') + '</div></div>' +
-      '<div class="vs">⚔</div><div class="side"><div class="' + dCls + '">' + tokHTML(b.d.o, b.d.r) + '</div><div class="who">' + who(b.d.o) + ' · ' + T('defender') + '</div></div></div>' +
-      '<div class="bres">' + esc(battleText(b)) + '</div><div class="bsub">' + esc(pname(b.a.r)) + ' (' + (b.a.r === 0 || b.a.r === 11 ? '' : b.a.r) + ') ⟷ ' + esc(pname(b.d.r)) + (b.d.r === 0 || b.d.r === 11 ? '' : ' (' + b.d.r + ')') + '</div><div class="tapc">' + T('tapCont') + '</div></div>';
+    ov.innerHTML = '<div class="bcard"><div class="duel"><div class="side"><div class="' + aCls + '">' + tokHTML(b.a.o, b.a.r) + '</div><div class="who">' + esc(nameOf(b.a.o)) + ' · ' + T('attacker') + '</div></div>' +
+      '<div class="vs">⚔</div><div class="side"><div class="' + dCls + '">' + tokHTML(b.d.o, b.d.r) + '</div><div class="who">' + esc(nameOf(b.d.o)) + ' · ' + T('defender') + '</div></div></div>' +
+      '<div class="bres">' + esc(battleText(b)) + '</div><div class="bsub">' + esc(pname(b.a.r)) + (b.a.r === 0 || b.a.r === 11 ? '' : ' (' + b.a.r + ')') + ' ⟷ ' + esc(pname(b.d.r)) + (b.d.r === 0 || b.d.r === 11 ? '' : ' (' + b.d.r + ')') + '</div><div class="tapc">' + T('tapCont') + '</div></div>';
     document.body.appendChild(ov);
     snd('clash'); setTimeout(() => { if (boom) { snd('boom'); buzz([60, 30, 120]); } else buzz(good ? 25 : [40, 30, 40]); }, 900);
     let done = false; const close = () => { if (done) return; done = true; ov.remove(); res(); };
@@ -1123,74 +1640,329 @@ function showBattle(b) {
   });
 }
 function noteSheet(id) {
-  const p = G.pcs[id], opts = ['q', ...RANK_ORDER];
+  const p = G.pcs[id], opts = ['q', ...RANK_ORDER], o = p.o;
   openSheet('<h2>' + T('noteT') + '</h2><p class="muted">' + T('noteSub') + '</p><div class="notes">' +
-    opts.map(r => '<button data-r="' + r + '">' + (r === 'q' ? '<div class="tb">' + tokHTML(1, 0, { show: false, note: 'q' }) + '</div>' + T('unknown') : tb(1, r) + esc(pname(r))) + '</button>').join('') +
-    '</div><div class="acts two"><button class="btn ghost" id="nC">' + T('noteClear') + '</button><button class="btn ghost" id="nX">' + T('close') + '</button></div>', o => {
-    o.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { const v = b.dataset.r; p.note = v === 'q' ? 'q' : +v; saveGame(); o.close(); refreshGame(); snd('tap'); });
-    o.querySelector('#nC').onclick = () => { p.note = null; saveGame(); o.close(); refreshGame(); };
-    o.querySelector('#nX').onclick = () => o.close();
+    opts.map(r => '<button data-r="' + r + '">' + (r === 'q' ? '<div class="tb">' + tokHTML(o, 0, { show: false, note: 'q' }) + '</div>' + T('unknown') : tb(o, r) + esc(pname(r))) + '</button>').join('') +
+    '</div><div class="acts two"><button class="btn ghost" id="nC">' + T('noteClear') + '</button><button class="btn ghost" id="nX">' + T('close') + '</button></div>', ov => {
+    ov.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { const v = b.dataset.r; p.note = v === 'q' ? 'q' : +v; saveGame(); ov.close(); refreshGame(); snd('tap'); });
+    ov.querySelector('#nC').onclick = () => { p.note = null; saveGame(); ov.close(); refreshGame(); };
+    ov.querySelector('#nX').onclick = () => ov.close();
   });
 }
 function gameMenu() {
-  const over = G.phase === 'over';
+  const over = G.phase === 'over', online = G.mode === 'online';
   openSheet('<h2>' + T('menu') + '</h2><div class="acts">' +
     '<button class="btn ghost" id="mLog">📜 ' + T('log') + '</button>' +
     '<button class="btn ghost" id="mRules">❔ ' + T('rules') + '</button>' +
     '<button class="btn ghost" id="mSnd">' + (ST.sound ? '🔊' : '🔇') + ' ' + T('sound') + '</button>' +
+    (online && !over ? '<button class="btn ghost" id="mInv">📤 ' + T('shareInvite') + '</button>' : '') +
     (over ? '<button class="btn pri" id="mNew">⚔ ' + T('playAgain') + '</button>' : '<button class="btn danger" id="mRes">🏳 ' + T('resign') + '</button>') +
+    (online ? '<button class="btn ghost" id="mLeave">🚪 ' + T('leaveRoom') + '</button>' : '') +
     '<button class="btn ghost" id="mX">' + T('close') + '</button></div>', o => {
     o.querySelector('#mLog').onclick = () => { o.close(); logSheet(); };
     o.querySelector('#mRules').onclick = () => { o.close(); go('rules'); };
     o.querySelector('#mSnd').onclick = () => { ST.sound = !ST.sound; saveST(); o.close(); toast(T('sound') + ': ' + (ST.sound ? 'ON' : 'OFF')); };
     o.querySelector('#mX').onclick = () => o.close();
-    const n = o.querySelector('#mNew'); if (n) n.onclick = () => { o.close(); startSetup(G.size, G.diff); };
-    const r = o.querySelector('#mRes'); if (r) r.onclick = async () => { o.close(); if (await ask(T('resignQ'), T('resign'), true)) { G.phase = 'over'; G.winner = 1; G.reason = 'resign'; G.t1 = Date.now(); finish(); } };
+    const inv = o.querySelector('#mInv'); if (inv) inv.onclick = () => { o.close(); shareInvite(); };
+    const n = o.querySelector('#mNew'); if (n) n.onclick = () => { o.close(); if (online) requestRematch(); else if (G.mode === 'local') startLocal(G.size, G.names); else startSetup(G.size, G.diff); };
+    const r = o.querySelector('#mRes'); if (r) r.onclick = async () => {
+      o.close(); if (!(await ask(T('resignQ'), T('resign'), true))) return;
+      G.phase = 'over'; G.winner = G.mode === 'local' ? 1 - G.turn : 1 - VW(); G.reason = 'resign'; G.t1 = Date.now();
+      if (online) netSend({ type: 'resign' });
+      finish();
+    };
+    const lv = o.querySelector('#mLeave'); if (lv) lv.onclick = async () => { o.close(); if (await ask(T('leaveQ'), T('leaveRoom'), true)) { if (G.phase !== 'over') netSend({ type: 'resign' }); netClose(); G = null; S.del('game'); go('home'); } };
   });
 }
 function logSheet() {
-  const L = G.log.slice().reverse();
+  const L = G.log.slice().reverse(), v = VW();
   openSheet('<h2>' + T('log') + '</h2>' + (L.length ? L.map(e => {
     const b = { a: { r: e.ar, o: e.ao }, d: { r: e.dr, o: 1 - e.ao }, res: e.res };
-    const good = (e.res === 'A' && e.ao === 0) || (e.res === 'D' && e.ao === 1);
-    return '<div class="logl"><span class="d">#' + (e.ply + 1) + '</span>' + tb(e.ao, e.ar) + '<span>⚔</span>' + tb(1 - e.ao, e.dr) + '<span style="flex:1">' + esc(battleText(b)) + '</span><span>' + (e.res === 'T' ? '＝' : good ? '✓' : '✗') + '</span></div>';
+    const good = (e.res === 'A' && e.ao === v) || (e.res === 'D' && e.ao !== v);
+    return '<div class="logl"><span class="d">#' + (e.ply + 1) + '</span>' + tb(e.ao, e.ar) + '<span>⚔</span>' + tb(1 - e.ao, e.dr) + '<span style="flex:1">' + esc(battleText(b)) + '</span><span>' + (e.res === 'T' ? '＝' : G.mode === 'local' ? '' : good ? '✓' : '✗') + '</span></div>';
   }).join('') : '<p class="muted">' + T('noLog') + '</p>') + '<div class="acts"><button class="btn ghost" id="lX">' + T('close') + '</button></div>', o => { o.querySelector('#lX').onclick = () => o.close(); });
+}
+function saveReplay() {
+  if (!G.init || !G.init[0] || !G.init[1] || !G.rec || G.replaySaved) return;
+  G.replaySaved = true;
+  const list = S.get('replays', []);
+  list.unshift({ t: Date.now(), mode: G.mode, size: G.size, diff: G.diff, names: [nameOf(0), nameOf(1)], me: G.mode === 'online' ? G.net.me : 0, winner: G.winner, reason: G.reason, init: G.init, rec: G.rec });
+  S.set('replays', list.slice(0, 10));
 }
 function finish() {
   if (!G.t1) G.t1 = Date.now();
   if (!G.counted) {
     G.counted = true;
-    const st = S.get('stats', { games: 0, wins: 0, losses: 0, draws: 0, streak: 0, best: 0, fastest: null, by: {} });
-    const k = G.diff + '_' + G.size; st.by[k] = st.by[k] || { w: 0, l: 0, d: 0 };
-    st.games++;
-    if (G.winner === 0) { st.wins++; st.streak++; st.best = Math.max(st.best, st.streak); st.by[k].w++; const mv = Math.ceil(G.ply / 2); if (!st.fastest || mv < st.fastest.m) st.fastest = { m: mv, s: G.size, d: G.diff }; }
-    else if (G.winner === 1) { st.losses++; st.streak = 0; st.by[k].l++; }
-    else { st.draws++; st.by[k].d++; }
-    S.set('stats', st);
+    if (G.mode === 'cpu') {
+      const st = S.get('stats', { games: 0, wins: 0, losses: 0, draws: 0, streak: 0, best: 0, fastest: null, by: {} });
+      const k = G.diff + '_' + G.size; st.by[k] = st.by[k] || { w: 0, l: 0, d: 0 };
+      st.games++;
+      if (G.winner === 0) { st.wins++; st.streak++; st.best = Math.max(st.best, st.streak); st.by[k].w++; const mv = Math.ceil(G.ply / 2); if (!st.fastest || mv < st.fastest.m) st.fastest = { m: mv, s: G.size, d: G.diff }; }
+      else if (G.winner === 1) { st.losses++; st.streak = 0; st.by[k].l++; }
+      else { st.draws++; st.by[k].d++; }
+      S.set('stats', st);
+      if (G.init && G.init[0]) {                 // the computer remembers where your flag was
+        const mem = S.get('aiMem', {}), m = mem[G.size] = mem[G.size] || { games: 0, flag: {} };
+        for (let d = 0; d < G.rows; d++) for (let c = 0; c < G.n; c++) if (G.init[0][d][c] === 0) { const idx = depthCell(G, 0, d, c); m.flag[idx] = (m.flag[idx] || 0) + 1; }
+        m.games++; S.set('aiMem', mem);
+      }
+    } else if (G.mode === 'online') {
+      const so = S.get('statsOnline', { w: 0, l: 0, d: 0 });
+      if (G.winner === G.net.me) so.w++; else if (G.winner === -1) so.d++; else so.l++;
+      S.set('statsOnline', so);
+      netSend({ type: 'reveal', grid: G.init[G.net.me] });
+    }
   }
-  S.del('game');
+  saveReplay(); saveGame();
   refreshGame();
-  setTimeout(() => { snd(G.winner === 0 ? 'win' : G.winner === 1 ? 'lose' : 'tap'); endSheet(); }, 350);
+  setTimeout(() => { const v = VW(); snd(G.winner === -1 ? 'tap' : G.mode === 'local' || G.winner === v ? 'win' : 'lose'); endSheet(); }, 350);
 }
 function endSheet() {
+  if (scr !== 'game') return;
   G.shownEnd = true;
-  const w = G.winner, reason = G.reason;
-  const rk = reason === 'flag' ? (w === 0 ? 'rflag' : 'rflagL') : reason === 'nomoves' ? (w === 0 ? 'rnomoves' : 'rnomovesL') : reason === 'resign' ? 'rresign' : reason === 'stuck' ? 'rstuck' : 'rcap';
+  const w = G.winner, reason = G.reason, v = VW(), meWon = w === v;
+  let rk = reason === 'flag' ? (meWon ? 'rflag' : 'rflagL') : reason === 'nomoves' ? (meWon ? 'rnomoves' : 'rnomovesL') : reason === 'resign' ? (meWon ? 'rOppResign' : 'rresign') : reason === 'stuck' ? 'rstuck' : 'rcap';
+  let title = w === -1 ? T('draw') : meWon ? '🏆 ' + T('win') : T('lose'), sub = T(rk);
+  if (G.mode === 'local' && w !== -1) { title = '🏆 ' + T('winOf', { n: G.names[w] }); sub = reason === 'flag' ? T('rflagOf', { n: G.names[w] }) : reason === 'resign' ? T('rresignOf', { n: G.names[1 - w] }) : T('rnomovesOf', { n: G.names[1 - w] }); }
+  if (G.mode === 'online' && reason === 'flag') sub = meWon ? T('rflagOf', { n: T('you') }) : T('rflagOf', { n: nameOf(1 - v) });
   const secs = Math.max(1, Math.round(((G.t1 || Date.now()) - G.t0) / 1000));
   const tm = Math.floor(secs / 60) + ':' + String(secs % 60).padStart(2, '0');
-  const caps = G.log.filter(e => (e.res === 'A' && e.ao === 0) || (e.res === 'D' && e.ao === 1)).length;
-  openSheet('<div class="endT" style="color:' + (w === 0 ? 'var(--gt)' : 'var(--txt)') + '">' + (w === 0 ? '🏆 ' + T('win') : w === 1 ? T('lose') : T('draw')) + '</div>' +
-    '<p style="text-align:center" class="muted">' + T(rk) + ' · ' + T(G.diff) + ' · ' + T('s' + G.size) + '</p>' +
-    '<div class="kv"><div><b>' + Math.ceil(G.ply / 2) + '</b><span>' + T('moves') + '</span></div><div><b>' + tm + '</b><span>' + T('time') + '</span></div></div>' +
-    '<div class="acts"><button class="btn pri" id="eSame">⚔ ' + T('sameSetup') + '</button><button class="btn" id="eNew">' + T('playAgain') + '</button>' +
+  const meta = G.mode === 'cpu' ? T(G.diff) + ' · ' + T('s' + G.size) : T('s' + G.size);
+  openSheet('<div class="endT" style="color:' + (meWon || G.mode === 'local' ? 'var(--gt)' : 'var(--txt)') + '">' + esc(title) + '</div>' +
+    '<p style="text-align:center" class="muted">' + esc(sub) + ' · ' + meta + '</p>' +
+    '<div class="kv"><div><b>' + Math.ceil(G.ply / 2) + '</b><span>' + T('moves') + '</span></div><div><b>' + tm + '</b><span>' + T('time') + '</span></div>' +
+    (G.hints ? '<div style="grid-column:span 2"><b>' + G.hints + '</b><span>' + T('hintsUsed') + '</span></div>' : '') + '</div>' +
+    '<div class="acts">' + (G.replaySaved ? '<button class="btn" id="eRp">▶ ' + T('replay') + '</button>' : '') +
+    (G.mode === 'online' ? '<button class="btn pri" id="eRm">⚔ ' + T('rematch') + '</button>' :
+      '<button class="btn pri" id="eSame">⚔ ' + (G.mode === 'cpu' ? T('sameSetup') : T('playAgain')) + '</button>' + (G.mode === 'cpu' ? '<button class="btn" id="eNew">' + T('newGame') + '</button>' : '')) +
     '<div class="acts two" style="margin:0"><button class="btn ghost" id="eView">' + T('viewBoard') + '</button><button class="btn ghost" id="eHome">' + T('toHome') + '</button></div></div>', o => {
     const size = G.size, diff = G.diff, mine = S.get('lastSetup_' + size, null);
-    o.querySelector('#eSame').onclick = () => { o.close(); startSetup(size, diff, mine); };
-    o.querySelector('#eNew').onclick = () => { o.close(); newGameSheet(); };
+    const rp = o.querySelector('#eRp'); if (rp) rp.onclick = () => { o.close(); openReplay(S.get('replays', [])[0]); };
+    const rm = o.querySelector('#eRm'); if (rm) rm.onclick = () => { o.close(); requestRematch(); };
+    const sm = o.querySelector('#eSame'); if (sm) sm.onclick = () => { o.close(); if (G.mode === 'local') startLocal(size, G.names); else startSetup(size, diff, mine); };
+    const nw = o.querySelector('#eNew'); if (nw) nw.onclick = () => { o.close(); newGameSheet(); };
     o.querySelector('#eView').onclick = () => o.close();
     o.querySelector('#eHome').onclick = () => { o.close(); go('home'); };
   });
 }
+
+/* ---------- replay ---------- */
+function openReplay(rp) { if (!rp) return; UI.rp = rp; UI.rk = rp.rec.length; go('replay'); }
+SCREENS.replay = () => {
+  const rp = UI.rp; if (!rp) { setTimeout(() => go('stats')); return ''; }
+  return barHTML(T('replay')) + '<p class="muted" style="text-align:center;margin:0">' + esc(rp.names[0]) + ' ⚔ ' + esc(rp.names[1]) + ' · ' + T('s' + rp.size) + '</p>' +
+    '<div class="boardWrap"><div class="board" id="board" style="--n:' + VARIANTS[rp.size].n + '"></div></div>' +
+    '<div class="status" id="rpTxt"></div>' +
+    '<input type="range" id="rpR" min="0" max="' + rp.rec.length + '" value="' + UI.rk + '" aria-label="' + T('replay') + '">' +
+    '<div class="rpc"><button class="icon" id="rp0">⏮</button><button class="icon" id="rpB">◀</button><button class="icon big" id="rpP">▶</button><button class="icon" id="rpF">▶</button><button class="icon" id="rpE">⏭</button></div>';
+};
+SCREENS.replay.mount = () => {
+  const rp = UI.rp, n = rp.rec.length;
+  const draw = () => {
+    const { g, b } = replayGame(rp, UI.rk); const saveG = G; G = g;
+    $('#board').innerHTML = cellsHTML(g, 'replay', rp.me, true); G = saveG;
+    $('#rpR').value = UI.rk;
+    const who = UI.rk > 0 ? (rp.names[UI.rk % 2 === 1 ? 0 : 1]) : '';
+    $('#rpTxt').textContent = T('step', { a: UI.rk, b: n }) + (UI.rk > 0 && b && g.last && b.at === g.last.t ? ' · ' + battleText(b) : who ? ' · ' + who : '');
+  };
+  const stop = () => { if (UI.rpTimer) { clearInterval(UI.rpTimer); UI.rpTimer = null; } $('#rpP').textContent = '▶'; };
+  const step = d => { UI.rk = Math.max(0, Math.min(n, UI.rk + d)); draw(); };
+  $('#rpR').oninput = e => { stop(); UI.rk = +e.target.value; draw(); };
+  $('#rp0').onclick = () => { stop(); UI.rk = 0; draw(); };
+  $('#rpE').onclick = () => { stop(); UI.rk = n; draw(); };
+  $('#rpB').onclick = () => { stop(); step(-1); };
+  $('#rpF').onclick = () => { stop(); step(1); };
+  $('#rpP').onclick = () => {
+    if (UI.rpTimer) return stop();
+    if (UI.rk >= n) UI.rk = 0;
+    $('#rpP').textContent = '⏸';
+    UI.rpTimer = setInterval(() => { if (UI.rk >= n) return stop(); step(1); }, 650 * SPEED());
+  };
+  $('#rpB').textContent = isRTL() ? '▶' : '◀'; $('#rpF').textContent = isRTL() ? '◀' : '▶';
+  $('#rp0').textContent = isRTL() ? '⏭' : '⏮'; $('#rpE').textContent = isRTL() ? '⏮' : '⏭';
+  draw();
+};
+
+/* ===================== online (PeerJS, direct phone-to-phone) ===================== */
+const NET = { peer: null, conn: null, open: false, retry: null, lastEmo: 0 };
+function loadScript(u) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = u; s.onload = res; s.onerror = rej; document.head.appendChild(s); setTimeout(rej, 12000); }); }
+async function loadPeer() { if (window.Peer) return true; for (const u of PEER_CDNS) { try { await loadScript(u); if (window.Peer) return true; } catch (e) {} } return false; }
+function peerOpts() {
+  const q = new URLSearchParams(location.search);
+  const o = { debug: 0, config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }, { urls: 'stun:stun.cloudflare.com:3478' }] } };
+  if (q.get('peerhost')) { o.host = q.get('peerhost'); o.port = +(q.get('peerport') || 9000); o.path = '/'; o.secure = false; }
+  return o;
+}
+const CODE_AB = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const genCode = () => Array.from({ length: 5 }, () => CODE_AB[Math.floor(Math.random() * CODE_AB.length)]).join('');
+const roomId = c => 'flagnest-v1-' + c.toLowerCase();
+function inviteURL() { return location.origin + location.pathname + '?join=' + G.net.code; }
+
+async function hostRoom(size) {
+  G = makeGame(size, 'medium'); G.mode = 'online'; G.phase = 'lobby';
+  G.net = { role: 'host', code: genCode(), me: 0, seq: 0, lastIn: 0, out: [], oppName: '', ready: [false, false], rm: [false, false], pending: null };
+  saveGame(); go('online'); netEnsure();
+}
+function joinSheet(pre) {
+  openSheet('<h2>' + T('joinRoom') + '</h2><p class="muted">' + T('enterCode') + '</p><input type="text" id="jc" maxlength="5" autocapitalize="characters" autocomplete="off" style="text-align:center;font:900 28px var(--fd);letter-spacing:6px;direction:ltr" value="' + esc(pre || '') + '">' +
+    '<div class="acts two"><button class="btn ghost" id="jX">' + T('cancel') + '</button><button class="btn pri" id="jGo">' + T('join') + '</button></div>', o => {
+    const inp = o.querySelector('#jc');
+    inp.oninput = () => { inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); };
+    o.querySelector('#jX').onclick = () => o.close();
+    o.querySelector('#jGo').onclick = () => { const c = inp.value.trim(); if (c.length !== 5) { snd('bad'); return; } o.close(); joinRoom(c); };
+  });
+}
+async function joinRoom(code) {
+  if (G && (G.phase === 'play' || G.phase === 'setup') && !(await ask(T('resumeQ'), T('startNew'), true))) return;
+  netClose();
+  G = { mode: 'online', phase: 'lobby', size: 10, net: { role: 'guest', code: code.toUpperCase(), me: 1, seq: 0, lastIn: 0, out: [], oppName: '', ready: [false, false], rm: [false, false], pending: null } };
+  saveGame(); go('online'); netEnsure();
+}
+async function netEnsure() {
+  if (!G || G.mode !== 'online' || NET.peer) return;
+  if (!(await loadPeer())) { toast(T('netFail'), 4000); renderNet(); return; }
+  const host = G.net.role === 'host';
+  const peer = NET.peer = new Peer(host ? roomId(G.net.code) : undefined, peerOpts());
+  peer.on('open', () => { renderNet(); if (!host) connectToHost(); });
+  peer.on('connection', c => { if (host) attachConn(c); });
+  peer.on('disconnected', () => { setTimeout(() => { try { if (NET.peer === peer && !peer.destroyed) peer.reconnect(); } catch (e) {} }, 1500); });
+  peer.on('error', e => {
+    const t = e && e.type;
+    if (t === 'unavailable-id') {                     // the room id is still held (e.g. after a reload) — retry, or pick a new code in the lobby
+      if (G.phase === 'lobby' && !G.net.lastIn) { G.net.code = genCode(); saveGame(); }
+      netClose(); setTimeout(netEnsure, G.phase === 'lobby' ? 300 : 4000); return;
+    }
+    if (t === 'peer-unavailable') { NET.lastErr = 'nf'; renderNet(); scheduleRetry(); return; }
+    if (t === 'network' || t === 'server-error' || t === 'socket-error' || t === 'socket-closed') { NET.lastErr = 'net'; renderNet(); }
+  });
+}
+function scheduleRetry() { clearTimeout(NET.retry); if (G && G.mode === 'online' && G.net.role === 'guest' && !NET.open) NET.retry = setTimeout(connectToHost, 3000); }
+function connectToHost() { if (!NET.peer || NET.peer.destroyed || NET.open) return; attachConn(NET.peer.connect(roomId(G.net.code), { reliable: true, serialization: 'json' })); scheduleRetry(); }
+function attachConn(c) {
+  if (NET.conn && NET.conn !== c) { try { NET.conn.close(); } catch (e) {} }
+  NET.conn = c;
+  const onOpen = () => { NET.open = true; NET.lastErr = null; clearTimeout(NET.retry); rawSend({ type: 'hi', v: APP_VERSION, name: ST.name || '', have: G.net.lastIn }); renderNet(); };
+  if (c.open) onOpen(); else c.on('open', onOpen);
+  c.on('data', onNet);
+  c.on('close', () => { if (NET.conn !== c) return; NET.open = false; renderNet(); scheduleRetry(); });
+  c.on('error', () => { if (NET.conn !== c) return; NET.open = false; renderNet(); scheduleRetry(); });
+}
+function netClose() { clearTimeout(NET.retry); try { if (NET.conn) NET.conn.close(); } catch (e) {} try { if (NET.peer) NET.peer.destroy(); } catch (e) {} NET.peer = null; NET.conn = null; NET.open = false; }
+function rawSend(m) { try { if (NET.conn && NET.open) NET.conn.send(m); } catch (e) {} }
+function netSend(m) {
+  if (!G || G.mode !== 'online') return;
+  m.seq = ++G.net.seq; G.net.out.push(m); if (G.net.out.length > 300) G.net.out.splice(0, G.net.out.length - 300);
+  saveGame(); rawSend(m);
+}
+function resendFrom(have) { G.net.out.filter(x => x.seq > have).forEach(rawSend); }
+function renderNet() { if (scr === 'online') render(); else if (scr === 'setup') refreshSetup(); else if (scr === 'game') refreshGame(); }
+function onNet(m) {
+  if (!m || !m.type || !G || G.mode !== 'online') return;
+  if (m.type === 'hi') {
+    if (m.v && m.v.split('.')[0] !== APP_VERSION.split('.')[0]) toast(T('verMismatch'), 4000);
+    G.net.oppName = (m.name || '').slice(0, 20); resendFrom(m.have || 0);
+    if (!m.r) rawSend({ type: 'hi', r: 1, v: APP_VERSION, name: ST.name || '', have: G.net.lastIn });
+    if (G.net.role === 'host' && G.phase === 'lobby') { netSend({ type: 'cfg', size: G.size }); toSetupOnline(); }
+    snd('ping'); saveGame(); renderNet(); return;
+  }
+  if (m.type === 'need') { resendFrom(m.have); return; }
+  if (m.type === 'emo') { floatEmo(m.e, false); return; }
+  if (m.seq) {
+    if (m.seq <= G.net.lastIn) return;
+    if (m.seq > G.net.lastIn + 1) { rawSend({ type: 'need', have: G.net.lastIn }); return; }
+    G.net.lastIn = m.seq;
+  }
+  handleNet(m); saveGame();
+}
+function toSetupOnline() {
+  const net = G.net, size = G.size;
+  G = makeGame(size, 'medium'); G.mode = 'online'; G.net = net; net.ready = [false, false]; net.rm = [false, false]; net.pending = null;
+  const last = S.get('lastSetup_' + size, null); if (last) applySetup(G, net.me, last);
+  UI.trayR = null; saveGame(); go('setup');
+}
+function maybeStartOnline() {
+  if (!(G.net.ready[0] && G.net.ready[1]) || G.phase !== 'setup') return;
+  const opp = 1 - G.net.me;
+  zoneCells(G, opp).forEach(i => { if (G.board[i] == null) addPiece(G, opp, -1, i); });
+  G.phase = 'play'; G.turn = 0; G.t0 = Date.now(); G.rec = []; G.init = G.init || {}; G.init[G.net.me] = readSetup(G, G.net.me);
+  snd('clash'); buzz([20, 40, 20]); saveGame(); go('game');
+}
+async function handleNet(m) {
+  const me = G.net.me, opp = 1 - me;
+  if (m.type === 'cfg') { G.size = m.size; toSetupOnline(); return; }
+  if (m.type === 'ready') { G.net.ready[opp] = true; if (scr === 'setup') refreshSetup(); maybeStartOnline(); return; }
+  if (m.type === 'move') {
+    if (G.phase !== 'play' || G.turn !== opp) return;
+    const id = G.board[m.f]; if (id == null) return;
+    const p = G.pcs[id]; if (m.ar != null) p.r = m.ar;
+    const tid = G.board[m.t];
+    if (tid != null) netSend({ type: 'bres', dr: G.pcs[tid].r });
+    const dist = Math.abs(rowOf(G, m.f) - rowOf(G, m.t)) + Math.abs(colOf(G, m.f) - colOf(G, m.t));
+    const mv = { id, from: m.f, to: m.t, long: dist > 1 };
+    UI.busy = true; const b = applyMove(G, mv); saveGame();
+    snd('ping'); await playOut(mv, m.f, b); UI.busy = false; afterTurn(); return;
+  }
+  if (m.type === 'bres') {
+    const pd = G.net.pending; if (!pd) return;
+    const id = G.board[pd.f], tid = G.board[pd.t]; if (id == null || tid == null) { G.net.pending = null; return; }
+    G.pcs[tid].r = m.dr; G.net.pending = null;
+    const mv = { id, from: pd.f, to: pd.t, long: Math.abs(rowOf(G, pd.f) - rowOf(G, pd.t)) + Math.abs(colOf(G, pd.f) - colOf(G, pd.t)) > 1 };
+    UI.busy = true; const b = applyMove(G, mv); saveGame();
+    refreshGame(); const el = document.querySelector('#board .cell[data-i="' + pd.f + '"] .tok'); if (el) el.style.transform = '';
+    await playOut(mv, pd.f, b); UI.busy = false; afterTurn(); return;
+  }
+  if (m.type === 'resign' || m.type === 'nomoves') {
+    if (G.phase !== 'play') return;
+    G.phase = 'over'; G.winner = me; G.reason = m.type === 'resign' ? 'resign' : 'nomoves'; G.t1 = Date.now();
+    if (m.type === 'resign') toast(T('oppResigned', { n: nameOf(opp) }), 3000);
+    finish(); return;
+  }
+  if (m.type === 'reveal') {
+    G.init = G.init || {}; G.init[opp] = m.grid;
+    if (G.rec && G.init[me]) {                      // show the opponent's surviving pieces on the final board
+      const { g } = replayGame({ size: G.size, init: G.init, rec: G.rec }, G.rec.length);
+      for (const id in G.pcs) { const p = G.pcs[id]; if (p.o === opp && !p.dead && p.r < 0) { const q = g.board[p.pos]; if (q != null) p.r = g.pcs[q].r; } }
+      saveReplay(); refreshGame();
+      if (scr === 'game' && ovStack.length) { ovStack.forEach(o => o.close()); G.shownEnd = false; endSheet(); }
+    }
+    return;
+  }
+  if (m.type === 'rematch') { G.net.rm[opp] = true; if (G.net.rm[me]) toSetupOnline(); else toast(T('rematchAsk', { n: nameOf(opp) }), 3500); return; }
+}
+function checkMyTurn() {
+  if (G.phase !== 'play' || G.turn !== G.net.me) { refreshGame(); return; }
+  if (!allMoves(G, G.net.me).length) { netSend({ type: 'nomoves' }); G.phase = 'over'; G.winner = 1 - G.net.me; G.reason = 'nomoves'; finish(); return; }
+  refreshGame();
+}
+function requestRematch() { G.net.rm[G.net.me] = true; netSend({ type: 'rematch' }); if (G.net.rm[1 - G.net.me]) toSetupOnline(); else toast(T('rematchWait'), 3000); }
+function sendEmo(e) { if (Date.now() - NET.lastEmo < 900) return; NET.lastEmo = Date.now(); rawSend({ type: 'emo', e }); floatEmo(e, true); }
+function floatEmo(e, mine) {
+  if (!EMOS.includes(e)) return;
+  const d = document.createElement('div'); d.className = 'floatE' + (mine ? ' mine' : ''); d.textContent = e; document.body.appendChild(d);
+  if (!mine) { snd('tap'); buzz(15); } setTimeout(() => d.remove(), 2200);
+}
+async function shareInvite() {
+  const url = inviteURL(), text = T('inviteText', { c: G.net.code });
+  try { if (navigator.share) { await navigator.share({ title: 'FlagNest', text, url }); return; } } catch (e) { return; }
+  try { await navigator.clipboard.writeText(text + ' ' + url); toast(T('copied')); } catch (e) {}
+}
+SCREENS.online = () => {
+  if (!G || G.mode !== 'online') { setTimeout(() => go('home')); return ''; }
+  const host = G.net.role === 'host';
+  const st = NET.open ? T('connected') : NET.lastErr === 'nf' ? T('roomNotFound') : NET.lastErr === 'net' ? T('netFail') : !NET.peer ? T('connecting') : host ? T('waitFriend') : T('connecting');
+  return barHTML(T('mOnline')) +
+    '<div class="card" style="text-align:center">' + (host ? '<p class="muted" style="margin:0">' + T('roomCode') + '</p><div class="code">' + esc(G.net.code) + '</div>' +
+      '<div class="acts"><button class="btn pri" id="oWa">💬 ' + T('sendWa') + '</button><button class="btn ghost" id="oSh">📤 ' + T('shareInvite') + '</button></div>'
+      : '<p class="muted" style="margin:0">' + T('roomCode') + '</p><div class="code">' + esc(G.net.code) + '</div>') +
+    '<p class="netst"><span class="net ' + (NET.open ? 'on' : 'mid') + '"></span> ' + esc(st) + '</p></div>' +
+    '<div class="card"><p style="margin:0 0 6px">🔒 ' + T('fairNote') + '</p><p class="muted" style="margin:0">' + T('onlineNote') + '</p></div>' +
+    '<button class="btn danger" id="oX">' + T('leaveRoom') + '</button>';
+};
+SCREENS.online.mount = () => {
+  const wa = $('#oWa'); if (wa) wa.onclick = () => window.open('https://wa.me/?text=' + encodeURIComponent(T('inviteText', { c: G.net.code }) + ' ' + inviteURL()), '_blank');
+  const sh = $('#oSh'); if (sh) sh.onclick = shareInvite;
+  $('#oX').onclick = async () => { if (await ask(T('leaveQ'), T('leaveRoom'), true)) { netClose(); G = null; S.del('game'); go('home'); } };
+};
 
 /* ---------- rules ---------- */
 SCREENS.rules = () => {
@@ -1202,29 +1974,41 @@ SCREENS.rules = () => {
 
 /* ---------- stats ---------- */
 SCREENS.stats = () => {
-  const st = S.get('stats', null);
-  if (!st || !st.games) return barHTML(T('stats')) + '<div class="card"><p>' + T('noStats') + '</p><button class="btn pri" onclick="newGameSheet()">⚔ ' + T('newGame') + '</button></div>';
-  const rate = Math.round(st.wins / st.games * 100);
-  const by = ['easy', 'medium', 'hard'].map(d => {
-    let w = 0, l = 0, dr = 0; [10, 7, 5].forEach(s => { const x = st.by[d + '_' + s]; if (x) { w += x.w; l += x.l; dr += x.d; } });
-    return w + l + dr ? '<div class="row"><span class="lb">' + T(d) + '</span><span>' + w + ' / ' + l + (dr ? ' / ' + dr : '') + '</span></div>' : '';
-  }).join('');
-  return barHTML(T('stats')) +
-    '<div class="kv"><div><b>' + st.games + '</b><span>' + T('games') + '</span></div><div><b>' + rate + '%</b><span>' + T('winRate') + '</span></div>' +
-    '<div><b>' + st.wins + '</b><span>' + T('wins') + '</span></div><div><b>' + st.losses + '</b><span>' + T('losses') + '</span></div>' +
-    '<div><b>' + st.streak + '</b><span>' + T('streak') + '</span></div><div><b>' + st.best + '</b><span>' + T('best') + '</span></div></div>' +
-    (st.fastest ? '<div class="card"><span class="muted">' + T('fastest') + '</span><br><b style="font:900 22px var(--fd)">' + st.fastest.m + ' ' + T('moves') + '</b> <span class="muted">· ' + T(st.fastest.d) + ' · ' + T('s' + st.fastest.s) + '</span></div>' : '') +
-    (by ? '<div class="card"><h3 style="margin-top:0">' + T('byDiff') + '</h3><p class="muted" style="margin:0">' + T('wins') + ' / ' + T('losses') + '</p>' + by + '</div>' : '') +
-    '<button class="btn danger" id="rsStats">' + T('resetStats') + '</button>';
+  const st = S.get('stats', null), so = S.get('statsOnline', null), rps = S.get('replays', []);
+  let h = barHTML(T('stats'));
+  if (!st || !st.games) h += '<div class="card"><p>' + T('noStats') + '</p><button class="btn pri" onclick="newGameSheet()">⚔ ' + T('newGame') + '</button></div>';
+  else {
+    const rate = Math.round(st.wins / st.games * 100);
+    const by = ['easy', 'medium', 'hard', 'expert'].map(d => {
+      let w = 0, l = 0, dr = 0; [10, 7, 5].forEach(s => { const x = st.by[d + '_' + s]; if (x) { w += x.w; l += x.l; dr += x.d; } });
+      return w + l + dr ? '<div class="row"><span class="lb">' + T(d) + '</span><span dir="ltr">' + w + ' / ' + l + (dr ? ' / ' + dr : '') + '</span></div>' : '';
+    }).join('');
+    h += '<div class="kv"><div><b>' + st.games + '</b><span>' + T('games') + '</span></div><div><b>' + rate + '%</b><span>' + T('winRate') + '</span></div>' +
+      '<div><b>' + st.wins + '</b><span>' + T('wins') + '</span></div><div><b>' + st.losses + '</b><span>' + T('losses') + '</span></div>' +
+      '<div><b>' + st.streak + '</b><span>' + T('streak') + '</span></div><div><b>' + st.best + '</b><span>' + T('best') + '</span></div></div>' +
+      (st.fastest ? '<div class="card"><span class="muted">' + T('fastest') + '</span><br><b style="font:900 22px var(--fd)">' + st.fastest.m + ' ' + T('moves') + '</b> <span class="muted">· ' + T(st.fastest.d) + ' · ' + T('s' + st.fastest.s) + '</span></div>' : '') +
+      (by ? '<div class="card"><h3 style="margin-top:0">' + T('byDiff') + '</h3><p class="muted" style="margin:0">' + T('wins') + ' / ' + T('losses') + '</p>' + by + '</div>' : '');
+  }
+  if (so && so.w + so.l + so.d) h += '<div class="card"><div class="row"><span class="lb">🌐 ' + T('onlineRec') + '</span><span dir="ltr">' + so.w + ' / ' + so.l + (so.d ? ' / ' + so.d : '') + '</span></div></div>';
+  if (rps.length) h += '<h2>▶ ' + T('replays') + '</h2><div class="list">' + rps.map((r, k) => {
+    const v = r.me, res = r.winner === -1 ? T('draw') : r.mode === 'local' ? T('winOf', { n: r.names[r.winner] }) : r.winner === v ? T('win') : T('lose');
+    return '<button class="item" data-rp="' + k + '"><span><b>' + esc(res) + '</b><br><span class="muted">' + esc(r.names[0]) + ' ⚔ ' + esc(r.names[1]) + ' · ' + T('s' + r.size) + (r.mode === 'cpu' ? ' · ' + T(r.diff) : '') + '</span></span><span class="muted">' + new Date(r.t).toLocaleDateString() + '</span></button>';
+  }).join('') + '</div>';
+  if (st && st.games) h += '<button class="btn danger" id="rsStats" style="margin-top:12px">' + T('resetStats') + '</button>';
+  return h;
 };
-SCREENS.stats.mount = () => { const b = $('#rsStats'); if (b) b.onclick = async () => { if (await ask(T('resetQ'), T('resetStats'), true)) { S.del('stats'); render(); } }; };
+SCREENS.stats.mount = () => {
+  const b = $('#rsStats'); if (b) b.onclick = async () => { if (await ask(T('resetQ'), T('resetStats'), true)) { S.del('stats'); S.del('aiMem'); render(); } };
+  document.querySelectorAll('[data-rp]').forEach(x => x.onclick = () => openReplay(S.get('replays', [])[+x.dataset.rp]));
+};
 
 /* ---------- settings ---------- */
 SCREENS.settings = () => {
   const sw = (k, on) => '<button class="sw' + (on ? ' on' : '') + '" data-sw="' + k + '" role="switch" aria-checked="' + !!on + '" aria-label="' + T(k) + '"></button>';
   const pal = { gold: '#d4af37', silver: '#c9d1dc', emerald: '#3fc48f', sapphire: '#5d91f0', ruby: '#e5536c' };
   return barHTML(T('settings')) +
-    '<div class="card"><label class="lb" for="nm">' + T('userName') + '</label><span class="muted" style="display:block">' + T('userNameSub') + '</span><input type="text" id="nm" maxlength="40" value="' + esc(ST.name) + '"></div>' +
+    '<div class="card"><label class="lb" for="nm">' + T('userName') + '</label><span class="muted" style="display:block">' + T('userNameSub') + '</span><input type="text" id="nm" maxlength="20" value="' + esc(ST.name) + '"></div>' +
+    '<div class="card"><span class="lb">' + T('army') + '</span><div class="armies">' + Object.keys(ARMIES).map(k => '<button data-army="' + k + '" class="' + (ST.army === k ? 'on' : '') + '" data-ar="' + k + '"><div class="armyP">' + tb(0, 10, { army: k }) + tb(1, 0, { army: k }) + '</div>' + T('ar' + k[0].toUpperCase() + k.slice(1)) + '</button>').join('') + '</div></div>' +
     '<div class="card"><div class="row"><span class="lb">' + T('lang') + '</span><select id="lg" style="width:auto">' + Object.keys(LANGS).map(k => '<option value="' + k + '"' + (k === ST.lang ? ' selected' : '') + '>' + LANGS[k].langName + '</option>').join('') + '</select></div>' +
     '<div class="row"><span class="lb">' + T('theme') + '</span><div class="swatches">' + Object.keys(pal).map(k => '<button class="swatch' + (k === ST.pal ? ' on' : '') + '" data-setpal="' + k + '" aria-label="' + k + '"><i style="background:' + pal[k] + '"></i></button>').join('') + '</div></div>' +
     '<div class="row"><span class="lb">' + T('mode') + '</span><div class="seg" style="width:180px"><button data-setmode="night" class="' + (ST.mode === 'night' ? 'on' : '') + '">' + T('night') + '</button><button data-setmode="day" class="' + (ST.mode === 'day' ? 'on' : '') + '">' + T('day') + '</button></div></div>' +
@@ -1241,6 +2025,7 @@ SCREENS.settings = () => {
 SCREENS.settings.mount = () => {
   $('#nm').oninput = e => { ST.name = e.target.value; saveST(); };
   $('#lg').onchange = e => { ST.lang = e.target.value; saveST(); render(); };
+  document.querySelectorAll('[data-ar]').forEach(b => b.onclick = () => { ST.army = b.dataset.ar; saveST(); render(); snd('place'); });
   document.querySelectorAll('[data-setpal]').forEach(b => b.onclick = () => { ST.pal = b.dataset.setpal; saveST(); render(); });
   document.querySelectorAll('[data-setmode]').forEach(b => b.onclick = () => { ST.mode = b.dataset.setmode; saveST(); render(); });
   document.querySelectorAll('[data-skin]').forEach(b => b.onclick = () => { ST.board = b.dataset.skin; saveST(); render(); });
@@ -1251,15 +2036,16 @@ SCREENS.settings.mount = () => {
   $('#imF').onchange = importBackup;
   $('#wipe').onclick = async () => {
     if (!(await ask(T('wipeQ1'), T('del'), true))) return; if (!(await ask(T('wipeQ2'), T('wipe'), true))) return;
-    ['settings', 'stats', 'boards', 'game', 'lastSetup_10', 'lastSetup_7', 'lastSetup_5'].forEach(k => S.del(k));
+    netClose(); ['settings', 'stats', 'statsOnline', 'boards', 'game', 'replays', 'aiMem', 'lastSetup_10', 'lastSetup_7', 'lastSetup_5'].forEach(k => S.del(k));
     ST = Object.assign({}, DEF, { onboarded: true, lang: ST.lang }); saveST(); G = null; toast(T('wiped')); go('home');
   };
 };
 function exportBackup() {
   const data = { app: 'FlagNest', version: APP_VERSION, user: ST.name || '', date: new Date().toISOString(),
     summary: (() => { const s = S.get('stats', null); return s ? { games: s.games, wins: s.wins, losses: s.losses } : null; })(),
-    settings: ST, stats: S.get('stats', null), boards: S.get('boards', {}), lastSetup: { 10: S.get('lastSetup_10', null), 7: S.get('lastSetup_7', null), 5: S.get('lastSetup_5', null) }, game: S.get('game', null) };
-  const blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
+    settings: ST, stats: S.get('stats', null), statsOnline: S.get('statsOnline', null), boards: S.get('boards', {}), replays: S.get('replays', []), aiMem: S.get('aiMem', {}),
+    lastSetup: { 10: S.get('lastSetup_10', null), 7: S.get('lastSetup_7', null), 5: S.get('lastSetup_5', null) }, game: G && G.mode !== 'online' ? S.get('game', null) : null };
+  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = 'flagnest-backup-' + (ST.name ? ST.name.replace(/[^\w\u0590-\u05FF-]+/g, '_') + '-' : '') + new Date().toISOString().slice(0, 10) + '.json';
   document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); toast(T('exported'));
@@ -1270,10 +2056,10 @@ async function importBackup(e) {
   if (!d || d.app !== 'FlagNest') { toast(T('badFile')); return; }
   if (!(await ask(T('importQ'), T('importB'), true))) return;
   if (d.settings) { ST = Object.assign({}, DEF, d.settings); saveST(); }
-  if (d.stats) S.set('stats', d.stats); else S.del('stats');
-  S.set('boards', d.boards || {});
+  ['stats', 'statsOnline'].forEach(k => { if (d[k]) S.set(k, d[k]); else S.del(k); });
+  S.set('boards', d.boards || {}); S.set('replays', d.replays || []); S.set('aiMem', d.aiMem || {});
   if (d.lastSetup) [10, 7, 5].forEach(s => { if (d.lastSetup[s]) S.set('lastSetup_' + s, d.lastSetup[s]); });
-  if (d.game) { S.set('game', d.game); G = d.game; } else { S.del('game'); G = null; }
+  netClose(); if (d.game) { S.set('game', d.game); G = d.game; } else { S.del('game'); G = null; }
   toast(T('imported')); render();
 }
 
@@ -1287,7 +2073,7 @@ SCREENS.about = () => barHTML(T('about')) +
   '<p class="muted" style="margin-top:16px">' + T('disclaimer') + '</p><div class="badge">AppNest · <b>FlagNest</b></div>';
 SCREENS.about.mount = () => {
   $('#shBtn').onclick = async () => {
-    const url = location.href.split('#')[0], text = T('shareText') + (ST.name ? ' — ' + ST.name : '');
+    const url = location.origin + location.pathname, text = T('shareText') + (ST.name ? ' — ' + ST.name : '');
     try { if (navigator.share) await navigator.share({ title: 'FlagNest', text, url }); else { await navigator.clipboard.writeText(text + ' ' + url); toast(T('copied')); } } catch (e) {}
   };
 };
@@ -1315,11 +2101,18 @@ function onboarding() {
 
 /* ---------- boot ---------- */
 function boot() {
-  if (G && (!G.pcs || !VARIANTS[G.size])) { G = null; S.del('game'); }
-  applyLook(); render();
+  if (G && (!G.mode || (G.mode !== 'online' && (!G.pcs || !VARIANTS[G.size])))) { if (G.pcs && VARIANTS[G.size]) G.mode = 'cpu'; else { G = null; S.del('game'); } }
+  if (G && G.phase === 'over' && G.mode !== 'online') { G = null; S.del('game'); }
+  applyLook();
+  const q = new URLSearchParams(location.search), jc = q.get('join');
+  if (jc && /^[A-Za-z0-9]{5}$/.test(jc)) {
+    history.replaceState(null, '', location.pathname + (q.get('peerhost') ? '?peerhost=' + q.get('peerhost') + '&peerport=' + (q.get('peerport') || 9000) : ''));
+    ST.onboarded = true; saveST(); render();
+    if (G && G.mode === 'online' && G.net.code === jc.toUpperCase()) resumeGame(); else joinRoom(jc);
+  } else render();
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
   if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
-  window.__fn = { get G() { return G; }, set G(v) { G = v; }, go, aiChoose, allMoves, applyMove, ST };   // test hook
+  window.__fn = { get G() { return G; }, set G(v) { G = v; }, go, aiChoose, allMoves, applyMove, ST, NET, VW, canAct };
 }
 boot();
 </script></body></html>
